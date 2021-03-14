@@ -11,15 +11,21 @@ void mousePressed() {
     if (lastKeyCode == 0 && modeSelection) {
       lastKeyCode = gui.modeTable.mousePressed(mouseX, mouseY);
     }
+    if (lastKeyCode == 0 && fnSelection) {
+      lastKeyCode = gui.fnTable.mousePressed(mouseX, mouseY);
+    }
     if (lastKeyCode == 0) {
+      lastKeyCode = gui.fnZone.mousePressed(mouseX, mouseY);
       // touch focus
-      if (mouseX >0 && mouseX<= width-320 && mouseY > 0 && mouseY < height-120) {
-        for (int i=0; i<NumCameras; i++) {
-          if (camera[i].isConnected()) {
-            println("mouse x="+(mouseX) + " y="+mouseY);
-            if (mouseX < 2*screen.width && mouseY<2*screen.height) {
-              camera[i].touchFocus((2*screen.height-mouseY)/2, mouseX/2);
-              //println("key touch click x="+(2*screen.height-mouseY)/2 + " y="+mouseX/2);
+      if (lastKeyCode == 0) {
+        if (mouseX >0 && mouseX<= width-320 && mouseY > 0 && mouseY < height-120) {
+          for (int i=0; i<NumCameras; i++) {
+            if (camera[i].isConnected()) {
+              println("mouse x="+(mouseX) + " y="+mouseY);
+              if (mouseX < 2*screen.width && mouseY<2*screen.height) {
+                camera[i].touchFocus((2*screen.height-mouseY)/2, mouseX/2);
+                //println("key touch click x="+(2*screen.height-mouseY)/2 + " y="+mouseX/2);
+              }
             }
           }
         }
@@ -157,6 +163,9 @@ boolean keyUpdate() {
     println("Camera MODE");
     modeSelection =! modeSelection;
     selectedCameraMode = cameraMode;
+  } else if (lastKeyCode == 500) {
+    println("Camera Fn parameters");
+    fnSelection =! fnSelection;
   } else if (lastKeyCode == KEYCODE_I || lastKey == 'i' || lastKey == 'I') {
     println("Camera INFO");
     for (int i=0; i<NumCameras; i++) {

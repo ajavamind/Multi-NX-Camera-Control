@@ -46,12 +46,30 @@ int KEYCODE_W = 87;
 int KEYCODE_ESCAPE = 27;
 int KEYCODE_MOVE_HOME       = 122;
 int KEYCODE_MOVE_END       = 123;
+int KEYCODE_FN_ZONE = 500;
 
 volatile boolean modeSelection = false;
+volatile boolean fnSelection = false;
+
 int cameraMode = 0;
 int selectedCameraMode = 0;
 String[] cameraModes ={"lens", "magic", "wi-fi", "scene", "movie", "smart", "p", "a", "s", "m", "", ""};
+String[] cameraKeyModes ={"Lens", "Magic", "WiFi", "Scene", "Movie", "Smart", "P", "A", "S", "M", "", ""};
 // setting "movie" mode does not function in NX2000 with "st key mode"
+
+String[] shutterName = { "Bulb", "30\"", "25\"", "20\"", "15\"", "13\"", "10\"", 
+"8\"", "6\"", "5\"", "4\"", "3\"", "2.5\"", "2\"", "1.6\"", "1.3\"", "1\"", "0.8\"", "0.6\"", "0.5\"", "0.4\"", "0.3\"", 
+"1/4", "1/5", "1/6", "1/8", "1/10", "1/13", "1/15", "1/20", "1/25", "1/30", "1/40", "1/50", "1/60", "1/80", "1/100", "1/125",
+"1/160", "1/200", "1/250", "1/320", "1/400", "1/500", "1/640", "1/800", "1/1000", "1/1250", "1/1600", "1/2000", "1/2500", "1/3200", "1/4000"
+};
+int shutterId = 1;
+String[] fnName = { "F3.5", "F4.0", "F4.5", "F5.0", "F5.6", "F6.3", "F7.1", "F8.0", "F9.0", "F10", "F11", "F13", "F14", "F16", "F18", "F20", "F22" };
+int fnId = 0;
+
+String[] isoName = { "AUTO", "100", "200", "400", "800", "1600", "3200", "6400", "12800", "25600" };
+String[] isoName3 = { "AUTO", "100", "125", "160", "200", "250", "320", "400", "500", "640", "800", "1000", 
+"1250", "1600", "2000", "2500", "3200", "4000", "5000", "6400", "8000", "10000", "12800", "16000", "20000", "25600" };
+int isoId = 1;
 
 // The GUI assumes the camera screen image is at (0,0)
 class Gui {
@@ -59,7 +77,9 @@ class Gui {
   HorzMenuBar horzMenuBar;
   VertMenuBar vertMenuBar;
   ModeTable modeTable;
-
+  FnZone fnZone;
+  FnTable fnTable;
+  
   // information zone touch coordinates
   // screen boundaries for click zone use
   float WIDTH;
@@ -68,7 +88,7 @@ class Gui {
   float iY;
   float mX;
   float mY;
-  //float inset;
+
 
   final static String INFO_SYMBOL = "\u24D8";
   final static String CIRCLE_PLUS = "\u2295";
@@ -109,7 +129,7 @@ class Gui {
   Gui() {
   }
 
-  void createGui(MultiNX base) {
+  void create(MultiNX base) {
     this.base = base;
     WIDTH = base.width;
     HEIGHT = base.height;
@@ -144,11 +164,17 @@ class Gui {
 
     modeTable = new ModeTable();
     modeTable.create();
+
+    fnZone = new FnZone();
+    fnZone.create();
+    fnTable = new FnTable();
+    fnTable.create();
   }
 
   void displayMenuBar() {
     horzMenuBar.display();
     vertMenuBar.display();
+    fnZone.display();
   }
 
   void highlightFocusKey(boolean hold) {
@@ -232,18 +258,18 @@ class Gui {
       //PImage imgxsbs = base.loadImage("icons/xsbs.png");
       //"lens", "magic", "wi-fi", "scene", "movie", "smart", "p", "a", "s", "m"
 
-      lensKey = new MenuKey(1000, cameraModes[0], FONT_SIZE, keyColor);
-      magicKey = new MenuKey(1001, cameraModes[1], FONT_SIZE, keyColor);
-      wifiKey = new MenuKey(1002, cameraModes[2], FONT_SIZE, keyColor);
-      sceneKey = new MenuKey(1003, cameraModes[3], FONT_SIZE, keyColor);
-      movieKey = new MenuKey(1004, cameraModes[4], FONT_SIZE, keyColor);
-      smartKey = new MenuKey(1005, cameraModes[5], FONT_SIZE, keyColor);
-      pKey = new MenuKey(1006, cameraModes[6], FONT_SIZE, keyColor);
-      aKey = new MenuKey(1007, cameraModes[7], FONT_SIZE, keyColor);
-      sKey = new MenuKey(1008, cameraModes[8], FONT_SIZE, keyColor);
-      mKey = new MenuKey(1009, cameraModes[9], FONT_SIZE, keyColor);
-      emptyKey = new MenuKey(1010, cameraModes[10], FONT_SIZE, keyColor);
-      empty2Key = new MenuKey(1011, cameraModes[11], FONT_SIZE, keyColor);
+      lensKey = new MenuKey(1000, cameraKeyModes[0], FONT_SIZE, keyColor);
+      magicKey = new MenuKey(1001, cameraKeyModes[1], FONT_SIZE, keyColor);
+      wifiKey = new MenuKey(1002, cameraKeyModes[2], FONT_SIZE, keyColor);
+      sceneKey = new MenuKey(1003, cameraKeyModes[3], FONT_SIZE, keyColor);
+      movieKey = new MenuKey(1004, cameraKeyModes[4], FONT_SIZE, keyColor);
+      smartKey = new MenuKey(1005, cameraKeyModes[5], FONT_SIZE, keyColor);
+      pKey = new MenuKey(1006, cameraKeyModes[6], FONT_SIZE, keyColor);
+      aKey = new MenuKey(1007, cameraKeyModes[7], FONT_SIZE, keyColor);
+      sKey = new MenuKey(1008, cameraKeyModes[8], FONT_SIZE, keyColor);
+      mKey = new MenuKey(1009, cameraKeyModes[9], FONT_SIZE, keyColor);
+      emptyKey = new MenuKey(1010, cameraKeyModes[10], FONT_SIZE, keyColor);
+      empty2Key = new MenuKey(1011, cameraKeyModes[11], FONT_SIZE, keyColor);
       okKey = new MenuKey(1012, CHECK_MARK, FONT_SIZE, keyColor);
 
       table = new MenuKey[numKeys];
@@ -253,12 +279,12 @@ class Gui {
       table[3] = sceneKey;
       table[4] = movieKey;
       table[5] = smartKey;
-      table[6] = pKey;
-      table[7] = aKey;
-      table[8] = sKey;
-      table[9] = mKey;
-      table[10] = emptyKey;
-      table[11] = empty2Key;
+      table[8] = pKey;
+      table[9] = aKey;
+      table[10] = sKey;
+      table[11] = mKey;
+      table[6] = emptyKey;
+      table[7] = empty2Key;
       table[12] = okKey;
       int[] valueTable = {0, 1, 2, 3, 
         4, 5, 6, 7, 
@@ -267,7 +293,7 @@ class Gui {
       };
       insetY = iY/8;
       insetX = iX/8;
-      float x = (mX)-insetX-iX-2*insetX- iX; // table start from left
+      float x = (mX)-insetX-iX-2*insetX- iX - iX/2; // table start from left
       float y = 3*iY;  // table start from middle
       int ROWS = 3;
       int COLS = 4;
@@ -279,7 +305,7 @@ class Gui {
           table[COLS*i+j].setValue(valueTable[COLS*i+j]);
         }
       }
-      table[ok].setPosition(mX-iX/2, y + ((float)ROWS) * (iY + 2 * insetY), iX, iY, WIDTH / 64f);
+      table[ok].setPosition(mX-iX, y + ((float)ROWS) * (iY + 2 * insetY), iX, iY, WIDTH / 64f);
       table[ok].setVisible(true);
       table[ok].setValue(1012);
     }
@@ -291,9 +317,8 @@ class Gui {
     }
 
     void saveSelection(int selected) {
-      
     }
-    
+
     void display() {
       if (modeSelection) {
         int mode = selectedCameraMode;
@@ -303,6 +328,130 @@ class Gui {
           } else {
             table[i].setHighlight(false);
           }
+          table[i].draw();
+        }
+      }
+    }
+
+    int mousePressed(int x, int y) {
+      int keyCode = -1;
+      // table touch control area at bottom of screen or sides
+      for (int i = 0; i < numKeys; i++) {
+        if (table[i].visible) {
+          if ((x <= (table[i].x + table[i].w)) && (x >= (table[i].x)) &&
+            (y >= table[i].y) && (y <= (table[i].y +table[i].h))) {
+            keyCode = table[i].keyCode;
+            break;
+          }
+        }
+      }
+      return keyCode;
+    }
+  }
+
+  /**
+   * FnTable appears in center of the screen.
+   */
+  class FnTable {
+    // initialize function Keys
+    MenuKey shutterNameKey;
+    MenuKey shutterLeftKey;
+    MenuKey shutterKey;
+    MenuKey shutterRightKey;
+    MenuKey fnNameKey;
+    MenuKey fnLeftKey;
+    MenuKey fnKey;
+    MenuKey fnRightKey;
+    MenuKey isoNameKey;
+    MenuKey isoLeftKey;
+    MenuKey isoKey;
+    MenuKey isoRightKey;
+    MenuKey okKey;
+    MenuKey[] table;
+    int numKeys = 13;
+    float insetY;
+    float insetX;
+
+    void create() {
+      int keyColor = black;
+      int arrowKeyColor = aqua;
+      shutterNameKey = new MenuKey(2000, "SHUTTER", FONT_SIZE, white);
+      shutterNameKey.setActive(false);
+      shutterNameKey.setCorner(false);
+      shutterLeftKey = new MenuKey(2001, LEFT_TRIANGLE, MEDIUM_FONT_SIZE, arrowKeyColor);
+      shutterKey = new MenuKey(2002, shutterName[shutterId], FONT_SIZE, keyColor);
+      shutterRightKey = new MenuKey(2003, RIGHT_TRIANGLE, MEDIUM_FONT_SIZE, arrowKeyColor);
+      fnNameKey = new MenuKey(2004, "FN", FONT_SIZE, white);
+      fnNameKey.setActive(false);
+      fnNameKey.setCorner(false);
+      fnLeftKey = new MenuKey(2005, LEFT_TRIANGLE, MEDIUM_FONT_SIZE, arrowKeyColor);
+      fnKey = new MenuKey(2006, fnName[fnId], FONT_SIZE, keyColor);
+      fnRightKey = new MenuKey(2007, RIGHT_TRIANGLE, MEDIUM_FONT_SIZE, arrowKeyColor);
+      isoNameKey = new MenuKey(2008, "ISO", FONT_SIZE, white);
+      isoNameKey.setActive(false);
+      isoNameKey.setCorner(false);
+      isoLeftKey = new MenuKey(2009, LEFT_TRIANGLE, MEDIUM_FONT_SIZE, arrowKeyColor);
+      isoKey = new MenuKey(2010, isoName[isoId], FONT_SIZE, keyColor);
+      isoRightKey = new MenuKey(2011, RIGHT_TRIANGLE, MEDIUM_FONT_SIZE, arrowKeyColor);
+      okKey = new MenuKey(2012, CHECK_MARK, FONT_SIZE, keyColor);
+
+      table = new MenuKey[numKeys];
+      table[0] = shutterNameKey;
+      table[1] = shutterLeftKey;
+      table[2] = shutterKey;
+      table[3] = shutterRightKey;
+      table[4] = fnNameKey;
+      table[5] = fnLeftKey;
+      table[6] = fnKey;
+      table[7] = fnRightKey;
+      table[8] = isoNameKey;
+      table[9] = isoLeftKey;
+      table[10] = isoKey;
+      table[11] = isoRightKey;
+      table[12] = okKey;
+      int[] valueTable = {0, 1, 2, 3, 
+        4, 5, 6, 7, 
+        8, 9, 10, 11, 
+        12
+      };
+      insetY = iY/8;
+      insetX = iX/8;
+      float x = (mX)-insetX-iX-2*insetX- iX -iX/2; // table start from left
+      float y = 3*iY;  // table start from middle
+      int ROWS = 3;
+      int COLS = 4;
+      int ok = 12;
+      for (int i = 0; i < ROWS; i++) {
+        for (int j = 0; j < COLS; j++) {
+          table[COLS*i+j].setPosition(x + ((float)j) * (iX + 2 * insetX), y + ((float)i) * (iY + 2 * insetY), iX, iY, 0);
+          table[COLS*i+j].setVisible(true);
+          table[COLS*i+j].setValue(valueTable[COLS*i+j]);
+        }
+      }
+      //table[ok].setPosition(mX-iX, y + ((float)ROWS) * (iY + 2 * insetY), iX, iY, WIDTH / 64f);
+      table[ok].setPosition(x + 2* (iX + 2 * insetX), y + ((float)ROWS) * (iY + 2 * insetY), iX, iY, WIDTH / 64f);
+      table[ok].setVisible(true);
+      table[ok].setValue(1012);
+    }
+
+    void setVisible(boolean[] visible) {
+      for (int i = 0; i < table.length; i++) {
+        table[i].setVisible(visible[i]);
+      }
+    }
+
+    void saveSelection(int selected) {
+    }
+
+    void display() {
+      if (fnSelection) {
+        //int mode = selectedCameraMode;
+        for (int i = 0; i < table.length; i++) {
+          //if (table[i].getValue() == mode) {
+          //  table[i].setHighlight(true);
+          //} else {
+          //  table[i].setHighlight(false);
+          //}
           table[i].draw();
         }
       }
@@ -436,11 +585,10 @@ class Gui {
       //PImage imgeye = base.loadImage("icons/eye.png");
 
       cameraInfoKey = new MenuKey(KEYCODE_I, "Info", FONT_SIZE, keyColor);
-      cameraMenuKey = new MenuKey(KEYCODE_M, "Menu", FONT_SIZE, keyColor);
-      cameraFnKey = new MenuKey(KEYCODE_N, "FN", FONT_SIZE, keyColor);
+      cameraMenuKey = new MenuKey(KEYCODE_M, "MENU", FONT_SIZE, keyColor);
+      cameraFnKey = new MenuKey(KEYCODE_N, "Fn", FONT_SIZE, keyColor);
       cameraModeKey = new MenuKey(KEYCODE_W, "Mode", FONT_SIZE, keyColor);
       cameraOkKey = new MenuKey(KEYCODE_K, "OK", FONT_SIZE, keyColor);
-      //xxxxKey = new MenuKey(KEYCODE_M, imgeye, keyColor);
       backKey = new MenuKey(KEYCODE_ESCAPE, "EXIT", FONT_SIZE, keyColor);
       menuKey = new MenuKey[numKeys];
       menuKey[0] = cameraInfoKey;
@@ -502,6 +650,74 @@ class Gui {
     }
   }
 
+  /**
+   * MenuBar appears at bottom of full screen.
+   */
+  class FnZone {
+    // initialize Keys
+    MenuKey zoneKey;
+    MenuKey[] menuKey;
+    int numKeys = 1;
+    float menuBase;
+
+    void create() {
+      color keyColor = black;
+
+      zoneKey = new MenuKey(KEYCODE_FN_ZONE, null, FONT_SIZE, keyColor);
+      menuKey = new MenuKey[numKeys];
+      menuKey[0] = zoneKey;
+
+      float w = 1016;
+      float h = 104;
+      float x = 294;
+      float y = 2*NX2000Camera.screenHeight -h;
+      menuBase = 2*NX2000Camera.screenHeight -h;
+
+
+      menuKey[0].setPosition( x, y, w, h, 0);
+      menuKey[0].setVisible(true);
+      menuKey[0].setActive(true);
+    }
+
+    void setVisible(boolean[] visible) {
+      for (int i = 0; i < menuKey.length; i++) {
+        menuKey[i].setVisible(visible[i]);
+      }
+    }
+
+    void setActive(boolean[] active) {
+      for (int i = 0; i < menuKey.length; i++) {
+        menuKey[i].setActive(active[i]);
+      }
+    }
+
+    void display() {
+      for (int i = 0; i < menuKey.length; i++) {
+        menuKey[i].draw();
+      }
+      noFill();
+      rect(menuKey[0].x, menuKey[0].y, menuKey[0].w, menuKey[0].h);
+    }
+
+    int mousePressed(int x, int y) {
+      int mkeyCode = 0;
+      int mkey = 0;
+      println("Fn Zone mouse x="+x + " y="+y + " menuBase="+menuBase);
+      if (y > menuBase ) {
+        // menu touch control area at bottom of screen or sides
+        for (int i = 0; i < numKeys; i++) {
+          if (menuKey[i].visible && menuKey[i].active) {
+            if ((x <= (menuKey[i].x + menuKey[i].w)) && (x >= (menuKey[i].x))) {
+              mkeyCode = menuKey[i].keyCode;
+              break;
+            }
+          }
+        }
+      } 
+      return mkeyCode;
+    }
+  }
+
   class MenuKey {
     float x, y, w, h; // location
     float inset;
@@ -514,6 +730,7 @@ class Gui {
     boolean highlight = false;
     boolean active = true;
     boolean corner = true;
+    boolean textOnly = false;
     int value;
 
     MenuKey() {
@@ -564,6 +781,10 @@ class Gui {
 
     void setCorner(boolean corner) {
       this.corner = corner;
+    }
+
+    void setTextOnly(boolean value) {
+      this.textOnly = value;
     }
 
     void draw() {

@@ -23,7 +23,7 @@ tcpsvd -u root -vE 0.0.0.0 21 ftpd -w  /mnt/mmc &
 // exit email to shoot photos and videos after connection to your local WiFi network.
 
 //import processing.net.*; 
-boolean testGui = false;
+boolean testGui = true;
 boolean DEBUG = true;
 
 int telnetPort = 23; // telnet port
@@ -38,7 +38,7 @@ void settings() {
   size(1920, 1080);
   smooth();
   gui = new Gui();
-  gui.createGui(this);
+  gui.create(this);
 }
 
 void setup() { 
@@ -47,8 +47,8 @@ void setup() {
 
   textSize(FONT_SIZE);
   
-  //screen = loadImage("screenshot/nx2000/readytoshoot.png");
-  screen = loadImage("screenshot/nx2000/readyfocustoshootmin.png");
+  screen = loadImage("screenshot/nx2000/readytoshoot.png");
+  //screen = loadImage("screenshot/nx2000/readyfocustoshootmin.png");
   
   // Create telnet clients to connect to Samsung NX2000 cameras.
   camera = new NX2000Camera[NumCameras];
@@ -105,6 +105,7 @@ void draw() {
   }
   gui.displayMenuBar();
   gui.modeTable.display();
+  gui.fnTable.display();
 } 
 
 void takeMultiPhoto(NX2000Camera[] camera) {
