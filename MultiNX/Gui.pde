@@ -434,6 +434,11 @@ class Gui {
       table[ok].setValue(1012);
     }
 
+    void setIso(int value) {
+      isoId = value;
+      isoKey.setCap(isoName[isoId]);
+    }
+    
     void setVisible(boolean[] visible) {
       for (int i = 0; i < table.length; i++) {
         table[i].setVisible(visible[i]);

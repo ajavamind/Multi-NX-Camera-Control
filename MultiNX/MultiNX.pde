@@ -23,7 +23,7 @@ tcpsvd -u root -vE 0.0.0.0 21 ftpd -w  /mnt/mmc &
 // exit email to shoot photos and videos after connection to your local WiFi network.
 
 //import processing.net.*; 
-boolean testGui = true;
+boolean testGui = false;
 boolean DEBUG = true;
 
 int telnetPort = 23; // telnet port
@@ -78,20 +78,17 @@ void draw() {
     if (!camera[i].isConnected()) {
       if (camera[i].client != null) {
         if (camera[i].client.available() > 0) { 
-          inString = camera[i].client.readString(); 
+          String inString = camera[i].client.readString(); 
           println(inString); 
           if (inString.endsWith(prompt)) {
             camera[i].setConnected(true);
             println("Camera "+i+" "+ip[i]+" connected");
+            camera[i].getCameraISO();
           }
         }
       }
     } else {
-      if (camera[i].client.available() > 0) { 
-        inString = camera[i].client.readString(); 
-        decodeResult(inString);
-        println(inString);
-      }
+      camera[i].getResult();
     }
     
     textSize(FONT_SIZE);
@@ -110,7 +107,7 @@ void draw() {
 
 void takeMultiPhoto(NX2000Camera[] camera) {
   for (int i=0; i<NumCameras; i++) {
-    camera[i].client.write("st key push s1;st key push s2;st key release s2;st key release s1\n"); // focus and shutter
+    camera[i].takePhoto();
   }
 }
 

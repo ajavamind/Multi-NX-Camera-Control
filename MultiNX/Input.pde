@@ -163,9 +163,6 @@ boolean keyUpdate() {
     println("Camera MODE");
     modeSelection =! modeSelection;
     selectedCameraMode = cameraMode;
-  } else if (lastKeyCode == 500) {
-    println("Camera Fn parameters");
-    fnSelection =! fnSelection;
   } else if (lastKeyCode == KEYCODE_I || lastKey == 'i' || lastKey == 'I') {
     println("Camera INFO");
     for (int i=0; i<NumCameras; i++) {
@@ -235,6 +232,38 @@ boolean keyUpdate() {
     } else {
       selectedCameraMode = lastKeyCode-1000;
       println("Set Mode "+ cameraModes[selectedCameraMode]);
+    }
+  } else if (lastKeyCode == 500) {
+    println("Camera Fn parameters");
+    camera[0].getCameraISO();
+    fnSelection =! fnSelection;
+  } else if (lastKeyCode >= 2000 && lastKeyCode <= 2012) {
+    if (lastKeyCode == 2012) {
+      fnSelection = false;
+      for (int i=0; i<NumCameras; i++) {
+        if (camera[i].isConnected()) {
+          camera[i].setCameraISO(isoId);
+          camera[i].function();
+          camera[i].sendDelay(1);
+          camera[i].touchBack();
+        }
+      }
+    } else {
+      if (lastKeyCode == 2009) {// left ISO
+        if (isoId > 0) {
+          isoId--;
+          gui.fnTable.setIso(isoId);
+        }
+      } else if (lastKeyCode == 2011) {// right ISO
+        if (isoId < isoName.length-1) {
+          isoId++;
+          gui.fnTable.setIso(isoId);
+        }
+      }
+      for (int i=0; i<NumCameras; i++) {
+        if (camera[i].isConnected()) {
+        }
+      }
     }
   } else if (lastKey == 'z' || lastKey == 'Z') {
     camera[0].getPrefMem(APPID, APPPREF_ISO_PAS, "l");
