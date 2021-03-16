@@ -235,8 +235,10 @@ boolean keyUpdate() {
     }
   } else if (lastKeyCode == 500) {
     println("Camera Fn parameters");
-    camera[0].getCameraFnShutterISO();
     fnSelection =! fnSelection;
+    if (fnSelection) {
+      camera[0].getCameraFnShutterISO();
+    }
   } else if (lastKeyCode >= 2000 && lastKeyCode <= 2012) {
     if (lastKeyCode == 2012) {
       fnSelection = false;

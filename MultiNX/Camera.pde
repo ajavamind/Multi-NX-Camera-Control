@@ -108,10 +108,15 @@ class NX2000Camera {
     this.shutterSpeed = shutterValue[shutterId];
     this.fn = fnValue[fnId];
     this.iso = isoId;
+    println("prefman set 1 " +APPPREF_FNO_INDEX + " l " + this.fn +
+      ";prefman set 1 " +APPPREF_SHUTTER_SPEED_INDEX + " l " + this.shutterSpeed +
+      ";prefman set 1 " + APPPREF_ISO_PAS + " l " + iso +
+      "\n");
     client.write(
       "prefman set 1 " +APPPREF_FNO_INDEX + " l " + this.fn +
       ";prefman set 1 " +APPPREF_SHUTTER_SPEED_INDEX + " l " + this.shutterSpeed +
       ";prefman set 1 " + APPPREF_ISO_PAS + " l " + iso +
+     // ";st key click fn;sleep 1;st key touch click 40 40"+
       "\n");
   }
 
@@ -229,7 +234,7 @@ class NX2000Camera {
   }
 
   void functionAndBack() {
-    client.write("st key click fn;sleep 1;st key touch click 40 40\n");
+    client.write("st key click fn;sleep 2;st key touch click 40 40\n");
   }
 
   void screenshot(String filename) {

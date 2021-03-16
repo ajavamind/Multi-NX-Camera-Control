@@ -75,7 +75,7 @@ int shutterId = 1;
 String[] fnName = { "F3.5", "F4.0", "F4.5", "F5.0", "F5.6", "F6.3", "F7.1", "F8.0", 
   "F9.0", "F10", "F11", "F13", "F14", "F16", "F18", "F20", "F22" };
 int[] fnValue = {58, 64, 69, 75, 80, 85, 91, 96, 
-101, 107, 112, 117, 123, 128, 133, 139, 144 };
+  101, 107, 112, 117, 123, 128, 133, 139, 144 };
 int fnId = 7;
 
 String[] isoName = { "AUTO", "100", "200", "400", "800", "1600", "3200", "6400", "12800", "25600" };
@@ -491,20 +491,14 @@ class Gui {
 
     void display() {
       if (fnSelection) {
-        //int mode = selectedCameraMode;
         for (int i = 0; i < table.length; i++) {
-          //if (table[i].getValue() == mode) {
-          //  table[i].setHighlight(true);
-          //} else {
-          //  table[i].setHighlight(false);
-          //}
           table[i].draw();
         }
       }
     }
 
     int mousePressed(int x, int y) {
-      int keyCode = -1;
+      int keyCode = 0;
       // table touch control area at bottom of screen or sides
       for (int i = 0; i < numKeys; i++) {
         if (table[i].visible) {
