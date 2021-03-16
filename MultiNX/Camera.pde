@@ -15,8 +15,10 @@ int NumCameras = ip.length;
 String prompt = "nx2000:/# ";// get Camera state
 int screenshotCounter = 1;
 String screenshotFilename = "screenshot";
-int GET_NONE = 0;
-int GET_ISO = 1;
+//int GET_NONE = 0;
+//int GET_ISO = 1;
+//int GET_SS = 2;
+//int GET_FN = 3;
 
 class NX2000Camera {
   static final int screenWidth = 800;
@@ -28,56 +30,91 @@ class NX2000Camera {
   Client client;
   boolean connected;
   String ipAddr;
-  String inString;
-  int inValue;
-  int getType;
-  
+  int[] result;
+
   NX2000Camera(String ipAddr, Client client) {
     this.ipAddr = ipAddr;
     this.client = client;
     connected = false;
   }
 
-  void getResult() {
+  void getFnShutterIsoResult() {
+    result = new int[3];
     if (client.available() > 0) { 
-      inString = client.readString(); 
-      if (decodeLong(inString)) {
-        println("result="+inValue);
-        if (getType == GET_ISO) {
-          iso = inValue;
-          getType = GET_NONE;
-          isoId = iso;
-          gui.fnTable.setIso(iso);
+      String inString = client.readString(); 
+      if (decodeLongSequence(inString, result)) {
+        for (int i=0; i<result.length; i++) {
+          println("result="+result[i]);
         }
+        fn = result[0];
+        gui.fnTable.setFn(fn);
+
+        shutterSpeed = result[1];
+        gui.fnTable.setShutter(shutterSpeed);
+
+        iso = result[2];
+        gui.fnTable.setIso(iso);
       }
     }
   }
 
   boolean decodeLong(String s) {
+    int[] result = new int[1];
     boolean decoded = false;
     int index = s.lastIndexOf("(0x");
     if (index >= 0) {
-      println(s.substring(index+3, index+11));
-      inValue = unhex(s.substring(index+3, index+11));
+      //println(s.substring(index+3, index+11));
+      result[0] = unhex(s.substring(index+3, index+11));
       decoded = true;
     }
     return decoded;
   }
 
-  void getCameraISO() {
-    getType = GET_ISO;
-    client.write("prefman get 1 0x64 l\n");
+  boolean decodeLongSequence(String s, int[] value ) {
+    boolean decoded = true;
+    int index = 0;
+    for (int i=0; i<value.length; i++) {
+      index = s.indexOf("(0x", index);
+      if (index >= 0) {
+        //println(s.substring(index+3, index+11));
+        value[i] = unhex(s.substring(index+3, index+11));
+        index += 8;
+      } else {
+        decoded = false;
+        break;
+      }
+    }
+    return decoded;
   }
-  
+
+  void getCameraFnShutterISO() {
+    client.write(  
+      "prefman get 1 " +APPPREF_FNO_INDEX + " l" + 
+      ";prefman get 1 " +APPPREF_SHUTTER_SPEED_INDEX + " l" +
+      ";prefman get 1 " + APPPREF_ISO_PAS + " l" +
+      "\n");
+  }
+
   int getISO () {
     return iso;
   }
 
-  void setCameraISO(int value) {
-    iso = value;
-    client.write("prefman set 1 0x64 l "+iso+"\n");
+  //void setCameraISO(int value) {
+  //  iso = value;
+  //  client.write("prefman set 1 " + APPPREF_ISO_PAS + " l " + iso + "\n");
+  //}
+
+  void setCameraFnShutterISO(int fnId, int shutterId, int isoId) {
+    this.shutterSpeed = shutterValue[shutterId];
+    this.fn = fnValue[fnId];
+    this.iso = isoId;
+    client.write(
+      "prefman set 1 " +APPPREF_FNO_INDEX + " l " + this.fn +
+      ";prefman set 1 " +APPPREF_SHUTTER_SPEED_INDEX + " l " + this.shutterSpeed +
+      ";prefman set 1 " + APPPREF_ISO_PAS + " l " + iso +
+      "\n");
   }
- 
+
 
   int getShutterSpeed () {
     return shutterSpeed;
@@ -189,6 +226,10 @@ class NX2000Camera {
 
   void sendDelay(int second) {
     client.write("sleep "+second+"\n");
+  }
+
+  void functionAndBack() {
+    client.write("st key click fn;sleep 1;st key touch click 40 40\n");
   }
 
   void screenshot(String filename) {

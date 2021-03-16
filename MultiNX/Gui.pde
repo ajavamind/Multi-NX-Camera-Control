@@ -57,18 +57,30 @@ String[] cameraModes ={"lens", "magic", "wi-fi", "scene", "movie", "smart", "p",
 String[] cameraKeyModes ={"Lens", "Magic", "WiFi", "Scene", "Movie", "Smart", "P", "A", "S", "M", "", ""};
 // setting "movie" mode does not function in NX2000 with "st key mode"
 
-String[] shutterName = { "Bulb", "30\"", "25\"", "20\"", "15\"", "13\"", "10\"", 
-"8\"", "6\"", "5\"", "4\"", "3\"", "2.5\"", "2\"", "1.6\"", "1.3\"", "1\"", "0.8\"", "0.6\"", "0.5\"", "0.4\"", "0.3\"", 
-"1/4", "1/5", "1/6", "1/8", "1/10", "1/13", "1/15", "1/20", "1/25", "1/30", "1/40", "1/50", "1/60", "1/80", "1/100", "1/125",
-"1/160", "1/200", "1/250", "1/320", "1/400", "1/500", "1/640", "1/800", "1/1000", "1/1250", "1/1600", "1/2000", "1/2500", "1/3200", "1/4000"
+String[] shutterName = { "Bulb", "30\"", "25\"", "20\"", "15\"", "13\"", "10\"", "8\"", "6\"", "5\"", 
+  "4\"", "3\"", "2.5\"", "2\"", "1.6\"", "1.3\"", "1\"", "0.8\"", "0.6\"", "0.5\"", 
+  "0.4\"", "0.3\"", "1/4", "1/5", "1/6", "1/8", "1/10", "1/13", "1/15", "1/20", 
+  "1/25", "1/30", "1/40", "1/50", "1/60", "1/80", "1/100", "1/125", "1/160", "1/200", 
+  "1/250", "1/320", "1/400", "1/500", "1/640", "1/800", "1/1000", "1/1250", "1/1600", "1/2000", 
+  "1/2500", "1/3200", "1/4000"
 };
+int[] shutterValue = { -80, -80, -75, -69, -64, -59, -53, -48, -43, -37, 
+  -32, -27, -21, -16, -11, -5, 0, 5, 11, 16, 
+  21, 27, 32, 37, 43, 48, 53, 59, 64, 69, 
+  75, 80, 85, 91, 96, 101, 107, 112, 117, 123, 
+  128, 133, 139, 144, 149, 155, 160, 165, 171, 176, 
+  181, 187, 192};
 int shutterId = 1;
-String[] fnName = { "F3.5", "F4.0", "F4.5", "F5.0", "F5.6", "F6.3", "F7.1", "F8.0", "F9.0", "F10", "F11", "F13", "F14", "F16", "F18", "F20", "F22" };
-int fnId = 0;
+
+String[] fnName = { "F3.5", "F4.0", "F4.5", "F5.0", "F5.6", "F6.3", "F7.1", "F8.0", 
+  "F9.0", "F10", "F11", "F13", "F14", "F16", "F18", "F20", "F22" };
+int[] fnValue = {58, 64, 69, 75, 80, 85, 91, 96, 
+101, 107, 112, 117, 123, 128, 133, 139, 144 };
+int fnId = 7;
 
 String[] isoName = { "AUTO", "100", "200", "400", "800", "1600", "3200", "6400", "12800", "25600" };
 String[] isoName3 = { "AUTO", "100", "125", "160", "200", "250", "320", "400", "500", "640", "800", "1000", 
-"1250", "1600", "2000", "2500", "3200", "4000", "5000", "6400", "8000", "10000", "12800", "16000", "20000", "25600" };
+  "1250", "1600", "2000", "2500", "3200", "4000", "5000", "6400", "8000", "10000", "12800", "16000", "20000", "25600" };
 int isoId = 1;
 
 // The GUI assumes the camera screen image is at (0,0)
@@ -79,7 +91,7 @@ class Gui {
   ModeTable modeTable;
   FnZone fnZone;
   FnTable fnTable;
-  
+
   // information zone touch coordinates
   // screen boundaries for click zone use
   float WIDTH;
@@ -438,7 +450,36 @@ class Gui {
       isoId = value;
       isoKey.setCap(isoName[isoId]);
     }
-    
+
+    void setShutter(int value) {
+      for (int i=0; i<shutterValue.length; i++) {
+        if (shutterValue[i] == value) {
+          shutterId = i;
+          break;
+        }
+      }
+      shutterKey.setCap(shutterName[shutterId]);
+    }
+
+    void setShutterId(int id) {
+      shutterKey.setCap(shutterName[shutterId]);
+    }
+
+
+    void setFn(int value) {
+      for (int i=0; i<fnValue.length; i++) {
+        if (fnValue[i] == value) {
+          fnId = i;
+          break;
+        }
+      }
+      fnKey.setCap(fnName[fnId]);
+    }
+
+    void setFnId(int id) {
+      fnKey.setCap(fnName[id]);
+    }
+
     void setVisible(boolean[] visible) {
       for (int i = 0; i < table.length; i++) {
         table[i].setVisible(visible[i]);
@@ -552,7 +593,7 @@ class Gui {
     int mousePressed(int x, int y) {
       int mkeyCode = 0;
       int mkey = 0;
-      println("vert menubar mouse x="+x + " y="+y);
+      if (DEBUG) println("vert menubar mouse x="+x + " y="+y);
       if (y > menuBase && y < HEIGHT-120 && x > menux) {
         // menu touch control area at bottom of screen or sides
         for (int i = 0; i < numKeys; i++) {
@@ -560,7 +601,7 @@ class Gui {
             if (x >= menuKey[i].x && x<= (menuKey[i].x + menuKey[i].w) && y >= menuKey[i].y && y <= (menuKey[i].y +menuKey[i].h)) {
               mkeyCode = menuKey[i].keyCode;
               mkey = 0;
-              println("vertMenu keycode="+mkeyCode);
+              if (DEBUG) println("vertMenu keycode="+mkeyCode);
               break;
             }
           }
@@ -639,7 +680,7 @@ class Gui {
     int mousePressed(int x, int y) {
       int mkeyCode = 0;
       int mkey = 0;
-      println("horz menubar mouse x="+x + " y="+y + " menuBase="+menuBase);
+      if (DEBUG) println("horz menubar mouse x="+x + " y="+y + " menuBase="+menuBase);
       if (y > menuBase ) {
         // menu touch control area at bottom of screen or sides
         for (int i = 0; i < numKeys; i++) {
@@ -707,7 +748,7 @@ class Gui {
     int mousePressed(int x, int y) {
       int mkeyCode = 0;
       int mkey = 0;
-      println("Fn Zone mouse x="+x + " y="+y + " menuBase="+menuBase);
+      if (DEBUG) println("Fn Zone mouse x="+x + " y="+y + " menuBase="+menuBase);
       if (y > menuBase ) {
         // menu touch control area at bottom of screen or sides
         for (int i = 0; i < numKeys; i++) {

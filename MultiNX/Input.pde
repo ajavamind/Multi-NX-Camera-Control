@@ -21,7 +21,7 @@ void mousePressed() {
         if (mouseX >0 && mouseX<= width-320 && mouseY > 0 && mouseY < height-120) {
           for (int i=0; i<NumCameras; i++) {
             if (camera[i].isConnected()) {
-              println("mouse x="+(mouseX) + " y="+mouseY);
+              if (DEBUG) println("mouse x="+(mouseX) + " y="+mouseY);
               if (mouseX < 2*screen.width && mouseY<2*screen.height) {
                 camera[i].touchFocus((2*screen.height-mouseY)/2, mouseX/2);
                 //println("key touch click x="+(2*screen.height-mouseY)/2 + " y="+mouseX/2);
@@ -45,7 +45,7 @@ void keyReleased() {
 }
 
 void keyPressed() {
-  println("key="+key + " keyCode="+keyCode);        
+  if (DEBUG) println("key="+key + " keyCode="+keyCode);        
   //if (DEBUG) Log.d(TAG, "key=" + key + " keyCode=" + keyCode);
   lastKey = key;
   lastKeyCode = keyCode;
@@ -235,21 +235,41 @@ boolean keyUpdate() {
     }
   } else if (lastKeyCode == 500) {
     println("Camera Fn parameters");
-    camera[0].getCameraISO();
+    camera[0].getCameraFnShutterISO();
     fnSelection =! fnSelection;
   } else if (lastKeyCode >= 2000 && lastKeyCode <= 2012) {
     if (lastKeyCode == 2012) {
       fnSelection = false;
       for (int i=0; i<NumCameras; i++) {
         if (camera[i].isConnected()) {
-          camera[i].setCameraISO(isoId);
-          camera[i].function();
-          camera[i].sendDelay(1);
-          camera[i].touchBack();
+          camera[i].setCameraFnShutterISO(fnId, shutterId, isoId);
+          camera[i].functionAndBack();
         }
       }
     } else {
-      if (lastKeyCode == 2009) {// left ISO
+      if (lastKeyCode == 2005) {// left Fn
+        if (fnId > 0) {
+          fnId--;
+          gui.fnTable.setFn(fnId);
+        }
+      } else if (lastKeyCode == 2007) {// right Fn
+        if (fnId < fnName.length-1) {
+          fnId++;
+          gui.fnTable.setFn(fnId);
+        }
+      }
+
+      if (lastKeyCode == 2001) {// left Shutter
+        if (shutterId > 0) {
+          shutterId--;
+          gui.fnTable.setShutterId(shutterId);
+        }
+      } else if (lastKeyCode == 2003) {// right Shutter
+        if (shutterId < shutterName.length-1) {
+          shutterId++;
+          gui.fnTable.setShutterId(shutterId);
+        }
+      } else if (lastKeyCode == 2009) {// left ISO
         if (isoId > 0) {
           isoId--;
           gui.fnTable.setIso(isoId);
@@ -260,6 +280,7 @@ boolean keyUpdate() {
           gui.fnTable.setIso(isoId);
         }
       }
+
       for (int i=0; i<NumCameras; i++) {
         if (camera[i].isConnected()) {
         }

@@ -24,7 +24,7 @@ tcpsvd -u root -vE 0.0.0.0 21 ftpd -w  /mnt/mmc &
 
 //import processing.net.*; 
 boolean testGui = false;
-boolean DEBUG = true;
+boolean DEBUG = false;
 
 int telnetPort = 23; // telnet port
 boolean doExit = false;
@@ -83,12 +83,12 @@ void draw() {
           if (inString.endsWith(prompt)) {
             camera[i].setConnected(true);
             println("Camera "+i+" "+ip[i]+" connected");
-            camera[i].getCameraISO();
+            camera[i].getCameraFnShutterISO();
           }
         }
       }
     } else {
-      camera[i].getResult();
+      camera[i].getFnShutterIsoResult();
     }
     
     textSize(FONT_SIZE);
