@@ -245,7 +245,7 @@ boolean keyUpdate() {
       for (int i=0; i<NumCameras; i++) {
         if (camera[i].isConnected()) {
           camera[i].setCameraFnShutterISO(fnId, shutterId, isoId);
-          camera[i].functionAndBack();
+          //camera[i].cameraMode(9);
         }
       }
     } else {

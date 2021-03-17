@@ -52,7 +52,7 @@ volatile boolean modeSelection = false;
 volatile boolean fnSelection = false;
 
 int cameraMode = 0;
-int selectedCameraMode = 0;
+int selectedCameraMode = 9;
 String[] cameraModes ={"lens", "magic", "wi-fi", "scene", "movie", "smart", "p", "a", "s", "m", "", ""};
 String[] cameraKeyModes ={"Lens", "Magic", "WiFi", "Scene", "Movie", "Smart", "P", "A", "S", "M", "", ""};
 // setting "movie" mode does not function in NX2000 with "st key mode"
@@ -82,6 +82,10 @@ String[] isoName = { "AUTO", "100", "200", "400", "800", "1600", "3200", "6400",
 String[] isoName3 = { "AUTO", "100", "125", "160", "200", "250", "320", "400", "500", "640", "800", "1000", 
   "1250", "1600", "2000", "2500", "3200", "4000", "5000", "6400", "8000", "10000", "12800", "16000", "20000", "25600" };
 int isoId = 1;
+
+String[] evName = { "-3.0", "-2.6", "-2.3", "-2.0", "-1.6", "-1.3", "-1.0", "-0.6", "-0.3",
+"0.0", "+0.3", "+0.6", "+1.0", "+1.3", "+1.6", "+2.0", "+2.3", "+2.6", "+3.0" };
+int evId = 9;
 
 // The GUI assumes the camera screen image is at (0,0)
 class Gui {

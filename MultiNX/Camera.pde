@@ -3,8 +3,8 @@
 String[] ip = { 
   //"192.168.216.56"
   // "10.0.0.245",
-  // "10.0.0.25",
-  "10.0.0.180", 
+   "10.0.0.25",
+  //"10.0.0.180", 
   //  "10.0.0.30"
   //, "10.0.0.58"
   //, "10.0.0.41"
@@ -113,10 +113,11 @@ class NX2000Camera {
       ";prefman set 1 " + APPPREF_ISO_PAS + " l " + iso +
       "\n");
     client.write(
-      "prefman set 1 " +APPPREF_FNO_INDEX + " l " + this.fn +
-      ";prefman set 1 " +APPPREF_SHUTTER_SPEED_INDEX + " l " + this.shutterSpeed +
+      "prefman set 1 " + APPPREF_FNO_INDEX + " l " + this.fn +
+      //";prefman set 1 " +APPPREF_FNO_INDEX_OTHER_MODE + " l " + this.fn +
+      ";prefman set 1 " + APPPREF_SHUTTER_SPEED_INDEX + " l " + this.shutterSpeed +
       ";prefman set 1 " + APPPREF_ISO_PAS + " l " + iso +
-     // ";st key click fn;sleep 1;st key touch click 40 40"+
+      ";st key mode "+ cameraModes[9]+
       "\n");
   }
 
@@ -166,7 +167,8 @@ class NX2000Camera {
   }
 
   void cameraMode(int m) {
-    client.write("st key mode "+ cameraModes[m]+"\n");
+    client.write("st key mode "+ cameraModes[m]+";sleep 1\n");
+    println("st key mode "+ cameraModes[m]+"\n");
   }
 
   void cameraInfo() {
