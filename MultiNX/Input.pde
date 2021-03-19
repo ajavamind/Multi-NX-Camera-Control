@@ -64,6 +64,7 @@ boolean keyUpdate() {
 
 
   if (lastKey==' ') {
+    camera[0].save();
   } else if (lastKey >= '1' && lastKey <= '9') {
     int ic = lastKey-'0';
     if (ic <= NumCameras) {
@@ -159,6 +160,13 @@ boolean keyUpdate() {
         camera[i].menu();
       }
     }
+  } else if (lastKeyCode == KEYCODE_O || lastKey == 'o' || lastKey == 'O') {
+    println("Application Fn Shutter values");
+    for (int i=0; i<NumCameras; i++) {
+      if (camera[i].isConnected()) {
+        camera[i].getCameraFnShutter();
+      }
+    }
   } else if (lastKeyCode == KEYCODE_W || lastKey == 'w' || lastKey == 'W') {
     println("Camera MODE");
     modeSelection =! modeSelection;
@@ -167,7 +175,8 @@ boolean keyUpdate() {
     println("Camera INFO");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
-        camera[i].cameraInfo();
+        //camera[i].cameraInfo();
+        camera[i].getShutterCount();
       }
     }
   } else if (lastKeyCode == KEYCODE_K || lastKey == 'k' || lastKey == 'K') {
@@ -237,15 +246,18 @@ boolean keyUpdate() {
     println("Camera Fn parameters");
     fnSelection =! fnSelection;
     if (fnSelection) {
-      camera[0].getCameraFnShutterISO();
+      camera[0].getCameraFnShutterEvISO();
     }
+  } else if (lastKeyCode == 501) {
+    println("Camera state");
+    gui.fnZone.zoneKey.cap = " "+ getSsName(camera[0].getShutterSpeed())+"    "+getFnName(camera[0].getFn())+"    EV "+
+    evName[camera[0].getEv()]+"    ISO "+isoName[camera[0].getISO()];
   } else if (lastKeyCode >= 2000 && lastKeyCode <= 2012) {
     if (lastKeyCode == 2012) {
       fnSelection = false;
       for (int i=0; i<NumCameras; i++) {
         if (camera[i].isConnected()) {
           camera[i].setCameraFnShutterISO(fnId, shutterId, isoId);
-          //camera[i].cameraMode(9);
         }
       }
     } else {
@@ -288,6 +300,10 @@ boolean keyUpdate() {
         }
       }
     }
+  } else if (lastKey == 'v' || lastKey == 'V') {
+    camera[0].getCameraEv();
+  } else if (lastKey == 'y' || lastKey == 'Y') {
+    camera[0].getShutterCount();
   } else if (lastKey == 'z' || lastKey == 'Z') {
     camera[0].getPrefMem(APPID, APPPREF_ISO_PAS, "l");
     ///prefman get 1 8 v=96

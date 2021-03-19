@@ -3,7 +3,7 @@
 String[] ip = { 
   //"192.168.216.56"
   // "10.0.0.245",
-   "10.0.0.25",
+  "10.0.0.25", 
   //"10.0.0.180", 
   //  "10.0.0.30"
   //, "10.0.0.58"
@@ -30,6 +30,7 @@ class NX2000Camera {
   Client client;
   boolean connected;
   String ipAddr;
+  int shutterCount;
   int[] result;
 
   NX2000Camera(String ipAddr, Client client) {
@@ -38,28 +39,62 @@ class NX2000Camera {
     connected = false;
   }
 
-  void getFnShutterIsoResult() {
-    result = new int[3];
-    if (client.available() > 0) { 
-      String inString = client.readString(); 
-      if (decodeLongSequence(inString, result)) {
-        for (int i=0; i<result.length; i++) {
-          println("result="+result[i]);
+  int[] getCameraResult() {
+    if (client.available() == 0) {
+      return null;
+    }
+    String inString = "";
+    while (!inString.endsWith(prompt)) {
+      if (client.available() > 0) { 
+        inString += client.readString(); 
+        println("inString="+inString);
+        if (inString.startsWith("exit")) {
+          return null;
         }
-        fn = result[0];
-        gui.fnTable.setFn(fn);
+        if (inString.endsWith(prompt)) {
+          String strFind = "memory:";
+          int count = 0, fromIndex = 0;
+          while ((fromIndex = inString.indexOf(strFind, fromIndex)) != -1 ) {
+            count++;
+            fromIndex++;
+          }
+          result = new int[count];
+          if (count == 4 && decodeLongSequence(inString, result)) {
+            for (int i=0; i<result.length; i++) {
+              println("result="+result[i]);
+            }
+            fn = result[0];
+            gui.fnTable.setFn(fn);
 
-        shutterSpeed = result[1];
-        gui.fnTable.setShutter(shutterSpeed);
+            shutterSpeed = result[1];
+            gui.fnTable.setShutter(shutterSpeed);
 
-        iso = result[2];
-        gui.fnTable.setIso(iso);
+            iso = result[2];
+            gui.fnTable.setIso(iso);
+            
+            ev = result[3];
+            lastKeyCode = 501;
+          } else if (count == 1) {
+            if (decodeLong(inString, result)) {
+              println("result="+result[0]);
+              if (inString.indexOf("system_rw")>0) {
+                shutterCount = result[0];
+              }
+            }
+          } else if (count > 4) {
+            if (decodeLongSequence(inString, result)) {
+              for (int j=0 ; j<count; j++)
+                println("result="+result[j]);
+            }
+          }
+          break;
+        }
       }
     }
+    return result;
   }
 
-  boolean decodeLong(String s) {
-    int[] result = new int[1];
+  boolean decodeLong(String s, int[] result) {
     boolean decoded = false;
     int index = s.lastIndexOf("(0x");
     if (index >= 0) {
@@ -95,8 +130,36 @@ class NX2000Camera {
       "\n");
   }
 
+  void getCameraFnShutterEvISO() {
+    client.write(  
+      "prefman get 1 " +APPPREF_FNO_INDEX + " l" + 
+      ";prefman get 1 " +APPPREF_SHUTTER_SPEED_INDEX + " l" +
+      ";prefman get 1 " + APPPREF_ISO_PAS + " l" +
+      ";prefman get 1 " + APPPREF_EVC + " l" +
+      "\n");
+  }
+
+  void getCameraFnShutter() {
+    client.write(  
+      "prefman get 1 " +APPPREF_FNO_INDEX + " l" + 
+      ";prefman get 1 " +APPPREF_FNO_INDEX_OTHER_MODE + " l" + 
+      ";prefman get 1 " +APPPREF_SHUTTER_SPEED_INDEX + " l" +
+      ";prefman get 1 " +APPPREF_SHUTTER_SPEED_INDEX_OTHER_MODE + " l" +
+      "\n");
+  }
+
+  void getCameraEv() {
+    client.write(  
+      "prefman get 1 " + APPPREF_EVC + " l" +
+      "\n");
+  }
+
   int getISO () {
     return iso;
+  }
+
+  int getEv () {
+    return ev;
   }
 
   //void setCameraISO(int value) {
@@ -114,13 +177,13 @@ class NX2000Camera {
       "\n");
     client.write(
       "prefman set 1 " + APPPREF_FNO_INDEX + " l " + this.fn +
-      //";prefman set 1 " +APPPREF_FNO_INDEX_OTHER_MODE + " l " + this.fn +
       ";prefman set 1 " + APPPREF_SHUTTER_SPEED_INDEX + " l " + this.shutterSpeed +
       ";prefman set 1 " + APPPREF_ISO_PAS + " l " + iso +
-      ";st key mode "+ cameraModes[9]+
+      ";st key mode "+ cameraModes[SMART_MODE]+
+    // ";sleep 1"+
+      ";st key mode "+ cameraModes[MANUAL_MODE]+
       "\n");
   }
-
 
   int getShutterSpeed () {
     return shutterSpeed;
@@ -130,6 +193,11 @@ class NX2000Camera {
     return fn;
   }
 
+  void save() {
+    client.write("prefman save 1\n");
+    println("prefman save 1");
+  }
+  
   boolean isConnected() {
     return connected;
   }
@@ -241,6 +309,13 @@ class NX2000Camera {
 
   void screenshot(String filename) {
     client.write("screenshot bmp /mnt/mmc/"+filename+convertCounter(screenshotCounter)+"\n");
+  }
+
+  void getShutterCount() {
+    println("get shutter count");
+    client.write("prefman get "+SYSRWID + " "+ SYSRWPREF_SHUTTER_COUNT+" l\n");
+    println("prefman get "+SYSRWID + " "+ SYSRWPREF_SHUTTER_COUNT+" l\n");
+    
   }
 
   void getPrefMem(int id, int offset, String type) {

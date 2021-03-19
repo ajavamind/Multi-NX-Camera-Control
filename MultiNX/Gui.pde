@@ -33,6 +33,7 @@ int KEYCODE_K = 75;
 int KEYCODE_L = 76;
 int KEYCODE_M = 77;
 int KEYCODE_N = 78;
+int KEYCODE_O = 79;
 int KEYCODE_MEDIA_NEXT;
 int KEYCODE_MEDIA_PLAY_PAUSE = 80;
 int KEYCODE_MEDIA_PREVIOUS;
@@ -51,8 +52,10 @@ int KEYCODE_FN_ZONE = 500;
 volatile boolean modeSelection = false;
 volatile boolean fnSelection = false;
 
-int cameraMode = 0;
-int selectedCameraMode = 9;
+int MANUAL_MODE = 9;
+int SMART_MODE = 5;
+int cameraMode = MANUAL_MODE;
+int selectedCameraMode = MANUAL_MODE;
 String[] cameraModes ={"lens", "magic", "wi-fi", "scene", "movie", "smart", "p", "a", "s", "m", "", ""};
 String[] cameraKeyModes ={"Lens", "Magic", "WiFi", "Scene", "Movie", "Smart", "P", "A", "S", "M", "", ""};
 // setting "movie" mode does not function in NX2000 with "st key mode"
@@ -72,19 +75,45 @@ int[] shutterValue = { -80, -80, -75, -69, -64, -59, -53, -48, -43, -37,
   181, 187, 192};
 int shutterId = 1;
 
-String[] fnName = { "F3.5", "F4.0", "F4.5", "F5.0", "F5.6", "F6.3", "F7.1", "F8.0", 
-  "F9.0", "F10", "F11", "F13", "F14", "F16", "F18", "F20", "F22" };
-int[] fnValue = {58, 64, 69, 75, 80, 85, 91, 96, 
-  101, 107, 112, 117, 123, 128, 133, 139, 144 };
+String[] fnName = { "F3.5", "F4.0", "F4.5", "F5.0", 
+  "F5.6", "F6.3", "F7.1", "F8.0", 
+  "F9.0", "F10", "F11", "F13", 
+  "F14", "F16", "F18", "F20", "F22" };
+int[] fnValue = {58, 64, 69, 75, 
+  80, 85, 91, 96, 
+  101, 107, 112, 117, 
+  123, 128, 133, 139, 144 };
 int fnId = 7;
+
+String getFnName(int value) {
+  String name = "";
+  for (int i=0; i<fnValue.length; i++) {
+    if (fnValue[i] == value) {
+      name = fnName[i];
+      break;
+    }
+  }
+  return name;
+}
+
+String getSsName(int value) {
+  String name = "";
+  for (int i=0; i<shutterValue.length; i++) {
+    if (shutterValue[i] == value) {
+      name = shutterName[i];
+      break;
+    }
+  }
+  return name;
+}
 
 String[] isoName = { "AUTO", "100", "200", "400", "800", "1600", "3200", "6400", "12800", "25600" };
 String[] isoName3 = { "AUTO", "100", "125", "160", "200", "250", "320", "400", "500", "640", "800", "1000", 
   "1250", "1600", "2000", "2500", "3200", "4000", "5000", "6400", "8000", "10000", "12800", "16000", "20000", "25600" };
 int isoId = 1;
 
-String[] evName = { "-3.0", "-2.6", "-2.3", "-2.0", "-1.6", "-1.3", "-1.0", "-0.6", "-0.3",
-"0.0", "+0.3", "+0.6", "+1.0", "+1.3", "+1.6", "+2.0", "+2.3", "+2.6", "+3.0" };
+String[] evName = { "-3.0", "-2.6", "-2.3", "-2.0", "-1.6", "-1.3", "-1.0", "-0.6", "-0.3", 
+  "0.0", "+0.3", "+0.6", "+1.0", "+1.3", "+1.6", "+2.0", "+2.3", "+2.6", "+3.0" };
 int evId = 9;
 
 // The GUI assumes the camera screen image is at (0,0)
@@ -295,17 +324,20 @@ class Gui {
       table[3] = sceneKey;
       table[4] = movieKey;
       table[5] = smartKey;
+      table[6] = emptyKey;
+      table[7] = empty2Key;
       table[8] = pKey;
       table[9] = aKey;
       table[10] = sKey;
       table[11] = mKey;
-      table[6] = emptyKey;
-      table[7] = empty2Key;
       table[12] = okKey;
+      //int[] valueTable = {0, 1, 2, 3, 
+      //  4, 5, 6, 7, 
+      //  8, 9, 10, 11, 
+      //  12
+      //};
       int[] valueTable = {0, 1, 2, 3, 
-        4, 5, 6, 7, 
-        8, 9, 10, 11, 
-        12
+        4, 5, 10, 11, 6, 7, 8, 9, 12
       };
       insetY = iY/8;
       insetX = iX/8;
@@ -318,6 +350,9 @@ class Gui {
         for (int j = 0; j < COLS; j++) {
           table[COLS*i+j].setPosition(x + ((float)j) * (iX + 2 * insetX), y + ((float)i) * (iY + 2 * insetY), iX, iY, 0);
           table[COLS*i+j].setVisible(true);
+          if (COLS*i+j == 6 || COLS*i+j == 7) {
+            table[COLS*i+j].setVisible(false);
+          }
           table[COLS*i+j].setValue(valueTable[COLS*i+j]);
         }
       }
