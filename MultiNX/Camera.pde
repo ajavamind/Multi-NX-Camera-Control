@@ -1,16 +1,4 @@
-
-// List of camera IP addresses to access
-String[] ip = { 
-  //"192.168.216.56"
-  // "10.0.0.245",
-  "10.0.0.25", 
-  //"10.0.0.180", 
-  //  "10.0.0.30"
-  //, "10.0.0.58"
-  //, "10.0.0.41"
-};
-
-int NumCameras = ip.length;
+// Camera parameters and control
 
 String prompt = "nx2000:/# ";// get Camera state
 int screenshotCounter = 1;
@@ -21,6 +9,7 @@ String screenshotFilename = "screenshot";
 //int GET_FN = 3;
 
 class NX2000Camera {
+  // screenshot dimensions
   static final int screenWidth = 800;
   static final int screenHeight = 480;
   int iso;
@@ -131,12 +120,14 @@ class NX2000Camera {
   }
 
   void getCameraFnShutterEvISO() {
+    if (client.active()) {
     client.write(  
       "prefman get 1 " +APPPREF_FNO_INDEX + " l" + 
       ";prefman get 1 " +APPPREF_SHUTTER_SPEED_INDEX + " l" +
       ";prefman get 1 " + APPPREF_ISO_PAS + " l" +
       ";prefman get 1 " + APPPREF_EVC + " l" +
       "\n");
+    }
   }
 
   void getCameraFnShutter() {
@@ -180,7 +171,7 @@ class NX2000Camera {
       ";prefman set 1 " + APPPREF_SHUTTER_SPEED_INDEX + " l " + this.shutterSpeed +
       ";prefman set 1 " + APPPREF_ISO_PAS + " l " + iso +
       ";st key mode "+ cameraModes[SMART_MODE]+
-    // ";sleep 1"+
+      ";sleep 2"+
       ";st key mode "+ cameraModes[MANUAL_MODE]+
       "\n");
   }

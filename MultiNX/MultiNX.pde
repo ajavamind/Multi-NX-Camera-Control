@@ -25,16 +25,40 @@
 //import processing.net.*; 
 //boolean testGui = true;
 boolean testGui = false;
-
 boolean DEBUG = false;
 
 int telnetPort = 23; // telnet port
-boolean doExit = false;
+
+// List of camera IP addresses to access
+String[] ip = null;
+int NumCameras = 0;
+
+//{ 
+//  //"192.168.216.56"
+//  "192.168.0.102", 
+//  "192.168.0.103"
+//  // "10.0.0.245",
+//  //  "10.0.0.25", 
+//  //  "10.0.0.180", 
+//  //  "10.0.0.30"
+//  //, "10.0.0.58"
+//  //, "10.0.0.41"
+//};
+
 NX2000Camera[] camera;
 PImage screen;  // camera LCD screen image
 
 Gui gui;
 int FONT_SIZE = 48;
+int MEDIUM_FONT_SIZE =  72;
+int LARGE_FONT_SIZE = 96;
+int GIANT_FONT_SIZE = 128;
+
+int INTRODUCTION_STATE = 0;
+int CONNECT_STATE = 1;
+int RUN_STATE = 2;
+int EXIT_STATE = 9;
+int state = INTRODUCTION_STATE;
 
 void settings() {
   size(1920, 1080);
@@ -49,20 +73,17 @@ void setup() {
 
   textSize(FONT_SIZE);
 
-  screen = loadImage("screenshot/nx2000/readytoshoot.png");
-  //screen = loadImage("screenshot/nx2000/readyfocustoshootmin.png");
+  //screen = loadImage("screenshot/nx2000/readytoshoot.png");
+  screen = loadImage("screenshot/nx2000/readyfocustoshootmin.png");
 
-  // Create telnet clients to connect to Samsung NX2000 cameras.
-  camera = new NX2000Camera[NumCameras];
-  for (int i=0; i<NumCameras; i++) {
-    Client client = null;
-    if (!testGui) {
-      client = new Client(this, ip[i], telnetPort);
-    }
-    camera[i] = new NX2000Camera(ip[i], client);
+  ip = loadStrings("Cameras.txt");
+  for (int i=0; i<ip.length; i++) {
+    println(ip[i]);
   }
+  println("number of cameras "+ip.length);
+  NumCameras = ip.length;
 
-  //println("width="+width + " height="+height);
+  println("width="+width + " height="+height);
   //println("screen.width="+screen.width + " screen.height="+screen.height);
 } 
 
@@ -70,16 +91,46 @@ void draw() {
   int[] result = null;
   background(128);
   image(screen, 0, 0, 2*screen.width, 2*screen.height);
-  keyUpdate();
-  //text("Connecting to cameras", 20, 100);
+  if (state == INTRODUCTION_STATE) {
+    state++;
+    fill(255);
+    textAlign(LEFT);
+    textSize(FONT_SIZE);
 
-  if (doExit) {
+    text("Multi NX", 300, 60);
+    text("Control Multiple NX2000 Cameras", 300, 60+50);
+    text("Version 1.0", 300, 60+100);
+    text("Written by Andy Modla", 300, 60+150);
+    for (int i=0; i<ip.length; i++) {
+      text ("("+(i+1)+") "+ip[i], 300, 60+250+i*50);
+    }
+    textSize(LARGE_FONT_SIZE);
+    text("Connecting to NX2000", 300, 560);
+    return;
+  } else if (state == CONNECT_STATE) {
+    // Create telnet clients to connect to Samsung NX2000 cameras.
+    camera = new NX2000Camera[NumCameras];
+    for (int i=0; i<NumCameras; i++) {
+      Client client = null;
+      if (!testGui) {
+        client = new Client(this, ip[i], telnetPort);
+        println("client="+client);
+        println("active="+client.active());
+      }
+      camera[i] = new NX2000Camera(ip[i], client);
+    }
+    state++;
+  }
+
+  keyUpdate();
+
+  if (state == EXIT_STATE) {
     exit();
   }
   for (int i=0; i<NumCameras; i++) {
     String inString = "";
     if (!camera[i].isConnected()) {
-      if (camera[i].client != null) {
+      if (camera[i].client != null && camera[i].client.active()) {
         while (!inString.endsWith(prompt)) {
           if (camera[i].client.available() > 0) { 
             inString += camera[i].client.readString(); 
@@ -100,6 +151,9 @@ void draw() {
     textSize(FONT_SIZE);
     fill(255);
     textAlign(LEFT);
+    if (!camera[i].client.active() ) {
+      camera[i].setConnected(false);
+    }
     if (camera[i].isConnected()) {
       if (camera[i].shutterCount == 0) {
         text("("+(i+1)+") "+ip[i]+ " Connected.", 300, 60+i*50);

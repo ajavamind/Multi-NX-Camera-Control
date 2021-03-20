@@ -81,7 +81,7 @@ boolean keyUpdate() {
       }
     }
     delay(1000); // delay draw();
-    doExit = true;
+    state = EXIT_STATE;
   } else if (lastKeyCode == KEYCODE_F || lastKey == 'f' || lastKey == 'F') { // Focus
     // focus
     if (!focus) {

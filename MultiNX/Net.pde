@@ -80,7 +80,10 @@ class Client implements Runnable {
     this.port = port;
 
     try {
-      socket = new Socket(this.host, this.port);
+      //socket = new Socket(this.host, this.port);
+      socket = new Socket();
+      socket.connect(new InetSocketAddress(this.host, this.port), 2000); // 2 second socket timeout limit
+
       input = socket.getInputStream();
       output = socket.getOutputStream();
 

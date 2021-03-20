@@ -12,10 +12,6 @@
 //import static android.view.KeyEvent.KEYCODE_PAGE_UP;
 //import static android.view.KeyEvent.KEYCODE_MEDIA_STOP;
 
-//int FONT_SIZE = 48;
-int MEDIUM_FONT_SIZE =  72;
-int LARGE_FONT_SIZE = 96;
-int GIANT_FONT_SIZE = 128;
 
 int KEYCODE_0 = 48;
 int KEYCODE_1 = 49;
