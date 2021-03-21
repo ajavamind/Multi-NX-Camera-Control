@@ -13,14 +13,14 @@
  mount -t devpts none /dev/pts
  
  telnetd -l /bin/bash -F > /mnt/mmc/telnetd.log 2>&1 &
- tcpsvd -u root -vE 0.0.0.0 21 ftpd -w  /mnt/mmc & 
+ #tcpsvd -u root -vE 0.0.0.0 21 ftpd -w  /mnt/mmc & 
  
  */
 
-// ftp is optional you can comment out the line starting with tcpsvd by preceding with # character
+// ftpd is optional you can remove comment character # to start the FTP server
 // make sure autoexec.sh has UNIX line ending x0a only, no x0dx0a (windows)
-// Use email WiFi cofiguration on NX2000 to connect to a local network
-// exit email to shoot photos and videos after connection to your local WiFi network.
+// Use email WiFi cofiguration on NX2000 to connect to a local network.
+// Exit email to shoot photos and videos after connection to your local WiFi network.
 
 //import processing.net.*; 
 //boolean testGui = true;
@@ -31,6 +31,7 @@ int telnetPort = 23; // telnet port
 
 // List of camera IP addresses to access
 String[] ip = null;
+String[] cameraName = {"LL", "LM", "RM", "RR"};
 int NumCameras = 0;
 
 //{ 
@@ -76,7 +77,9 @@ void setup() {
   //screen = loadImage("screenshot/nx2000/readytoshoot.png");
   screen = loadImage("screenshot/nx2000/readyfocustoshootmin.png");
 
-  ip = loadStrings("Cameras.txt");
+  ip = loadStrings("twincameras.txt");
+  //ip = loadStrings("multicameras.txt");
+  //ip = loadStrings("camera.txt");
   for (int i=0; i<ip.length; i++) {
     println(ip[i]);
   }
@@ -118,6 +121,7 @@ void draw() {
         println("active="+client.active());
       }
       camera[i] = new NX2000Camera(ip[i], client);
+      camera[i].setName(cameraName[i]);
     }
     state++;
   }
@@ -125,6 +129,9 @@ void draw() {
   keyUpdate();
 
   if (state == EXIT_STATE) {
+    for (int i=0; i<NumCameras; i++) {
+      camera[i].client.stop();
+    }
     exit();
   }
   for (int i=0; i<NumCameras; i++) {
@@ -137,7 +144,7 @@ void draw() {
             println(inString); 
             if (inString.endsWith(prompt)) {
               camera[i].setConnected(true);
-              println("Camera "+i+" "+ip[i]+" connected");
+              println("Camera "+camera[i].name+" "+ip[i]+" connected");
               camera[i].getCameraFnShutterEvISO();
               break;
             }
@@ -156,12 +163,12 @@ void draw() {
     }
     if (camera[i].isConnected()) {
       if (camera[i].shutterCount == 0) {
-        text("("+(i+1)+") "+ip[i]+ " Connected.", 300, 60+i*50);
+        text("("+camera[i].name+") "+ip[i]+ " Connected.", 300, 60+i*50);
       } else {
-        text("("+(i+1)+") "+ip[i]+ " Connected. Shutter Count "+camera[i].shutterCount, 300, 60+i*50);
+        text("("+camera[i].name+") "+ip[i]+ " Connected. Shutter Count "+camera[i].shutterCount, 300, 60+i*50);
       }
     } else {
-      text ("("+(i+1)+") "+ip[i]+ " Not Connected.", 300, 60+i*50);
+      text ("("+camera[i].name+") "+ip[i]+ " Not Connected.", 300, 60+i*50);
     }
   }
   gui.displayMenuBar();

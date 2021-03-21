@@ -80,6 +80,7 @@ int[] fnValue = {58, 64, 69, 75,
   101, 107, 112, 117, 
   123, 128, 133, 139, 144 };
 int fnId = 7;
+int savedFnId = 7;
 
 String getFnName(int value) {
   String name = "";
@@ -90,6 +91,15 @@ String getFnName(int value) {
     }
   }
   return name;
+}
+
+int getFnId(int value) {
+  for (int i=0; i<fnValue.length; i++) {
+    if (fnValue[i] == value) {
+      return i;
+    }
+  }
+  return 0;
 }
 
 String getSsName(int value) {

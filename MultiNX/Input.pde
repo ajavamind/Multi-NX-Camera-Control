@@ -118,6 +118,8 @@ boolean keyUpdate() {
         camera[i].shutterPushRelease();
       }
     }
+    focus = false;
+    gui.highlightFocusKey(focus);
   } else if (lastKey == 't' || lastKey == 'T') { // Take picture
     // take picture
     for (int i=0; i<NumCameras; i++) {
@@ -140,10 +142,16 @@ boolean keyUpdate() {
         camera[i].record();
       }
     }
+    //} else if (lastKey == 'd' || lastKey == 'D') {
+    //  for (int i=0; i<NumCameras; i++) {
+    //    if (camera[i].isConnected()) {
+    //      camera[i].end();
+    //    }
+    //  }
   } else if (lastKey == 'd' || lastKey == 'D') {
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
-        camera[i].end();
+        camera[i].startHttp();
       }
     }
   } else if (lastKeyCode == KEYCODE_H || lastKey == 'h' || lastKey == 'H') {
@@ -251,12 +259,13 @@ boolean keyUpdate() {
   } else if (lastKeyCode == 501) {
     println("Camera state");
     gui.fnZone.zoneKey.cap = " "+ getSsName(camera[0].getShutterSpeed())+"    "+getFnName(camera[0].getFn())+"    EV "+
-    evName[camera[0].getEv()]+"    ISO "+isoName[camera[0].getISO()];
+      evName[camera[0].getEv()]+"    ISO "+isoName[camera[0].getISO()];
   } else if (lastKeyCode >= 2000 && lastKeyCode <= 2012) {
     if (lastKeyCode == 2012) {
       fnSelection = false;
       for (int i=0; i<NumCameras; i++) {
         if (camera[i].isConnected()) {
+          camera[i].updateFn();
           camera[i].setCameraFnShutterISO(fnId, shutterId, isoId);
         }
       }
