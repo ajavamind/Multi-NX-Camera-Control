@@ -2,26 +2,26 @@
 
 /*
   Client - basic network client implementation
-  Part of the Processing project - http://processing.org
-
-  Copyright (c) 2004-2007 Ben Fry and Casey Reas
-  The previous version of this code was developed by Hernando Barragan
-
-  This library is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 2.1 of the License, or (at your option) any later version.
-
-  This library is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
-
-  You should have received a copy of the GNU Lesser General
-  Public License along with this library; if not, write to the
-  Free Software Foundation, Inc., 59 Temple Place, Suite 330,
-  Boston, MA  02111-1307  USA
-*/
+ Part of the Processing project - http://processing.org
+ 
+ Copyright (c) 2004-2007 Ben Fry and Casey Reas
+ The previous version of this code was developed by Hernando Barragan
+ 
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+ 
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+ 
+ You should have received a copy of the GNU Lesser General
+ Public License along with this library; if not, write to the
+ Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ Boston, MA  02111-1307  USA
+ */
 
 //package processing.net;
 import processing.core.*;
@@ -31,13 +31,13 @@ import java.lang.reflect.*;
 import java.net.*;
 
 /**
-   * ( begin auto-generated from Client.xml )
-   * 
-   * A client connects to a server and sends data back and forth. If anything 
-   * goes wrong with the connection, for example the host is not there or is 
-   * listening on a different port, an exception is thrown.
-   * 
-   * ( end auto-generated )
+ * ( begin auto-generated from Client.xml )
+ * 
+ * A client connects to a server and sends data back and forth. If anything 
+ * goes wrong with the connection, for example the host is not there or is 
+ * listening on a different port, an exception is thrown.
+ * 
+ * ( end auto-generated )
  * @webref net
  * @brief The client class is used to create client Objects which connect to a server to exchange data. 
  * @instanceName client any variable of type Client
@@ -67,8 +67,8 @@ class Client implements Runnable {
   int bufferLast;
 
   boolean disposeRegistered = false;
-  
-  
+
+
   /**
    * @param parent typically use "this"
    * @param host address of the server
@@ -99,24 +99,26 @@ class Client implements Runnable {
       try {
         clientEventMethod =
           parent.getClass().getMethod("clientEvent", Client.class);
-      } catch (Exception e) {
+      } 
+      catch (Exception e) {
         // no such method, or an error.. which is fine, just ignore
       }
       // do the same for disconnectEvent(Client c);
       try {
         disconnectEventMethod =
           parent.getClass().getMethod("disconnectEvent", Client.class);
-      } catch (Exception e) {
+      } 
+      catch (Exception e) {
         // no such method, or an error.. which is fine, just ignore
       }
-
-    } catch (IOException e) {
+    } 
+    catch (IOException e) {
       e.printStackTrace();
       dispose();
     }
   }
 
-  
+
   /**
    * @param socket any object of type Socket
    * @throws IOException
@@ -136,15 +138,17 @@ class Client implements Runnable {
     // which would be called each time an event comes in
     try {
       clientEventMethod =
-          parent.getClass().getMethod("clientEvent", Client.class);
-    } catch (Exception e) {
+        parent.getClass().getMethod("clientEvent", Client.class);
+    } 
+    catch (Exception e) {
       // no such method, or an error.. which is fine, just ignore
     }
     // do the same for disconnectEvent(Client c);
     try {
       disconnectEventMethod =
         parent.getClass().getMethod("disconnectEvent", Client.class);
-    } catch (Exception e) {
+    } 
+    catch (Exception e) {
       // no such method, or an error.. which is fine, just ignore
     }
   }
@@ -162,10 +166,11 @@ class Client implements Runnable {
    * @usage application
    */
   void stop() {    
-    if (disconnectEventMethod != null && thread != null){
+    if (disconnectEventMethod != null && thread != null) {
       try {
         disconnectEventMethod.invoke(parent, this);
-      } catch (Exception e) {
+      } 
+      catch (Exception e) {
         Throwable cause = e;
         // unwrap the exception if it came from the user code
         if (e instanceof InvocationTargetException && e.getCause() != null) {
@@ -196,7 +201,8 @@ class Client implements Runnable {
         input.close();
         input = null;
       }
-    } catch (Exception e) {
+    } 
+    catch (Exception e) {
       e.printStackTrace();
     }
 
@@ -205,30 +211,34 @@ class Client implements Runnable {
         output.close();
         output = null;
       }
-    } catch (Exception e) {
+    } 
+    catch (Exception e) {
       e.printStackTrace();
     }
-    
+
     try {
       if (socket != null) {
         socket.close();
         socket = null;
       }
-    } catch (Exception e) {
+    } 
+    catch (Exception e) {
       e.printStackTrace();
     }
   }
 
 
   @Override
-  void run() {
+    void run() {
     byte[] readBuffer;
     { // make the read buffer same size as socket receive buffer so that
       // we don't waste cycles calling listeners when there is more data waiting
       int readBufferSize = 1 << 16; // 64 KB (default socket receive buffer size)
       try {
         readBufferSize = socket.getReceiveBufferSize();
-      } catch (SocketException ignore) { }
+      } 
+      catch (SocketException ignore) {
+      }
       readBuffer = new byte[readBufferSize];
     }
     while (Thread.currentThread() == thread) {
@@ -240,13 +250,14 @@ class Client implements Runnable {
           // An exception will occur when the sketch is exits.
           try {
             readCount = input.read(readBuffer, 0, readBuffer.length);
-          } catch (SocketException e) {
-             System.err.println("Client SocketException: " + e.getMessage());
-             // the socket had a problem reading so don't try to read from it again.
-             stop();
-             return;
+          } 
+          catch (SocketException e) {
+            System.err.println("Client SocketException: " + e.getMessage());
+            // the socket had a problem reading so don't try to read from it again.
+            stop();
+            return;
           }
-        
+
           // read returns -1 if end-of-stream occurs (for example if the host disappears)
           if (readCount == -1) {
             System.err.println("Client got end-of-stream.");
@@ -267,7 +278,7 @@ class Client implements Runnable {
                 if (newSize > MAX_BUFFER_SIZE) {
                   // buffer is full because client is not reading (fast enough)
                   System.err.println("Client: can't receive more data, buffer is full. " +
-                                         "Make sure you read the data from the client.");
+                    "Make sure you read the data from the client.");
                   stop();
                   return;
                 }
@@ -288,7 +299,8 @@ class Client implements Runnable {
           if (clientEventMethod != null) {
             try {
               clientEventMethod.invoke(parent, this);
-            } catch (Exception e) {
+            } 
+            catch (Exception e) {
               System.err.println("error, disabling clientEvent() for " + host);
               Throwable cause = e;
               // unwrap the exception if it came from the user code
@@ -300,7 +312,8 @@ class Client implements Runnable {
             }
           }
         }
-      } catch (IOException e) {
+      } 
+      catch (IOException e) {
         //errorMessage("run", e);
         e.printStackTrace();
       }
@@ -335,7 +348,7 @@ class Client implements Runnable {
    * @brief Returns the IP address of the machine as a String
    */
   String ip() {
-    if (socket != null){
+    if (socket != null) {
       return socket.getInetAddress().getHostAddress();
     }
     return null;
@@ -600,8 +613,8 @@ class Client implements Runnable {
       int length = found - bufferIndex + 1;
       if (length > byteBuffer.length) {
         System.err.println("readBytesUntil() byte buffer is" +
-                           " too small for the " + length +
-                           " bytes up to and including char " + interesting);
+          " too small for the " + length +
+          " bytes up to and including char " + interesting);
         return -1;
       }
       //byte outgoing[] = new byte[length];
@@ -678,8 +691,8 @@ class Client implements Runnable {
     try {
       output.write(data & 0xff);  // for good measure do the &
       output.flush();   // hmm, not sure if a good idea
-
-    } catch (Exception e) { // null pointer or serial port dead
+    } 
+    catch (Exception e) { // null pointer or serial port dead
       //errorMessage("write", e);
       //e.printStackTrace();
       //dispose();
@@ -694,8 +707,8 @@ class Client implements Runnable {
     try {
       output.write(data);
       output.flush();   // hmm, not sure if a good idea
-
-    } catch (Exception e) { // null pointer or serial port dead
+    } 
+    catch (Exception e) { // null pointer or serial port dead
       //errorMessage("write", e);
       //e.printStackTrace();
       //disconnect(e);
@@ -728,12 +741,12 @@ class Client implements Runnable {
    */
   /*
     protected void disconnect(Exception e) {
-    dispose();
-    if (e != null) {
-    e.printStackTrace();
-    }
-    }
-  */
+   dispose();
+   if (e != null) {
+   e.printStackTrace();
+   }
+   }
+   */
 
 
   /**

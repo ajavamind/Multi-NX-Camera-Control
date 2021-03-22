@@ -64,7 +64,7 @@ boolean keyUpdate() {
 
 
   if (lastKey==' ') {
-    camera[0].save();
+    camera[mainCamera].save();
   } else if (lastKey >= '1' && lastKey <= '9') {
     int ic = lastKey-'0';
     if (ic <= NumCameras) {
@@ -151,7 +151,7 @@ boolean keyUpdate() {
   } else if (lastKey == 'd' || lastKey == 'D') {
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
-        camera[i].startHttp();
+        // debug
       }
     }
   } else if (lastKeyCode == KEYCODE_H || lastKey == 'h' || lastKey == 'H') {
@@ -236,7 +236,7 @@ boolean keyUpdate() {
         camera[i].jogccw();
       }
     }
-  } else if (lastKeyCode >= 1000 && lastKeyCode <= 1012) {
+  } else if (lastKeyCode >= KEYCODE_MODE_TABLE && lastKeyCode <= 1012) {
     if (lastKeyCode == 1012) {
       modeSelection = false;
       cameraMode = selectedCameraMode;
@@ -247,20 +247,20 @@ boolean keyUpdate() {
         }
       }
     } else {
-      selectedCameraMode = lastKeyCode-1000;
+      selectedCameraMode = lastKeyCode-KEYCODE_MODE_TABLE;
       println("Set Mode "+ cameraModes[selectedCameraMode]);
     }
-  } else if (lastKeyCode == 500) {
+  } else if (lastKeyCode == KEYCODE_FN_ZONE) {
     println("Camera Fn parameters");
     fnSelection =! fnSelection;
     if (fnSelection) {
-      camera[0].getCameraFnShutterEvISO();
+      camera[mainCamera].getCameraFnShutterEvISO();
     }
-  } else if (lastKeyCode == 501) {
+  } else if (lastKeyCode == KEYCODE_FN_ZONE+1) {
     println("Camera state");
-    gui.fnZone.zoneKey.cap = " "+ getSsName(camera[0].getShutterSpeed())+"    "+getFnName(camera[0].getFn())+"    EV "+
-      evName[camera[0].getEv()]+"    ISO "+isoName[camera[0].getISO()];
-  } else if (lastKeyCode >= 2000 && lastKeyCode <= 2012) {
+    gui.fnZone.zoneKey.cap = " "+ getSsName(camera[mainCamera].getShutterSpeed())+"    "+getFnName(camera[mainCamera].getFn())+"    EV "+
+      evName[camera[mainCamera].getEv()]+"    ISO "+isoName[camera[mainCamera].getISO()];
+  } else if (lastKeyCode >= KEYCODE_FN_UPDATE && lastKeyCode <= 2012) {
     if (lastKeyCode == 2012) {
       fnSelection = false;
       for (int i=0; i<NumCameras; i++) {
@@ -309,15 +309,31 @@ boolean keyUpdate() {
         }
       }
     }
+  } else if (lastKeyCode == KEYCODE_SHOW) {
+    for (int i=0; i<NumCameras; i++) {
+      if (camera[i].isConnected()) {
+        camera[i].getFilename();
+      }
+    }
+  } else if (lastKeyCode == KEYCODE_SAVE) {
+    for (int i=0; i<NumCameras; i++) {
+      if (camera[i].lastPhoto != null) {
+        int w = camera[i].lastPhoto.width;
+        int h = camera[i].lastPhoto.height;
+        if (w>0 && h>0) {
+          //save
+        }
+      }
+    }
   } else if (lastKey == 'v' || lastKey == 'V') {
-    camera[0].getCameraEv();
+    camera[mainCamera].getCameraEv();
   } else if (lastKey == 'y' || lastKey == 'Y') {
-    camera[0].getShutterCount();
+    camera[mainCamera].getShutterCount();
   } else if (lastKey == 'z' || lastKey == 'Z') {
-    camera[0].getPrefMem(APPID, APPPREF_ISO_PAS, "l");
+    camera[mainCamera].getPrefMem(APPID, APPPREF_ISO_PAS, "l");
     ///prefman get 1 8 v=96
   } else if (lastKey == 'x' || lastKey == 'X') {
-    camera[0].getPrefMemBlock(APPID, APPPREF_FNO_INDEX, 96);
+    camera[mainCamera].getPrefMemBlock(APPID, APPPREF_FNO_INDEX, 96);
     ///prefman get 1 8 v=96
   }
   lastKey = 0;

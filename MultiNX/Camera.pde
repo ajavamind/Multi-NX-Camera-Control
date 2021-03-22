@@ -8,6 +8,9 @@ String screenshotFilename = "screenshot";
 //int GET_SS = 2;
 //int GET_FN = 3;
 
+//most recent file
+//FILENAME=`ls -t /mnt/mmc/DCIM/100PHOTO | head -1`;echo "filename=/DCIM/100PHOTO/$FILENAME"
+
 class NX2000Camera {
   // screenshot dimensions
   static final int screenWidth = 800;
@@ -22,6 +25,8 @@ class NX2000Camera {
   int shutterCount;
   int[] result;
   String name;
+  String filenameUrl = "";
+  PImage lastPhoto;
 
   NX2000Camera(String ipAddr, Client client) {
     this.ipAddr = ipAddr;
@@ -40,6 +45,17 @@ class NX2000Camera {
         inString += client.readString(); 
         println("inString="+inString);
         if (inString.startsWith("exit")) {
+          return null;
+        }
+        if (inString.startsWith("FILENAME=")) {
+          ;
+          int fin = inString.lastIndexOf("FILENAME=");
+          int lin = inString.lastIndexOf("nx2000");
+          filenameUrl = "http://"+ipAddr+inString.substring(fin+9, lin);
+          filenameUrl.trim();
+          filenameUrl = filenameUrl.replaceAll("(\\r|\\n)", "");
+          println(filenameUrl);
+          lastPhoto = loadImage(filenameUrl, "jpg");
           return null;
         }
         if (inString.endsWith(prompt)) {
@@ -207,6 +223,12 @@ class NX2000Camera {
     return this.name;
   }
 
+  void getFilename() {
+    if (client.active()) {
+      client.write("FILENAME=`ls -t /mnt/mmc/DCIM/100PHOTO | head -1`;echo \"FILENAME=/DCIM/100PHOTO/$FILENAME\"\n");
+    }
+  }
+
   void focusPush() {
     client.write("st key push s1\n");
   }
@@ -300,13 +322,13 @@ class NX2000Camera {
     client.write("\032\n");  // TODO need kill process
   }
 
-  void startHttp() {
-    client.write("httpd -h /mnt/mmc\n");
-  }
+  //void startHttp() {
+  //  client.write("httpd -h /mnt/mmc\n");
+  //}
 
-  void stopHttp() {
-    client.write("\n");  // TODO need kill process
-  }
+  //void stopHttp() {
+  //  client.write("\n");  // TODO need kill process
+  //}
 
   void sendDelay(int second) {
     client.write("sleep "+second+"\n");

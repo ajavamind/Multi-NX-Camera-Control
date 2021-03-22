@@ -17,6 +17,7 @@
  
  */
 
+
 // ftpd is optional you can remove comment character # to start the FTP server
 // make sure autoexec.sh has UNIX line ending x0a only, no x0dx0a (windows)
 // Use email WiFi cofiguration on NX2000 to connect to a local network.
@@ -33,6 +34,7 @@ int telnetPort = 23; // telnet port
 String[] ip = null;
 String[] cameraName = {"LL", "LM", "RM", "RR"};
 int NumCameras = 0;
+int mainCamera = 0;
 
 //{ 
 //  //"192.168.216.56"
@@ -77,8 +79,8 @@ void setup() {
   //screen = loadImage("screenshot/nx2000/readytoshoot.png");
   screen = loadImage("screenshot/nx2000/readyfocustoshootmin.png");
 
-  ip = loadStrings("twincameras.txt");
-  //ip = loadStrings("multicameras.txt");
+  //ip = loadStrings("twincameras.txt");
+  ip = loadStrings("multicameras.txt");
   //ip = loadStrings("camera.txt");
   for (int i=0; i<ip.length; i++) {
     println(ip[i]);
@@ -134,6 +136,7 @@ void draw() {
     }
     exit();
   }
+  
   for (int i=0; i<NumCameras; i++) {
     String inString = "";
     if (!camera[i].isConnected()) {
@@ -161,12 +164,24 @@ void draw() {
     if (!camera[i].client.active() ) {
       camera[i].setConnected(false);
     }
+    
     if (camera[i].isConnected()) {
-      if (camera[i].shutterCount == 0) {
-        text("("+camera[i].name+") "+ip[i]+ " Connected.", 300, 60+i*50);
-      } else {
-        text("("+camera[i].name+") "+ip[i]+ " Connected. Shutter Count "+camera[i].shutterCount, 300, 60+i*50);
-      }
+      if (camera[i].lastPhoto != null) {
+        float w = camera[i].lastPhoto.width;
+        float h = camera[i].lastPhoto.height;
+        float div = 8.0; 
+        if (w <= 1728) {
+          div = 3.0;
+        }
+        if (w > 0 && h > 0) {
+          image(camera[i].lastPhoto, 180+(i%2)*(w/div), 0+(i/2)*(h/div), w/div, h/div);
+        }
+      } else
+        if (camera[i].shutterCount == 0) {
+          text("("+camera[i].name+") "+ip[i]+ " Connected.", 300, 60+i*50);
+        } else {
+          text("("+camera[i].name+") "+ip[i]+ " Connected. Shutter Count "+camera[i].shutterCount, 300, 60+i*50);
+        }
     } else {
       text ("("+camera[i].name+") "+ip[i]+ " Not Connected.", 300, 60+i*50);
     }
@@ -174,6 +189,15 @@ void draw() {
   gui.displayMenuBar();
   gui.modeTable.display();
   gui.fnTable.display();
+  
+    // check for first connected camera
+  for (int i=0; i<NumCameras; i++) {
+    if (camera[i].isConnected()) {
+      mainCamera = i;
+      break;
+    }
+  }
+
 } 
 
 void takeMultiPhoto(NX2000Camera[] camera) {

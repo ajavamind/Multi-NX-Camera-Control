@@ -44,6 +44,10 @@ int KEYCODE_ESCAPE = 27;
 int KEYCODE_MOVE_HOME       = 122;
 int KEYCODE_MOVE_END       = 123;
 int KEYCODE_FN_ZONE = 500;
+int KEYCODE_MODE_TABLE = 1000;
+int KEYCODE_SHOW = 3000;
+int KEYCODE_FN_UPDATE = 2000;
+int KEYCODE_SAVE = 3001;
 
 volatile boolean modeSelection = false;
 volatile boolean fnSelection = false;
@@ -174,7 +178,7 @@ class Gui {
   color brown;
   color bague;
   final boolean[] vfull = {true, true, true, true, true, true, true, true, true, true};
-  final boolean[] hfull = {true, true, true, true, true, true, false};
+  final boolean[] hfull = {true, true, true, true, true, true, true, true};
   final boolean[] modefull = {true, true, true, true, true, true, true, true, true, true, true, true, true};
 
   Gui() {
@@ -309,8 +313,8 @@ class Gui {
       //PImage imgxsbs = base.loadImage("icons/xsbs.png");
       //"lens", "magic", "wi-fi", "scene", "movie", "smart", "p", "a", "s", "m"
 
-      lensKey = new MenuKey(1000, cameraKeyModes[0], FONT_SIZE, keyColor);
-      magicKey = new MenuKey(1001, cameraKeyModes[1], FONT_SIZE, keyColor);
+      lensKey = new MenuKey(KEYCODE_MODE_TABLE, cameraKeyModes[0], FONT_SIZE, keyColor);
+      magicKey = new MenuKey(KEYCODE_MODE_TABLE+1, cameraKeyModes[1], FONT_SIZE, keyColor);
       wifiKey = new MenuKey(1002, cameraKeyModes[2], FONT_SIZE, keyColor);
       sceneKey = new MenuKey(1003, cameraKeyModes[3], FONT_SIZE, keyColor);
       movieKey = new MenuKey(1004, cameraKeyModes[4], FONT_SIZE, keyColor);
@@ -656,20 +660,23 @@ class Gui {
   class HorzMenuBar {
     // initialize Keys
     MenuKey cameraInfoKey;
+    MenuKey cameraShowKey;
+    MenuKey cameraSaveKey;
     MenuKey cameraModeKey;
     MenuKey cameraMenuKey;
     MenuKey cameraFnKey;
     MenuKey cameraOkKey;
     MenuKey backKey;
     MenuKey[] menuKey;
-    int numKeys = 6;
+    int numKeys = 8;
     float menuBase;
 
     void create() {
       color keyColor = black;
-      //PImage imgeye = base.loadImage("icons/eye.png");
 
       cameraInfoKey = new MenuKey(KEYCODE_I, "Info", FONT_SIZE, keyColor);
+      cameraShowKey = new MenuKey(KEYCODE_SHOW, "Show", FONT_SIZE, keyColor);
+      cameraSaveKey = new MenuKey(KEYCODE_SAVE, "Save", FONT_SIZE, keyColor);
       cameraMenuKey = new MenuKey(KEYCODE_M, "MENU", FONT_SIZE, keyColor);
       cameraFnKey = new MenuKey(KEYCODE_N, "Fn", FONT_SIZE, keyColor);
       cameraModeKey = new MenuKey(KEYCODE_W, "Mode", FONT_SIZE, keyColor);
@@ -677,12 +684,13 @@ class Gui {
       backKey = new MenuKey(KEYCODE_ESCAPE, "EXIT", FONT_SIZE, keyColor);
       menuKey = new MenuKey[numKeys];
       menuKey[0] = cameraInfoKey;
-      menuKey[1] = cameraModeKey;
-      menuKey[2] = cameraMenuKey;
-      menuKey[3] = cameraFnKey;
-      menuKey[4] = cameraOkKey;
-      menuKey[5] = backKey;
-      //menuKey[6] = magnifyKey;
+      menuKey[1] = cameraShowKey;
+      menuKey[2] = cameraSaveKey;
+      menuKey[3] = cameraModeKey;
+      menuKey[4] = cameraMenuKey;
+      menuKey[5] = cameraFnKey;
+      menuKey[6] = cameraOkKey;
+      menuKey[7] = backKey;
 
       float x = 0;
       float y = HEIGHT - iY;
