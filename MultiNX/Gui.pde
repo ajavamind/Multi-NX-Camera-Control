@@ -260,17 +260,25 @@ class Gui {
   //        base.line(0, base.height / 2, base.width, base.height / 2);
   //    }
 
+  void displayMessage(String msg, int counter) {
+    frameCounter = counter;
+    message = msg;
+  }
+  
   void displayMessage(String message) {
-    float w = base.textWidth(message);
-    float h =  base.textAscent()+textDescent();
-    float d = base.textWidth("W");
-    base.fill(192);
-    base.rect(width/2 - w/2-d, height / 2-h, w+2*d, 2*h, h);
-    base.fill(192, 0, 0);
-    base.textSize(MEDIUM_FONT_SIZE);
-    base.textAlign(CENTER, CENTER);
-    base.text(message, width / 2, base.height / 2);
-    base.textAlign(LEFT);
+    if (message == null) {
+      return;
+    }
+    float w = textWidth(message);
+    float h =  textAscent()+textDescent();
+    float d = textWidth("W");
+    fill(192);
+    rect(width/2 - w/2-2*d, height / 2-h, w+4*d, 2*h, h);
+    fill(192, 0, 0);
+    textSize(MEDIUM_FONT_SIZE);
+    textAlign(CENTER, CENTER);
+    text(message, width / 2, base.height / 2);
+    textAlign(LEFT);
   }
 
 

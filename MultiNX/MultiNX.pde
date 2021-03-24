@@ -26,7 +26,7 @@
 //import processing.net.*; 
 //boolean testGui = true;
 boolean testGui = false;
-boolean DEBUG = false;
+final static boolean DEBUG = true;
 
 int telnetPort = 23; // telnet port
 
@@ -35,6 +35,7 @@ String[] ip = null;
 String[] cameraName = {"LL", "LM", "RM", "RR"};
 int NumCameras = 0;
 int mainCamera = 0;
+String saveFolderPath;
 
 //{ 
 //  //"192.168.216.56"
@@ -60,8 +61,12 @@ int GIANT_FONT_SIZE = 128;
 int INTRODUCTION_STATE = 0;
 int CONNECT_STATE = 1;
 int RUN_STATE = 2;
+int PRE_SAVE_STATE = 3;
+int SAVE_STATE = 4;
 int EXIT_STATE = 9;
 int state = INTRODUCTION_STATE;
+String message="Running";
+int frameCounter = 60; 
 
 void settings() {
   size(1920, 1080);
@@ -79,9 +84,9 @@ void setup() {
   //screen = loadImage("screenshot/nx2000/readytoshoot.png");
   screen = loadImage("screenshot/nx2000/readyfocustoshootmin.png");
 
+  //ip = loadStrings("multicameras.txt");
   //ip = loadStrings("twincameras.txt");
-  ip = loadStrings("multicameras.txt");
-  //ip = loadStrings("camera.txt");
+  ip = loadStrings("camera.txt");
   for (int i=0; i<ip.length; i++) {
     println(ip[i]);
   }
@@ -94,9 +99,24 @@ void setup() {
 
 void draw() { 
   int[] result = null;
+  if (frameCounter > 0) {
+    frameCounter--;
+  } else {
+    message = null;
+  }
+  
+  if (state == PRE_SAVE_STATE) {
+    state = SAVE_STATE;
+  } else if (state == SAVE_STATE) {
+    if (DEBUG) println(state);
+    savePhoto();
+    message = null;
+    state = RUN_STATE;
+  }
   background(128);
   image(screen, 0, 0, 2*screen.width, 2*screen.height);
   if (state == INTRODUCTION_STATE) {
+    openFileSystem();
     state++;
     fill(255);
     textAlign(LEFT);
@@ -104,7 +124,12 @@ void draw() {
 
     text("Multi NX", 300, 60);
     text("Control Multiple NX2000 Cameras", 300, 60+50);
-    text("Version 1.0", 300, 60+100);
+    if (DEBUG) {
+      text("Version 1.0 DEBUG", 300, 60+100);
+    } else {
+      text("Version 1.0", 300, 60+100);
+    }
+
     text("Written by Andy Modla", 300, 60+150);
     for (int i=0; i<ip.length; i++) {
       text ("("+(i+1)+") "+ip[i], 300, 60+250+i*50);
@@ -125,7 +150,7 @@ void draw() {
       camera[i] = new NX2000Camera(ip[i], client);
       camera[i].setName(cameraName[i]);
     }
-    state++;
+    state = RUN_STATE;
   }
 
   keyUpdate();
@@ -136,7 +161,7 @@ void draw() {
     }
     exit();
   }
-  
+
   for (int i=0; i<NumCameras; i++) {
     String inString = "";
     if (!camera[i].isConnected()) {
@@ -164,7 +189,7 @@ void draw() {
     if (!camera[i].client.active() ) {
       camera[i].setConnected(false);
     }
-    
+
     if (camera[i].isConnected()) {
       if (camera[i].lastPhoto != null) {
         float w = camera[i].lastPhoto.width;
@@ -189,15 +214,16 @@ void draw() {
   gui.displayMenuBar();
   gui.modeTable.display();
   gui.fnTable.display();
-  
-    // check for first connected camera
+  gui.displayMessage(message);
+
+
+  // check for first connected camera
   for (int i=0; i<NumCameras; i++) {
     if (camera[i].isConnected()) {
       mainCamera = i;
       break;
     }
   }
-
 } 
 
 void takeMultiPhoto(NX2000Camera[] camera) {

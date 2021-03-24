@@ -316,15 +316,7 @@ boolean keyUpdate() {
       }
     }
   } else if (lastKeyCode == KEYCODE_SAVE) {
-    for (int i=0; i<NumCameras; i++) {
-      if (camera[i].lastPhoto != null) {
-        int w = camera[i].lastPhoto.width;
-        int h = camera[i].lastPhoto.height;
-        if (w>0 && h>0) {
-          //save
-        }
-      }
-    }
+    selectPhotoFolder();
   } else if (lastKey == 'v' || lastKey == 'V') {
     camera[mainCamera].getCameraEv();
   } else if (lastKey == 'y' || lastKey == 'Y') {

@@ -51,11 +51,13 @@ class NX2000Camera {
           ;
           int fin = inString.lastIndexOf("FILENAME=");
           int lin = inString.lastIndexOf("nx2000");
-          filenameUrl = "http://"+ipAddr+inString.substring(fin+9, lin);
-          filenameUrl.trim();
-          filenameUrl = filenameUrl.replaceAll("(\\r|\\n)", "");
-          println(filenameUrl);
-          lastPhoto = loadImage(filenameUrl, "jpg");
+          if (fin > 0 && lin > 0) {
+            filenameUrl = "http://"+ipAddr+inString.substring(fin+9, lin);
+            filenameUrl.trim();
+            filenameUrl = filenameUrl.replaceAll("(\\r|\\n)", "");
+            println("result filename= "+filenameUrl);
+            lastPhoto = loadImage(filenameUrl, "jpg");
+          }
           return null;
         }
         if (inString.endsWith(prompt)) {
