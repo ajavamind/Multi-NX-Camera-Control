@@ -27,6 +27,7 @@
 //boolean testGui = true;
 boolean testGui = false;
 final static boolean DEBUG = true;
+//final static boolean DEBUG = false;
 
 int telnetPort = 23; // telnet port
 
@@ -88,12 +89,12 @@ void setup() {
   //ip = loadStrings("twincameras.txt");
   ip = loadStrings("camera.txt");
   for (int i=0; i<ip.length; i++) {
-    println(ip[i]);
+    if (DEBUG) println(ip[i]);
   }
-  println("number of cameras "+ip.length);
+  if (DEBUG) println("number of cameras "+ip.length);
   NumCameras = ip.length;
 
-  println("width="+width + " height="+height);
+  if (DEBUG) println("width="+width + " height="+height);
   //println("screen.width="+screen.width + " screen.height="+screen.height);
 } 
 
@@ -104,7 +105,7 @@ void draw() {
   } else {
     message = null;
   }
-  
+
   if (state == PRE_SAVE_STATE) {
     state = SAVE_STATE;
   } else if (state == SAVE_STATE) {
@@ -144,8 +145,8 @@ void draw() {
       Client client = null;
       if (!testGui) {
         client = new Client(this, ip[i], telnetPort);
-        println("client="+client);
-        println("active="+client.active());
+        if (DEBUG) println("client="+client);
+        if (DEBUG) println("active="+client.active());
       }
       camera[i] = new NX2000Camera(ip[i], client);
       camera[i].setName(cameraName[i]);
@@ -169,10 +170,10 @@ void draw() {
         while (!inString.endsWith(prompt)) {
           if (camera[i].client.available() > 0) { 
             inString += camera[i].client.readString(); 
-            println(inString); 
+            if (DEBUG) println(inString); 
             if (inString.endsWith(prompt)) {
               camera[i].setConnected(true);
-              println("Camera "+camera[i].name+" "+ip[i]+" connected");
+              if (DEBUG) println("Camera "+camera[i].name+" "+ip[i]+" connected");
               camera[i].getCameraFnShutterEvISO();
               break;
             }
@@ -190,6 +191,8 @@ void draw() {
       camera[i].setConnected(false);
     }
 
+    // ---------------------------------------------------------------------
+    // displayPhoto
     if (camera[i].isConnected()) {
       if (camera[i].lastPhoto != null) {
         float w = camera[i].lastPhoto.width;
@@ -199,7 +202,12 @@ void draw() {
           div = 3.0;
         }
         if (w > 0 && h > 0) {
-          image(camera[i].lastPhoto, 180+(i%2)*(w/div), 0+(i/2)*(h/div), w/div, h/div);
+          if (NumCameras == 1) {
+            div = div/2;
+            image(camera[i].lastPhoto, 180+(i%2)*(w/div), 0+(i/2)*(h/div), w/div, h/div);
+          } else {
+            image(camera[i].lastPhoto, 180+(i%2)*(w/div), 0+(i/2)*(h/div), w/div, h/div);
+          }
         }
       } else
         if (camera[i].shutterCount == 0) {
@@ -225,15 +233,3 @@ void draw() {
     }
   }
 } 
-
-void takeMultiPhoto(NX2000Camera[] camera) {
-  for (int i=0; i<NumCameras; i++) {
-    camera[i].takePhoto();
-  }
-}
-
-void focusMultiPhoto(NX2000Camera[] camera) {
-  for (int i=0; i<NumCameras; i++) {
-    camera[i].client.write("st key push s1;sleep 1;st key release s1\n"); // focus
-  }
-}

@@ -1,3 +1,42 @@
+// Keyboard and mouse input handling
+
+int KEYCODE_0 = 48;
+int KEYCODE_1 = 49;
+int KEYCODE_DEL = 127;
+int KEYCODE_B = 66;
+int KEYCODE_E = 69;
+int KEYCODE_S = 83;
+int KEYCODE_T = 84;
+int KEYCODE_F = 70;
+int KEYCODE_G = 71;
+int KEYCODE_H = 72;
+int KEYCODE_I = 73;
+int KEYCODE_J = 74;
+int KEYCODE_K = 75;
+int KEYCODE_L = 76;
+int KEYCODE_M = 77;
+int KEYCODE_N = 78;
+int KEYCODE_O = 79;
+int KEYCODE_MEDIA_NEXT;
+int KEYCODE_MEDIA_PLAY_PAUSE = 80;
+int KEYCODE_MEDIA_PREVIOUS;
+int KEYCODE_PAGE_DOWN;
+int KEYCODE_PAGE_UP;
+int KEYCODE_MEDIA_STOP;
+int KEYCODE_R = 82;
+int KEYCODE_P = 80;
+int KEYCODE_V = 86;
+int KEYCODE_W = 87;
+int KEYCODE_ESCAPE = 27;
+int KEYCODE_MOVE_HOME       = 122;
+int KEYCODE_MOVE_END       = 123;
+int KEYCODE_FN_ZONE = 500;
+int KEYCODE_FN_ZONE_UPDATE = 501;
+int KEYCODE_MODE_TABLE = 1000;
+int KEYCODE_SHOW = 3000;
+int KEYCODE_FN_UPDATE = 2000;
+int KEYCODE_SAVE = 3001;
+
 int lastKey;
 int lastKeyCode;
 
@@ -56,7 +95,7 @@ boolean keyUpdate() {
   if (lastKey == 0 && lastKeyCode == 0) {
     return false;
   }
-  println("keyUpdate lastKey="+lastKey + " lastKeyCode="+lastKeyCode);
+  if (DEBUG) println("keyUpdate lastKey="+lastKey + " lastKeyCode="+lastKeyCode);
 
   //if ( lastKeyCode == KEYCODE_ESCAPE ) {
   //  getActivity().finish();
@@ -73,7 +112,7 @@ boolean keyUpdate() {
       }
     }
   } else if (lastKeyCode == 111 || lastKeyCode == KEYCODE_ESCAPE || lastKey == 'q' || lastKey == 'Q') {  // quit/ESC key
-    println("QUIT");
+    if (DEBUG) println("QUIT");
     gui.horzMenuBar.backKey.setHighlight(true);
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
@@ -85,7 +124,7 @@ boolean keyUpdate() {
   } else if (lastKeyCode == KEYCODE_F || lastKey == 'f' || lastKey == 'F') { // Focus
     // focus
     if (!focus) {
-      println("FOCUS");
+      if (DEBUG) println("FOCUS");
       for (int i=0; i<NumCameras; i++) {
         if (camera[i].isConnected()) {
           camera[i].focusPush();
@@ -93,7 +132,7 @@ boolean keyUpdate() {
       }
       focus = true;
     } else {
-      println("FOCUS RELEASE");
+      if (DEBUG) println("FOCUS RELEASE");
       for (int i=0; i<NumCameras; i++) {
         if (camera[i].isConnected()) {
           camera[i].focusRelease();
@@ -104,7 +143,7 @@ boolean keyUpdate() {
     gui.highlightFocusKey(focus);
   } else if (lastKeyCode == KEYCODE_G || lastKey == 'g' || lastKey == 'G') { // Focus release
     // focus
-    println("FOCUS RELEASE");
+    if (DEBUG) println("FOCUS RELEASE");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].focusRelease();
@@ -112,7 +151,7 @@ boolean keyUpdate() {
     }
   } else if (lastKeyCode == KEYCODE_S || lastKey == 's' || lastKey == 'S') { // Shutter
     // shutter
-    println("SHUTTER");
+    if (DEBUG) println("SHUTTER");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].shutterPushRelease();
@@ -136,7 +175,7 @@ boolean keyUpdate() {
     }
     // video start and pause if already recording
   } else if (lastKeyCode == KEYCODE_R || lastKey == 'r' || lastKey == 'R') {
-    println("RECORD");
+    if (DEBUG) println("RECORD");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].record();
@@ -155,32 +194,32 @@ boolean keyUpdate() {
       }
     }
   } else if (lastKeyCode == KEYCODE_H || lastKey == 'h' || lastKey == 'H') {
-    println("HOME");
+    if (DEBUG) println("HOME");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].home();
       }
     }
   } else if (lastKeyCode == KEYCODE_M || lastKey == 'm' || lastKey == 'M') {
-    println("MENU");
+    if (DEBUG) println("MENU");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].menu();
       }
     }
   } else if (lastKeyCode == KEYCODE_O || lastKey == 'o' || lastKey == 'O') {
-    println("Application Fn Shutter values");
+    if (DEBUG) println("Application Fn Shutter values");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].getCameraFnShutter();
       }
     }
   } else if (lastKeyCode == KEYCODE_W || lastKey == 'w' || lastKey == 'W') {
-    println("Camera MODE");
+    if (DEBUG) println("Camera MODE");
     modeSelection =! modeSelection;
     selectedCameraMode = cameraMode;
   } else if (lastKeyCode == KEYCODE_I || lastKey == 'i' || lastKey == 'I') {
-    println("Camera INFO");
+    if (DEBUG) println("Camera INFO");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         //camera[i].cameraInfo();
@@ -188,49 +227,49 @@ boolean keyUpdate() {
       }
     }
   } else if (lastKeyCode == KEYCODE_K || lastKey == 'k' || lastKey == 'K') {
-    println("Camera OK");
+    if (DEBUG) println("Camera OK");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].cameraOk();
       }
     }
   } else if (lastKeyCode == KEYCODE_B || lastKey == 'b' || lastKey == 'B') {
-    println("Camera Screenshot");
+    if (DEBUG) println("Camera Screenshot");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].screenshot(screenshotFilename);
       }
     }
   } else if (lastKeyCode == KEYCODE_N || lastKey == 'n' || lastKey == 'N') {
-    println("FN");
+    if (DEBUG) println("FN");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].function();
       }
     }
   } else if (lastKeyCode == KEYCODE_P || lastKey == 'p' || lastKey == 'P') {
-    println("PLAYBACK");
+    if (DEBUG) println("PLAYBACK");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].playback();
       }
     }
   } else if (lastKeyCode == KEYCODE_E || lastKey == 'e' || lastKey == 'E') {
-    println("EV");
+    if (DEBUG) println("EV");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].ev();
       }
     }
   } else if (lastKeyCode == KEYCODE_J || lastKey == 'j' || lastKey == 'J') {
-    println("JOG CW");
+    if (DEBUG) println("JOG CW");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].jogcw();
       }
     }
   } else if (lastKeyCode == KEYCODE_L || lastKey == 'l' || lastKey == 'L') {
-    println("JOG CCW");
+    if (DEBUG) println("JOG CCW");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].jogccw();
@@ -240,7 +279,7 @@ boolean keyUpdate() {
     if (lastKeyCode == 1012) {
       modeSelection = false;
       cameraMode = selectedCameraMode;
-      println("Set Mode "+ cameraModes[cameraMode]);
+      if (DEBUG) println("Set Mode "+ cameraModes[cameraMode]);
       for (int i=0; i<NumCameras; i++) {
         if (camera[i].isConnected()) {
           camera[i].cameraMode(cameraMode);
@@ -248,18 +287,18 @@ boolean keyUpdate() {
       }
     } else {
       selectedCameraMode = lastKeyCode-KEYCODE_MODE_TABLE;
-      println("Set Mode "+ cameraModes[selectedCameraMode]);
+      if (DEBUG) println("Set Mode "+ cameraModes[selectedCameraMode]);
     }
   } else if (lastKeyCode == KEYCODE_FN_ZONE) {
-    println("Camera Fn parameters");
+    if (DEBUG) println("Camera Fn parameters");
     fnSelection =! fnSelection;
     if (fnSelection) {
       camera[mainCamera].getCameraFnShutterEvISO();
     }
-  } else if (lastKeyCode == KEYCODE_FN_ZONE+1) {
-    println("Camera state");
+  } else if (lastKeyCode == KEYCODE_FN_ZONE_UPDATE) {
     gui.fnZone.zoneKey.cap = " "+ getSsName(camera[mainCamera].getShutterSpeed())+"    "+getFnName(camera[mainCamera].getFn())+"    EV "+
       evName[camera[mainCamera].getEv()]+"    ISO "+isoName[camera[mainCamera].getISO()];
+    if (DEBUG) println("Camera state "+gui.fnZone.zoneKey.cap);
   } else if (lastKeyCode >= KEYCODE_FN_UPDATE && lastKeyCode <= 2012) {
     if (lastKeyCode == 2012) {
       fnSelection = false;

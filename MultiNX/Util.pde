@@ -43,9 +43,9 @@ int resultType = NO_TYPE;
 //  String block = s.replaceAll("\\s", "");
 //  int index = block.indexOf(']');
 //  if (index >= 0) {
-//    println(s.substring(index+1, index+9));
+//    if (DEBUG) println(s.substring(index+1, index+9));
 //    result = unhex(s.substring(index+1, index+9));
-//    println("result="+result);
+//    if (DEBUG) println("result="+result);
 //    decoded = true;
 //  }
 //}
@@ -58,4 +58,19 @@ String convertCounter(int value) {
   } else if (value <1000)
     return ("0"+value);
   return str(value);
+}
+
+//..........................................................................
+// common to android and java platforms
+
+void folderSelected(File selection) {
+  if (selection == null) {
+    if (DEBUG) println("Window closed or canceled.");
+    gui.displayMessage("Canceled", 30);
+  } else {
+    if (DEBUG) println("User selected " + selection.getAbsolutePath());
+    saveFolderPath = selection.getAbsolutePath();
+    state = PRE_SAVE_STATE;
+    gui.displayMessage("Save Photos", 30);
+  }
 }
