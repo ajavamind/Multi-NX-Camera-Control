@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" android:targetSandboxVersion="1" android:versionCode="1" android:versionName="1.0" package="com.andymodla.apps.multinx">
-    <uses-sdk android:minSdkVersion="17" android:targetSdkVersion="29"/>
-    <!-- Some Chromebooks don't support touch. Although not essential,
+    <!-- 
+	    <uses-sdk android:minSdkVersion="17" android:targetSdkVersion="29"/>
+
+	Some Chromebooks don't support touch. Although not essential,
              it's a good idea to explicitly include this declaration. -->
     <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
     <application android:icon="@mipmap/ic_launcher" android:label="" android:usesCleartextTraffic="true">

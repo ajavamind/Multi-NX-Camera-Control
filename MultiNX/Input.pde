@@ -103,7 +103,9 @@ boolean keyUpdate() {
 
 
   if (lastKey==' ') {
-    camera[mainCamera].save();
+    //camera[mainCamera].save();
+    camera[mainCamera].screenshot();
+    screenshot = loadImage("http://"+camera[mainCamera].ipAddr+"screenshot.bmp");
   } else if (lastKey >= '1' && lastKey <= '9') {
     int ic = lastKey-'0';
     if (ic <= NumCameras) {
@@ -128,6 +130,7 @@ boolean keyUpdate() {
       for (int i=0; i<NumCameras; i++) {
         if (camera[i].isConnected()) {
           camera[i].focusPush();
+          camera[i].getCameraFnShutterEvISO();
         }
       }
       focus = true;
@@ -154,7 +157,11 @@ boolean keyUpdate() {
     if (DEBUG) println("SHUTTER");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
-        camera[i].shutterPushRelease();
+        if (focus) {
+          camera[i].shutterPushRelease();
+        } else {
+          camera[i].takePhoto();
+        }
       }
     }
     focus = false;
@@ -226,6 +233,8 @@ boolean keyUpdate() {
         camera[i].getShutterCount();
       }
     }
+    camera[mainCamera].screenshot();
+    screenshot = loadImage("http://"+camera[mainCamera].ipAddr+"/screenshot.bmp");
   } else if (lastKeyCode == KEYCODE_K || lastKey == 'k' || lastKey == 'K') {
     if (DEBUG) println("Camera OK");
     for (int i=0; i<NumCameras; i++) {

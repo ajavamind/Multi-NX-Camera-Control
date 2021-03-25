@@ -365,6 +365,10 @@ class NX2000Camera {
     client.write("screenshot bmp /mnt/mmc/"+filename+name+convertCounter(screenshotCounter)+"\n");
   }
 
+  void screenshot() {
+    client.write("screenshot bmp /mnt/mmc/screenshot.bmp\n");
+  }
+  
   void getShutterCount() {
     if (DEBUG) println("get shutter count");
     client.write("prefman get "+SYSRWID + " "+ SYSRWPREF_SHUTTER_COUNT+" l\n");

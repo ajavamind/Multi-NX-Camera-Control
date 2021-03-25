@@ -52,7 +52,7 @@ String saveFolderPath;
 
 NX2000Camera[] camera;
 PImage screen;  // camera LCD screen image
-
+PImage screenshot;
 Gui gui;
 int FONT_SIZE = 48;
 int MEDIUM_FONT_SIZE =  72;
@@ -115,7 +115,16 @@ void draw() {
     state = RUN_STATE;
   }
   background(128);
-  image(screen, 0, 0, 2*screen.width, 2*screen.height);
+  if (screenshot != null) {
+    pushMatrix();
+    //translate(screen.height, screen.width);
+    translate(screen.height/2, screen.width/2);
+    rotate(3*PI/2.0);
+    image(screenshot, 0, 0, 2*screenshot.width, 2*screenshot.height);
+    popMatrix();
+  } else {
+    image(screen, 0, 0, 2*screen.width, 2*screen.height);
+  }
   if (state == INTRODUCTION_STATE) {
     openFileSystem();
     state++;
