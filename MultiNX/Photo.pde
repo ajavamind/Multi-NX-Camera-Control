@@ -3,6 +3,7 @@ PGraphics pg;
 int counter=0;
 
 void savePhoto() {
+  if (DEBUG) println("savePhoto");
   //saveCompositePhoto();
   saveCameraPhotos();
 }
@@ -16,13 +17,25 @@ void saveCameraPhotos() {
       if (w>0 && h>0) {
         if (saveFolderPath != null) {
           String name = camera[i].filename;
-          name = name.substring(name.lastIndexOf("/")+1, name.lastIndexOf("."));
+          if (DEBUG) println(name);
+          int ia = name.lastIndexOf("/")+1;
+          int ib = name.lastIndexOf(".");
+          if (DEBUG) println(name +" "+ ia +" "+ib);
+          if (ia >= 0 && ib >=0 ) {
+            name = name.substring(name.lastIndexOf("/")+1, name.lastIndexOf("."));
+          }
           if (DEBUG) println(name);
           //name.replace("\\.JPG", "");
           //if (DEBUG) println(name);
           //name.replace("\\.SRW", "");
           //if (DEBUG) println(name);
-          String out = saveFolderPath+File.separator+"MNX"+convertCounter(counter)+"_"+name+"_"+camera[i].name+".JPG";
+          String cname = camera[i].name;
+          if (cname == null || cname.equals("") || cname.equals(" ")) {
+            cname = "";
+          } else {
+            cname = "_"+camera[i].name;
+          }
+          String out = saveFolderPath+File.separator+"MNX"+convertCounter(counter)+"_"+name+cname+".JPG";
           if (DEBUG) println("save="+out);
           camera[i].lastPhoto.save(out);
         }

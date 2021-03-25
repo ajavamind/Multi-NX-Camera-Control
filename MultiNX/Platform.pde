@@ -16,11 +16,11 @@ void openFileSystem() {
 }
 
 public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-    println("onRequestPermissionsResult "+ requestCode + " " + grantResults + " ");
-    for (int i=0; i<permissions.length; i++) {
+  println("onRequestPermissionsResult "+ requestCode + " " + grantResults + " ");
+  for (int i=0; i<permissions.length; i++) {
     println(permissions[i]);
-    }
-  }  
+  }
+}  
 
 
 void requestPermissions() {
@@ -50,7 +50,7 @@ void handleWrite(boolean granted) {
   }
 }
 
-void inputDialog() {
+void selectConfigurationFile() {
   //if (!grantedRead || !grantedWrite) {
   //  requestPermissions();
   //}
@@ -60,15 +60,10 @@ void inputDialog() {
 void selectPhotoFolder() {
   if (saveFolderPath == null) {
     files.selectFolder("Select Photo Folder", "folderSelected");
-  }
-}
-
-void fileSelected(File selection) {
-  if (selection == null) {
-    println("Selection window was closed or the user hit cancel.");
-    //showMsg("Selection window was closed or canceled.");
   } else {
-    println("User selected " + selection.getAbsolutePath());
+    state = PRE_SAVE_STATE;
+    if (DEBUG) println("saveFolderPath="+saveFolderPath);
+    gui.displayMessage("Save Photos", 30);
   }
 }
 
@@ -78,8 +73,8 @@ void fileSelected(File selection) {
 //void openFileSystem() {
 //}
 
-//void inputDialog() {
-//  selectInput("Select XML Configuration File:", "fileSelected");
+//void selectConfigurationFile() {
+//  selectInput("Select Configuration File:", "fileSelected");
 //}
 
 //void selectPhotoFolder() {

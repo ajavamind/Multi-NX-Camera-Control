@@ -60,14 +60,17 @@ int LARGE_FONT_SIZE = 96;
 int GIANT_FONT_SIZE = 128;
 
 int INTRODUCTION_STATE = 0;
-int CONNECT_STATE = 1;
-int RUN_STATE = 2;
-int PRE_SAVE_STATE = 3;
-int SAVE_STATE = 4;
+int CONFIGURATION_STATE = 1;
+int CONNECT_STATE = 2;
+int RUN_STATE = 3;
+int PRE_SAVE_STATE = 4;
+int SAVE_STATE = 5;
 int EXIT_STATE = 9;
 int state = INTRODUCTION_STATE;
-String message="Running";
+String message=null;
 int frameCounter = 60; 
+boolean showPhoto = true;
+String configFilename;
 
 void settings() {
   size(1920, 1080);
@@ -85,15 +88,6 @@ void setup() {
   //screen = loadImage("screenshot/nx2000/readytoshoot.png");
   screen = loadImage("screenshot/nx2000/readyfocustoshootmin.png");
 
-  //ip = loadStrings("multicameras.txt");
-  //ip = loadStrings("twincameras.txt");
-  ip = loadStrings("camera.txt");
-  for (int i=0; i<ip.length; i++) {
-    if (DEBUG) println(ip[i]);
-  }
-  if (DEBUG) println("number of cameras "+ip.length);
-  NumCameras = ip.length;
-
   if (DEBUG) println("width="+width + " height="+height);
   //println("screen.width="+screen.width + " screen.height="+screen.height);
 } 
@@ -108,7 +102,9 @@ void draw() {
 
   if (state == PRE_SAVE_STATE) {
     state = SAVE_STATE;
-  } else if (state == SAVE_STATE) {
+    return;
+  }  
+  if (state == SAVE_STATE) {
     if (DEBUG) println(state);
     savePhoto();
     message = null;
@@ -116,24 +112,28 @@ void draw() {
   }
   background(128);
   if (screenshot != null) {
+    imageMode(CENTER);
     pushMatrix();
-    //translate(screen.height, screen.width);
-    translate(screen.height/2, screen.width/2);
+    translate(screen.width, screen.height);
     rotate(3*PI/2.0);
     image(screenshot, 0, 0, 2*screenshot.width, 2*screenshot.height);
     popMatrix();
+    imageMode(CORNER);
   } else {
     image(screen, 0, 0, 2*screen.width, 2*screen.height);
   }
-  if (state == INTRODUCTION_STATE) {
-    openFileSystem();
-    state++;
+  if (state == INTRODUCTION_STATE|| state == CONFIGURATION_STATE) {
+    if (state == INTRODUCTION_STATE) {
+      openFileSystem();
+      selectConfigurationFile();
+    }
+    state = CONFIGURATION_STATE;
     fill(255);
     textAlign(LEFT);
     textSize(FONT_SIZE);
 
     text("Multi NX", 300, 60);
-    text("Control Multiple NX2000 Cameras", 300, 60+50);
+    text("Control Multiple NX Cameras", 300, 60+50);
     if (DEBUG) {
       text("Version 1.0 DEBUG", 300, 60+100);
     } else {
@@ -141,13 +141,38 @@ void draw() {
     }
 
     text("Written by Andy Modla", 300, 60+150);
-    for (int i=0; i<ip.length; i++) {
-      text ("("+(i+1)+") "+ip[i], 300, 60+250+i*50);
-    }
-    textSize(LARGE_FONT_SIZE);
-    text("Connecting to NX2000", 300, 560);
+    //    for (int i=0; i<ip.length; i++) {
+    //      text ("("+(i+1)+") "+ip[i], 300, 60+250+i*50);
+    //    }
+    textSize(MEDIUM_FONT_SIZE);
+    text("Select Camera Configuration File", 300, 560);
     return;
   } else if (state == CONNECT_STATE) {
+    String[] config = null;
+    if (configFilename == null) {
+      if (DEBUG) println("configFilename="+configFilename);
+      config = loadStrings("multicameras.txt");
+      //String[] config = loadStrings("twincameras.txt");
+      //String[] config = loadStrings("camera.txt");
+    } else {
+      if (DEBUG) println("configFilename="+configFilename);
+      config = loadStrings(configFilename);
+    }
+    if (DEBUG) println("number of cameras "+config.length);
+    NumCameras = config.length;
+    ip = new String[NumCameras];
+    for (int i=0; i<config.length; i++) {
+      if (DEBUG) println(config[i]);
+      int iv = config[i].indexOf(" ");
+      if (iv > 0) {
+        ip[i] = config[i].substring(0, iv);
+      }
+      int in = config[i].indexOf(" ", iv+1);
+      if (in > 0) {
+        cameraName[i] = config[i].substring(iv+1, in);
+      }
+    }
+
     // Create telnet clients to connect to Samsung NX2000 cameras.
     camera = new NX2000Camera[NumCameras];
     for (int i=0; i<NumCameras; i++) {
@@ -160,8 +185,9 @@ void draw() {
       camera[i] = new NX2000Camera(ip[i], client);
       camera[i].setName(cameraName[i]);
     }
-    state = RUN_STATE;
   }
+  state = RUN_STATE;
+
 
   keyUpdate();
 
@@ -203,7 +229,7 @@ void draw() {
     // ---------------------------------------------------------------------
     // displayPhoto
     if (camera[i].isConnected()) {
-      if (camera[i].lastPhoto != null) {
+      if (camera[i].lastPhoto != null && showPhoto) {
         float w = camera[i].lastPhoto.width;
         float h = camera[i].lastPhoto.height;
         float div = 8.0; 
@@ -220,12 +246,12 @@ void draw() {
         }
       } else
         if (camera[i].shutterCount == 0) {
-          text("("+camera[i].name+") "+ip[i]+ " Connected.", 300, 60+i*50);
+          text("("+camera[i].name+") "+ip[i]+ " Connected.", 200, 110+i*50);
         } else {
-          text("("+camera[i].name+") "+ip[i]+ " Connected. Shutter Count "+camera[i].shutterCount, 300, 60+i*50);
+          text("("+camera[i].name+") "+ip[i]+ " Shutter Count "+camera[i].shutterCount, 200, 110+i*50);
         }
     } else {
-      text ("("+camera[i].name+") "+ip[i]+ " Not Connected.", 300, 60+i*50);
+      text ("("+camera[i].name+") "+ip[i]+ " Not Connected.", 200, 110+i*50);
     }
   }
   gui.displayMenuBar();

@@ -58,20 +58,29 @@ class NX2000Camera {
       int fin = inString.lastIndexOf("FILENAME=");
       int lin = inString.lastIndexOf("nx2000");
       if (fin > 0 && lin > 0) {
-        filename = inString.substring(fin+9, lin);
-        filenameUrl = "http://"+ipAddr+inString.substring(fin+9, lin);
-        filenameUrl.trim();
-        filenameUrl = filenameUrl.replaceAll("(\\r|\\n)", "");
-        filename = filename.replaceAll("(\\r|\\n)", "");
-        if (DEBUG) println("result filename = " + filename + " filenameURL= "+filenameUrl);
-        if (filenameUrl.endsWith("SRW")) {
-          filenameUrl = filenameUrl.replace("SRW", "JPG");
-          filename = filename.replace("SRW", "JPG");
+        String afilename = inString.substring(fin+9, lin);
+        String afilenameUrl = "http://"+ipAddr+inString.substring(fin+9, lin);
+        afilenameUrl.trim();
+        afilenameUrl = afilenameUrl.replaceAll("(\\r|\\n)", "");
+        afilename = afilename.replaceAll("(\\r|\\n)", "");
+        if (DEBUG) println("result filename = " + afilename + " filenameURL= "+afilenameUrl);
+        if (afilenameUrl.endsWith("SRW")) {
+          afilenameUrl = afilenameUrl.replace("SRW", "JPG");
+          afilename = afilename.replace("SRW", "JPG");
         }
-        lastPhoto = loadImage(filenameUrl, "jpg");
+        if (!afilenameUrl.equals(filenameUrl)) {
+          filename = afilename;
+          filenameUrl = afilenameUrl;
+          lastPhoto = loadImage(filenameUrl, "jpg");
+          showPhoto = true;
+        } else {
+          showPhoto = !showPhoto;
+        }
       }
       inString = "";
       return null;
+    } else if (inString.startsWith("screenshot")) {
+      lastKeyCode = KEYCODE_LOAD_SCREENSHOT;
     }
     if (inString.endsWith(prompt)) {
       String strFind = "memory:";
@@ -196,13 +205,13 @@ class NX2000Camera {
     if (DEBUG) println("prefman set 1 " +APPPREF_FNO_INDEX + " l " + this.fn +
       ";prefman set 1 " +APPPREF_SHUTTER_SPEED_INDEX + " l " + this.shutterSpeed +
       ";prefman set 1 " + APPPREF_ISO_PAS + " l " + iso +
-//      ";prefman get 1 " + APPPREF_EVC + " l" +
+      //      ";prefman get 1 " + APPPREF_EVC + " l" +
       "\n");
     client.write(
       "prefman set 1 " + APPPREF_FNO_INDEX + " l " + this.fn +
       ";prefman set 1 " + APPPREF_SHUTTER_SPEED_INDEX + " l " + this.shutterSpeed +
       ";prefman set 1 " + APPPREF_ISO_PAS + " l " + iso +
-//      ";prefman get 1 " + APPPREF_EVC + " l" +
+      //      ";prefman get 1 " + APPPREF_EVC + " l" +
       ";st key mode "+ cameraModes[SMART_MODE]+
       ";sleep 1"+
       ";st key mode "+ cameraModes[MANUAL_MODE]+
@@ -214,7 +223,7 @@ class NX2000Camera {
       "st key mode "+ cameraModes[SMART_MODE]+
       ";sleep 1"+
       ";st key mode "+ cameraModes[MANUAL_MODE]+
-      "\n");    
+      "\n");
   }
 
   int getShutterSpeed () {
@@ -365,10 +374,14 @@ class NX2000Camera {
     client.write("screenshot bmp /mnt/mmc/"+filename+name+convertCounter(screenshotCounter)+"\n");
   }
 
-  void screenshot() {
+  boolean screenshot() {
+    if (!client.active()) {
+      return false;
+    }
     client.write("screenshot bmp /mnt/mmc/screenshot.bmp\n");
+    return true;
   }
-  
+
   void getShutterCount() {
     if (DEBUG) println("get shutter count");
     client.write("prefman get "+SYSRWID + " "+ SYSRWPREF_SHUTTER_COUNT+" l\n");

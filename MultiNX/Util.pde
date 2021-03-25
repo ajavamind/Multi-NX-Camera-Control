@@ -74,3 +74,16 @@ void folderSelected(File selection) {
     gui.displayMessage("Save Photos", 30);
   }
 }
+
+void fileSelected(File selection) {
+  if (selection == null) {
+    println("Selection window was closed or the user hit cancel.");
+    //showMsg("Selection window was closed or canceled.");
+    configFilename = null;
+    state = CONNECT_STATE;
+  } else {
+    println("User selected " + selection.getAbsolutePath());
+    configFilename = selection.getAbsolutePath();
+    state = CONNECT_STATE;
+  }
+}

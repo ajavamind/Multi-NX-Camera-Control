@@ -6,7 +6,10 @@
 	Some Chromebooks don't support touch. Although not essential,
              it's a good idea to explicitly include this declaration. -->
     <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
-    <application android:icon="@mipmap/ic_launcher" android:label="" android:usesCleartextTraffic="true">
+    <application android:icon="@mipmap/ic_launcher" android:label="" 
+	android:largeHeap="true"
+    android:requestLegacyExternalStorage="true"
+	android:usesCleartextTraffic="true">
         <activity android:name=".MainActivity" android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

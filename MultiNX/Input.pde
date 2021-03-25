@@ -32,9 +32,10 @@ int KEYCODE_MOVE_HOME       = 122;
 int KEYCODE_MOVE_END       = 123;
 int KEYCODE_FN_ZONE = 500;
 int KEYCODE_FN_ZONE_UPDATE = 501;
+int KEYCODE_LOAD_SCREENSHOT = 502;
 int KEYCODE_MODE_TABLE = 1000;
-int KEYCODE_SHOW = 3000;
 int KEYCODE_FN_UPDATE = 2000;
+int KEYCODE_SHOW = 3000;
 int KEYCODE_SAVE = 3001;
 
 int lastKey;
@@ -102,10 +103,8 @@ boolean keyUpdate() {
   //}
 
 
-  if (lastKey==' ') {
-    //camera[mainCamera].save();
-    camera[mainCamera].screenshot();
-    screenshot = loadImage("http://"+camera[mainCamera].ipAddr+"screenshot.bmp");
+  if (lastKeyCode == KEYCODE_LOAD_SCREENSHOT || lastKey==' ') {
+    screenshot = loadImage("http://"+camera[mainCamera].ipAddr+"/screenshot.bmp");
   } else if (lastKey >= '1' && lastKey <= '9') {
     int ic = lastKey-'0';
     if (ic <= NumCameras) {
@@ -227,14 +226,13 @@ boolean keyUpdate() {
     selectedCameraMode = cameraMode;
   } else if (lastKeyCode == KEYCODE_I || lastKey == 'i' || lastKey == 'I') {
     if (DEBUG) println("Camera INFO");
+    camera[mainCamera].screenshot();
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         //camera[i].cameraInfo();
         camera[i].getShutterCount();
       }
     }
-    camera[mainCamera].screenshot();
-    screenshot = loadImage("http://"+camera[mainCamera].ipAddr+"/screenshot.bmp");
   } else if (lastKeyCode == KEYCODE_K || lastKey == 'k' || lastKey == 'K') {
     if (DEBUG) println("Camera OK");
     for (int i=0; i<NumCameras; i++) {
