@@ -33,6 +33,8 @@ int KEYCODE_MOVE_END       = 123;
 int KEYCODE_FN_ZONE = 500;
 int KEYCODE_FN_ZONE_UPDATE = 501;
 int KEYCODE_LOAD_SCREENSHOT = 502;
+int KEYCODE_NEW_CONFIG = 503;
+int KEYCODE_CURRENT_CONFIG = 504;
 int KEYCODE_MODE_TABLE = 1000;
 int KEYCODE_FN_UPDATE = 2000;
 int KEYCODE_SHOW = 3000;
@@ -56,15 +58,18 @@ void mousePressed() {
     }
     if (lastKeyCode == 0) {
       lastKeyCode = gui.fnZone.mousePressed(mouseX, mouseY);
-      // touch focus
       if (lastKeyCode == 0) {
-        if (mouseX >0 && mouseX<= width-320 && mouseY > 0 && mouseY < height-120) {
-          for (int i=0; i<NumCameras; i++) {
-            if (camera[i].isConnected()) {
-              if (DEBUG) println("mouse x="+(mouseX) + " y="+mouseY);
-              if (mouseX < 2*screen.width && mouseY<2*screen.height) {
-                camera[i].touchFocus((2*screen.height-mouseY)/2, mouseX/2);
-                //println("key touch click x="+(2*screen.height-mouseY)/2 + " y="+mouseX/2);
+        lastKeyCode = gui.configZone.mousePressed(mouseX, mouseY);
+        // touch focus
+        if (lastKeyCode == 0) {
+          if (mouseX >0 && mouseX<= width-320 && mouseY > 0 && mouseY < height-120) {
+            for (int i=0; i<NumCameras; i++) {
+              if (camera[i].isConnected()) {
+                if (DEBUG) println("mouse x="+(mouseX) + " y="+mouseY);
+                if (mouseX < 2*screen.width && mouseY<2*screen.height) {
+                  camera[i].touchFocus((2*screen.height-mouseY)/2, mouseX/2);
+                  //println("key touch click x="+(2*screen.height-mouseY)/2 + " y="+mouseX/2);
+                }
               }
             }
           }
@@ -187,18 +192,8 @@ boolean keyUpdate() {
         camera[i].record();
       }
     }
-    //} else if (lastKey == 'd' || lastKey == 'D') {
-    //  for (int i=0; i<NumCameras; i++) {
-    //    if (camera[i].isConnected()) {
-    //      camera[i].end();
-    //    }
-    //  }
   } else if (lastKey == 'd' || lastKey == 'D') {
-    for (int i=0; i<NumCameras; i++) {
-      if (camera[i].isConnected()) {
-        // debug
-      }
-    }
+    if (DEBUG) println("State="+stateName[state]);
   } else if (lastKeyCode == KEYCODE_H || lastKey == 'h' || lastKey == 'H') {
     if (DEBUG) println("HOME");
     for (int i=0; i<NumCameras; i++) {
@@ -363,6 +358,10 @@ boolean keyUpdate() {
     }
   } else if (lastKeyCode == KEYCODE_SAVE) {
     selectPhotoFolder();
+  } else if (lastKeyCode == KEYCODE_NEW_CONFIG) {
+    state = CONFIGURATION_STATE;
+  } else if (lastKeyCode == KEYCODE_CURRENT_CONFIG) {
+    state = CONNECT_STATE;
   } else if (lastKey == 'v' || lastKey == 'V') {
     camera[mainCamera].getCameraEv();
   } else if (lastKey == 'y' || lastKey == 'Y') {

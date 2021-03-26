@@ -85,6 +85,7 @@ class Gui {
   ModeTable modeTable;
   FnZone fnZone;
   FnTable fnTable;
+  ConfigZone configZone;
 
   // information zone touch coordinates
   // screen boundaries for click zone use
@@ -175,6 +176,17 @@ class Gui {
     fnZone.create();
     fnTable = new FnTable();
     fnTable.create();
+
+    configZone = new ConfigZone();
+    configZone.create();
+  }
+
+  void displayConfigZone() {
+    configZone.display();
+  }
+
+  void removeConfigZone() {
+    configZone.remove();
   }
 
   void displayMenuBar() {
@@ -215,7 +227,7 @@ class Gui {
     frameCounter = counter;
     message = msg;
   }
-  
+
   void displayMessage(String message) {
     if (message == null) {
       return;
@@ -770,6 +782,78 @@ class Gui {
     }
   }
 
+  /**
+   * MenuBar appears at bottom of full screen.
+   */
+  class ConfigZone {
+    // initialize Keys
+    MenuKey zoneKey;
+    MenuKey cancelKey;
+    MenuKey[] menuKey;
+    int numKeys = 2;
+    float menuBase;
+
+    void create() {
+      color keyColor = black;
+
+      zoneKey = new MenuKey(KEYCODE_NEW_CONFIG, "New", FONT_SIZE, keyColor);
+      cancelKey = new MenuKey(KEYCODE_CURRENT_CONFIG, "Current", FONT_SIZE, keyColor);
+      menuKey = new MenuKey[numKeys];
+      menuKey[0] = zoneKey;
+      menuKey[1] = cancelKey;
+      float w = 1016;
+      float h = 104;
+      float x = 294;
+      float y = NX2000Camera.screenHeight ;
+      menuBase = NX2000Camera.screenHeight ;
+
+
+      zoneKey.setPosition( x, y, w/2, h, 60);
+      cancelKey.setPosition( x+w/2+10, y, w/2, h, 60);
+      setActive();
+    }
+
+    void setActive() {
+      for (int i = 0; i < menuKey.length; i++) {
+        menuKey[i].setVisible(true);
+        menuKey[i].setActive(true);
+      }
+    }
+
+    void remove() {
+      for (int i = 0; i < menuKey.length; i++) {
+        menuKey[i].setVisible(false);
+        menuKey[i].setActive(false);
+      }
+    }
+
+    void display() {
+      for (int i = 0; i < menuKey.length; i++) {
+        menuKey[i].draw();
+      }
+      noFill();
+      rect(menuKey[0].x, menuKey[0].y, menuKey[0].w, menuKey[0].h);
+    }
+
+    int mousePressed(int x, int y) {
+      int mkeyCode = 0;
+      int mkey = 0;
+      if (DEBUG) println("Config Zone mouse x="+x + " y="+y + " menuBase="+menuBase);
+      if (y > menuBase ) {
+        // menu touch control area at bottom of screen or sides
+        for (int i = 0; i < numKeys; i++) {
+          if (menuKey[i].visible && menuKey[i].active) {
+            if ((x <= (menuKey[i].x + menuKey[i].w)) && (x >= (menuKey[i].x))) {
+              mkeyCode = menuKey[i].keyCode;
+              break;
+            }
+          }
+        }
+      } 
+      return mkeyCode;
+    }
+  }
+
   class MenuKey {
     float x, y, w, h; // location
     float inset;
@@ -925,4 +1009,25 @@ class Gui {
       return keyCode;
     }
   }
+}
+
+void drawIntroductionScreen() {
+  fill(255);
+  textAlign(LEFT);
+  textSize(FONT_SIZE);
+
+  text("MultiNX", 300, 60);
+  text("Control Multiple NX Cameras", 300, 60+50);
+  if (DEBUG) {
+    text("Version 1.0 DEBUG", 300, 60+100);
+  } else {
+    text("Version 1.0", 300, 60+100);
+  }
+
+  text("Written by Andy Modla", 300, 60+150);
+  //    for (int i=0; i<ip.length; i++) {
+  //      text ("("+(i+1)+") "+ip[i], 300, 60+250+i*50);
+  //    }
+  textSize(FONT_SIZE);
+  text("Select Camera Configuration File", 300, 400);
 }

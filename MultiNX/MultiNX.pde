@@ -37,6 +37,8 @@ String[] cameraName = {"LL", "LM", "RM", "RR"};
 int NumCameras = 0;
 int mainCamera = 0;
 String saveFolderPath;
+//String defaultFilename = "camera_noname.txt";
+String defaultFilename = "default.txt";
 
 //{ 
 //  //"192.168.216.56"
@@ -61,12 +63,26 @@ int GIANT_FONT_SIZE = 128;
 
 int INTRODUCTION_STATE = 0;
 int CONFIGURATION_STATE = 1;
-int CONNECT_STATE = 2;
-int RUN_STATE = 3;
-int PRE_SAVE_STATE = 4;
-int SAVE_STATE = 5;
+int CONFIGURATION_DIALOG_STATE = 2;
+int CONNECT_STATE = 3;
+int RUN_STATE = 4;
+int PRE_SAVE_STATE = 5;
+int SAVE_STATE = 6;
 int EXIT_STATE = 9;
 int state = INTRODUCTION_STATE;
+String[] stateName = {
+  "INTRODUCTION_STATE", 
+  "CONFIGURATION_STATE", 
+  "CONFIGURATION_DIALOG_STATE", 
+  "CONNECT_STATE", 
+  "RUN_STATE", 
+  "PRE_SAVE_STATE", 
+  "SAVE_STATE", 
+  "UNDEFINED STATE", 
+  "UNDEFINED STATE", 
+  "EXIT_STATE" 
+};
+
 String message=null;
 int frameCounter = 60; 
 boolean showPhoto = true;
@@ -94,6 +110,9 @@ void setup() {
 
 void draw() { 
   int[] result = null;
+
+  // update message display visible counter
+  // 
   if (frameCounter > 0) {
     frameCounter--;
   } else {
@@ -122,41 +141,37 @@ void draw() {
   } else {
     image(screen, 0, 0, 2*screen.width, 2*screen.height);
   }
-  if (state == INTRODUCTION_STATE|| state == CONFIGURATION_STATE) {
+  if (state == INTRODUCTION_STATE || state == CONFIGURATION_STATE) {
     if (state == INTRODUCTION_STATE) {
       openFileSystem();
+      gui.displayConfigZone();
+    }
+    if (state == CONFIGURATION_STATE) {
+
+      //gui.removeConfigZone();
+      state = CONFIGURATION_DIALOG_STATE;
       selectConfigurationFile();
     }
-    state = CONFIGURATION_STATE;
-    fill(255);
-    textAlign(LEFT);
-    textSize(FONT_SIZE);
-
-    text("Multi NX", 300, 60);
-    text("Control Multiple NX Cameras", 300, 60+50);
-    if (DEBUG) {
-      text("Version 1.0 DEBUG", 300, 60+100);
-    } else {
-      text("Version 1.0", 300, 60+100);
-    }
-
-    text("Written by Andy Modla", 300, 60+150);
-    //    for (int i=0; i<ip.length; i++) {
-    //      text ("("+(i+1)+") "+ip[i], 300, 60+250+i*50);
-    //    }
-    textSize(MEDIUM_FONT_SIZE);
-    text("Select Camera Configuration File", 300, 560);
+    drawIntroductionScreen();
+    keyUpdate();
+    return;
+  } else if (state == CONFIGURATION_DIALOG_STATE) {
+    drawIntroductionScreen();
+    keyUpdate();
     return;
   } else if (state == CONNECT_STATE) {
+    gui.removeConfigZone();
     String[] config = null;
     if (configFilename == null) {
       if (DEBUG) println("configFilename="+configFilename);
-      config = loadStrings("multicameras.txt");
+      config = loadStrings(defaultFilename);
+      //config = loadStrings("multicameras.txt");
       //String[] config = loadStrings("twincameras.txt");
       //String[] config = loadStrings("camera.txt");
     } else {
       if (DEBUG) println("configFilename="+configFilename);
       config = loadStrings(configFilename);
+      saveStrings("data/"+defaultFilename, config);
     }
     if (DEBUG) println("number of cameras "+config.length);
     NumCameras = config.length;
@@ -232,14 +247,15 @@ void draw() {
       if (camera[i].lastPhoto != null && showPhoto) {
         float w = camera[i].lastPhoto.width;
         float h = camera[i].lastPhoto.height;
+        float ar = w/h;
         float div = 8.0; 
         if (w <= 1728) {
           div = 3.0;
         }
         if (w > 0 && h > 0) {
           if (NumCameras == 1) {
-            div = div/2;
-            image(camera[i].lastPhoto, 180+(i%2)*(w/div), 0+(i/2)*(h/div), w/div, h/div);
+            float offset = (2*NX2000Camera.screenWidth-((2*NX2000Camera.screenHeight)*ar))/2;
+            image(camera[i].lastPhoto, offset, 0, (2*NX2000Camera.screenHeight)*ar, 2*NX2000Camera.screenHeight);
           } else {
             image(camera[i].lastPhoto, 180+(i%2)*(w/div), 0+(i/2)*(h/div), w/div, h/div);
           }

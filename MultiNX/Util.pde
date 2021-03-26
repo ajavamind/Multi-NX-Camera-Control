@@ -71,7 +71,7 @@ void folderSelected(File selection) {
     if (DEBUG) println("User selected " + selection.getAbsolutePath());
     saveFolderPath = selection.getAbsolutePath();
     state = PRE_SAVE_STATE;
-    gui.displayMessage("Save Photos", 30);
+    gui.displayMessage("Save Photos", 40);
   }
 }
 
