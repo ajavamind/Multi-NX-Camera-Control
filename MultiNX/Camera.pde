@@ -74,7 +74,7 @@ class NX2000Camera {
           lastPhoto = loadImage(filenameUrl, "jpg");
           showPhoto = true;
         } else {
-          showPhoto = !showPhoto;
+          
         }
       }
       inString = "";
@@ -266,7 +266,10 @@ class NX2000Camera {
   }
 
   void focusRelease() {
-    client.write("st key release s1\n");
+      focus = false;
+    if (client.active()) {
+      client.write("st key release s1\n");
+    }
   }
 
   void shutterPush() {
@@ -347,7 +350,7 @@ class NX2000Camera {
   }
 
   void startFtp() {
-    client.write("tcpsvd -vE 0.0.0.0 21 ftpd /mnt/mmc/DCIM/100PHOTO\n");
+    client.write("tcpsvd -vE 0.0.0.0 21 ftpd /mnt/mmc\n");
   }
 
   void stopFtp() {

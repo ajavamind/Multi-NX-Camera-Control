@@ -37,7 +37,6 @@ String[] cameraName = {"LL", "LM", "RM", "RR"};
 int NumCameras = 0;
 int mainCamera = 0;
 String saveFolderPath;
-//String defaultFilename = "camera_noname.txt";
 String defaultFilename = "default.txt";
 
 //{ 
@@ -56,6 +55,7 @@ NX2000Camera[] camera;
 PImage screen;  // camera LCD screen image
 PImage screenshot;
 Gui gui;
+int SMALL_FONT_SIZE = 24;
 int FONT_SIZE = 48;
 int MEDIUM_FONT_SIZE =  72;
 int LARGE_FONT_SIZE = 96;
@@ -85,7 +85,7 @@ String[] stateName = {
 
 String message=null;
 int frameCounter = 60; 
-boolean showPhoto = true;
+boolean showPhoto = false;
 String configFilename;
 
 void settings() {
@@ -165,13 +165,10 @@ void draw() {
     if (configFilename == null) {
       if (DEBUG) println("configFilename="+configFilename);
       config = loadStrings(defaultFilename);
-      //config = loadStrings("multicameras.txt");
-      //String[] config = loadStrings("twincameras.txt");
-      //String[] config = loadStrings("camera.txt");
     } else {
       if (DEBUG) println("configFilename="+configFilename);
       config = loadStrings(configFilename);
-      saveStrings("data/"+defaultFilename, config);
+      saveStrings(defaultFilename, config);
     }
     if (DEBUG) println("number of cameras "+config.length);
     NumCameras = config.length;
@@ -245,6 +242,8 @@ void draw() {
     // displayPhoto
     if (camera[i].isConnected()) {
       if (camera[i].lastPhoto != null && showPhoto) {
+        textSize(SMALL_FONT_SIZE);
+        if (DEBUG) println("show "+camera[i].filename + " " + camera[i].lastPhoto.width + " "+camera[i].lastPhoto.height);
         float w = camera[i].lastPhoto.width;
         float h = camera[i].lastPhoto.height;
         float ar = w/h;
@@ -252,22 +251,29 @@ void draw() {
         if (w <= 1728) {
           div = 3.0;
         }
+
         if (w > 0 && h > 0) {
+          float offset = (2*NX2000Camera.screenWidth-((2*NX2000Camera.screenHeight)*ar))/2;
           if (NumCameras == 1) {
-            float offset = (2*NX2000Camera.screenWidth-((2*NX2000Camera.screenHeight)*ar))/2;
             image(camera[i].lastPhoto, offset, 0, (2*NX2000Camera.screenHeight)*ar, 2*NX2000Camera.screenHeight);
+            text(camera[i].filename, 10, 30);
+          } else if (NumCameras == 2) {
+            image(camera[i].lastPhoto, i*NX2000Camera.screenWidth, 0, (NX2000Camera.screenWidth), NX2000Camera.screenWidth/ar);
+            text(camera[i].filename, i*NX2000Camera.screenWidth+10, 30);
           } else {
             image(camera[i].lastPhoto, 180+(i%2)*(w/div), 0+(i/2)*(h/div), w/div, h/div);
           }
         }
-      } else
+      } else {
+        textSize(FONT_SIZE);
         if (camera[i].shutterCount == 0) {
-          text("("+camera[i].name+") "+ip[i]+ " Connected.", 200, 110+i*50);
+          text(camera[i].name+" "+ip[i]+ " Connected.", 200, 110+i*50);
         } else {
-          text("("+camera[i].name+") "+ip[i]+ " Shutter Count "+camera[i].shutterCount, 200, 110+i*50);
+          text(camera[i].name+" "+ip[i]+ " Shutter Count "+camera[i].shutterCount, 200, 110+i*50);
         }
+      }
     } else {
-      text ("("+camera[i].name+") "+ip[i]+ " Not Connected.", 200, 110+i*50);
+      text (camera[i].name+" "+ip[i]+ " Not Connected.", 200, 110+i*50);
     }
   }
   gui.displayMenuBar();

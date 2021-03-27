@@ -597,6 +597,7 @@ class Gui {
     }
 
     void display() {
+      highlightFocusKey(focus);
       fill(192);
       rect(WIDTH -320, 0, 320, HEIGHT - 120);
       for (int i = 0; i < menuKey.length; i++) {
@@ -1025,9 +1026,6 @@ void drawIntroductionScreen() {
   }
 
   text("Written by Andy Modla", 300, 60+150);
-  //    for (int i=0; i<ip.length; i++) {
-  //      text ("("+(i+1)+") "+ip[i], 300, 60+250+i*50);
-  //    }
   textSize(FONT_SIZE);
   text("Select Camera Configuration File", 300, 400);
 }

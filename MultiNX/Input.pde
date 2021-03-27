@@ -147,7 +147,6 @@ boolean keyUpdate() {
       }
       focus = false;
     }
-    gui.highlightFocusKey(focus);
   } else if (lastKeyCode == KEYCODE_G || lastKey == 'g' || lastKey == 'G') { // Focus release
     // focus
     if (DEBUG) println("FOCUS RELEASE");
@@ -169,7 +168,6 @@ boolean keyUpdate() {
       }
     }
     focus = false;
-    gui.highlightFocusKey(focus);
   } else if (lastKey == 't' || lastKey == 'T') { // Take picture
     // take picture
     for (int i=0; i<NumCameras; i++) {
@@ -306,6 +304,7 @@ boolean keyUpdate() {
       fnSelection = false;
       for (int i=0; i<NumCameras; i++) {
         if (camera[i].isConnected()) {
+          camera[i].focusRelease();
           camera[i].updateFn();
           camera[i].setCameraFnShutterISO(fnId, shutterId, isoId);
         }
@@ -351,6 +350,7 @@ boolean keyUpdate() {
       }
     }
   } else if (lastKeyCode == KEYCODE_SHOW) {
+    showPhoto = !showPhoto;
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].getFilename();
