@@ -23,7 +23,6 @@
 // Use email WiFi cofiguration on NX2000 to connect to a local network.
 // Exit email to shoot photos and videos after connection to your local WiFi network.
 
-//import processing.net.*; 
 //boolean testGui = true;
 boolean testGui = false;
 final static boolean DEBUG = true;
@@ -38,6 +37,7 @@ int NumCameras = 0;
 int mainCamera = 0;
 String saveFolderPath;
 String defaultFilename = "default.txt";
+String configFilename;
 
 //{ 
 //  //"192.168.216.56"
@@ -52,7 +52,8 @@ String defaultFilename = "default.txt";
 //};
 
 NX2000Camera[] camera;
-PImage screen;  // camera LCD screen image
+PImage lcdScreen;  // camera LCD screen image
+PImage cameraImage;
 PImage screenshot;
 Gui gui;
 int SMALL_FONT_SIZE = 24;
@@ -64,16 +65,18 @@ int GIANT_FONT_SIZE = 128;
 int INTRODUCTION_STATE = 0;
 int CONFIGURATION_STATE = 1;
 int CONFIGURATION_DIALOG_STATE = 2;
-int CONNECT_STATE = 3;
-int RUN_STATE = 4;
-int PRE_SAVE_STATE = 5;
-int SAVE_STATE = 6;
+int PRE_CONNECT_STATE = 3;
+int CONNECT_STATE = 4;
+int RUN_STATE = 5;
+int PRE_SAVE_STATE = 6;
+int SAVE_STATE = 7;
 int EXIT_STATE = 9;
 int state = INTRODUCTION_STATE;
 String[] stateName = {
   "INTRODUCTION_STATE", 
   "CONFIGURATION_STATE", 
   "CONFIGURATION_DIALOG_STATE", 
+  "PRE_CONNECT_STATE", 
   "CONNECT_STATE", 
   "RUN_STATE", 
   "PRE_SAVE_STATE", 
@@ -86,7 +89,6 @@ String[] stateName = {
 String message=null;
 int frameCounter = 60; 
 boolean showPhoto = false;
-String configFilename;
 
 void settings() {
   size(1920, 1080);
@@ -101,9 +103,10 @@ void setup() {
 
   textSize(FONT_SIZE);
 
-  //screen = loadImage("screenshot/nx2000/readytoshoot.png");
-  screen = loadImage("screenshot/nx2000/readyfocustoshootmin.png");
-
+  //lcdScreen = loadImage("screenshot/nx2000/readytoshoot.png");
+  //lcdScreen = loadImage("screenshot/nx2000/readyfocustoshootmin.png");
+  lcdScreen = loadImage("screenshot/nx2000/blankscreen.png");
+  cameraImage = loadImage("images/nx2000_topview_270x270.jpg");
   if (DEBUG) println("width="+width + " height="+height);
   //println("screen.width="+screen.width + " screen.height="+screen.height);
 } 
@@ -129,17 +132,18 @@ void draw() {
     message = null;
     state = RUN_STATE;
   }
-  background(128);
+  //background(128);
+  background(0);
   if (screenshot != null) {
     imageMode(CENTER);
     pushMatrix();
-    translate(screen.width, screen.height);
+    translate(lcdScreen.width, lcdScreen.height);
     rotate(3*PI/2.0);
     image(screenshot, 0, 0, 2*screenshot.width, 2*screenshot.height);
     popMatrix();
     imageMode(CORNER);
   } else {
-    image(screen, 0, 0, 2*screen.width, 2*screen.height);
+    image(lcdScreen, 0, 0, 2*lcdScreen.width, 2*lcdScreen.height);
   }
   if (state == INTRODUCTION_STATE || state == CONFIGURATION_STATE) {
     if (state == INTRODUCTION_STATE) {
@@ -159,16 +163,32 @@ void draw() {
     drawIntroductionScreen();
     keyUpdate();
     return;
-  } else if (state == CONNECT_STATE) {
+  } else if (state == PRE_CONNECT_STATE) {
     gui.removeConfigZone();
+    state = CONNECT_STATE;
+    drawIntroductionScreen();
+    gui.displayMessage("Using Last Configuration");
+    return;
+  } else if (state == CONNECT_STATE) {
+    //gui.removeConfigZone();
     String[] config = null;
     if (configFilename == null) {
       if (DEBUG) println("configFilename="+configFilename);
-      config = loadStrings(defaultFilename);
+      if (ANDROID_MODE) {
+        configFilename = loadConfig();
+      }
+      if (configFilename == null) {
+        configFilename = defaultFilename;
+      }
+      config = loadStrings(configFilename);
     } else {
       if (DEBUG) println("configFilename="+configFilename);
       config = loadStrings(configFilename);
-      saveStrings(defaultFilename, config);
+      if (ANDROID_MODE) {
+        saveConfig(configFilename);
+      } else {
+        saveStrings("data"+File.separator+defaultFilename, config);
+      }
     }
     if (DEBUG) println("number of cameras "+config.length);
     NumCameras = config.length;
@@ -243,7 +263,7 @@ void draw() {
     if (camera[i].isConnected()) {
       if (camera[i].lastPhoto != null && showPhoto) {
         textSize(SMALL_FONT_SIZE);
-        if (DEBUG) println("show "+camera[i].filename + " " + camera[i].lastPhoto.width + " "+camera[i].lastPhoto.height);
+        //if (DEBUG) println("show "+camera[i].filename + " " + camera[i].lastPhoto.width + " "+camera[i].lastPhoto.height);
         float w = camera[i].lastPhoto.width;
         float h = camera[i].lastPhoto.height;
         float ar = w/h;
@@ -256,12 +276,15 @@ void draw() {
           float offset = (2*NX2000Camera.screenWidth-((2*NX2000Camera.screenHeight)*ar))/2;
           if (NumCameras == 1) {
             image(camera[i].lastPhoto, offset, 0, (2*NX2000Camera.screenHeight)*ar, 2*NX2000Camera.screenHeight);
-            text(camera[i].filename, 10, 30);
+            text(camera[i].name + " "+camera[i].ipAddr+" "+camera[i].filename, 10, 30);
           } else if (NumCameras == 2) {
             image(camera[i].lastPhoto, i*NX2000Camera.screenWidth, 0, (NX2000Camera.screenWidth), NX2000Camera.screenWidth/ar);
-            text(camera[i].filename, i*NX2000Camera.screenWidth+10, 30);
+            text(camera[i].name + " "+camera[i].ipAddr+" "+camera[i].filename, i*NX2000Camera.screenWidth+10, 30);
           } else {
-            image(camera[i].lastPhoto, 180+(i%2)*(w/div), 0+(i/2)*(h/div), w/div, h/div);
+            //image(camera[i].lastPhoto, 180+(i%2)*(w/div), 0+(i/2)*(h/div), w/div, h/div);
+            //image(camera[i].lastPhoto, (i%2)*NX2000Camera.screenWidth, (i/2)*(NX2000Camera.screenWidth/ar), (NX2000Camera.screenWidth), NX2000Camera.screenWidth/ar);
+            image(camera[i].lastPhoto, (i%2)*NX2000Camera.screenWidth, (i/2)*(NX2000Camera.screenHeight), (NX2000Camera.screenHeight)*ar, NX2000Camera.screenHeight);
+            text(camera[i].name + " "+camera[i].ipAddr+" "+camera[i].filename, (i%2)*NX2000Camera.screenWidth+10, 30+ (i/2)*(NX2000Camera.screenHeight));
           }
         }
       } else {

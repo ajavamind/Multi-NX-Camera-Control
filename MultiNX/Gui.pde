@@ -236,7 +236,9 @@ class Gui {
     float h =  textAscent()+textDescent();
     float d = textWidth("W");
     fill(192);
-    rect(width/2 - w/2-2*d, height / 2-h, w+4*d, 2*h, h);
+    //rectMode(CENTER);
+    //rect(width/2 - w/2-2*d, height / 2-h, w+4*d, 2*h, h);
+    //rectMode(CORNER);
     fill(192, 0, 0);
     textSize(MEDIUM_FONT_SIZE);
     textAlign(CENTER, CENTER);
@@ -642,6 +644,7 @@ class Gui {
     MenuKey[] menuKey;
     int numKeys = 8;
     float menuBase;
+    float x, y, w, h;
 
     void create() {
       color keyColor = black;
@@ -664,10 +667,10 @@ class Gui {
       menuKey[6] = cameraOkKey;
       menuKey[7] = backKey;
 
-      float x = 0;
-      float y = HEIGHT - iY;
-      float w = WIDTH / ((float) numKeys);
-      float h = iY-4;
+      x = 0;
+      y = HEIGHT - iY;
+      w = WIDTH / ((float) numKeys);
+      h = iY-4;
       menuBase = 2*NX2000Camera.screenHeight;
 
       float inset = WIDTH / ((float) numKeys) / 7f;
@@ -691,6 +694,9 @@ class Gui {
     }
 
     void display() {
+      fill(128);
+      rect(0, menuBase, WIDTH, HEIGHT-menuBase);
+
       for (int i = 0; i < menuKey.length; i++) {
         menuKey[i].draw();
       }
@@ -728,7 +734,7 @@ class Gui {
     void create() {
       color keyColor = black;
 
-      zoneKey = new MenuKey(KEYCODE_FN_ZONE, null, FONT_SIZE, keyColor);
+      zoneKey = new MenuKey(KEYCODE_FN_ZONE, "Manual Settings", FONT_SIZE, keyColor);
       menuKey = new MenuKey[numKeys];
       menuKey[0] = zoneKey;
 
@@ -744,6 +750,13 @@ class Gui {
       menuKey[0].setActive(true);
     }
 
+    void show(boolean visible, boolean active) {
+      for (int i = 0; i < menuKey.length; i++) {
+        menuKey[i].setVisible(visible);
+        menuKey[i].setActive(active);
+      }
+    }
+
     void setVisible(boolean[] visible) {
       for (int i = 0; i < menuKey.length; i++) {
         menuKey[i].setVisible(visible[i]);
@@ -757,11 +770,16 @@ class Gui {
     }
 
     void display() {
-      for (int i = 0; i < menuKey.length; i++) {
-        menuKey[i].draw();
+      if (menuKey[0].visible) {
+        fill(255);
+        rect(menuKey[0].x, menuKey[0].y, menuKey[0].w, menuKey[0].h);
+
+        for (int i = 0; i < menuKey.length; i++) {
+          menuKey[i].draw();
+        }
+        noFill();
+        rect(menuKey[0].x, menuKey[0].y, menuKey[0].w, menuKey[0].h);
       }
-      noFill();
-      rect(menuKey[0].x, menuKey[0].y, menuKey[0].w, menuKey[0].h);
     }
 
     int mousePressed(int x, int y) {
@@ -789,7 +807,7 @@ class Gui {
   class ConfigZone {
     // initialize Keys
     MenuKey zoneKey;
-    MenuKey cancelKey;
+    MenuKey lastcKey;
     MenuKey[] menuKey;
     int numKeys = 2;
     float menuBase;
@@ -798,11 +816,11 @@ class Gui {
       color keyColor = black;
 
       zoneKey = new MenuKey(KEYCODE_NEW_CONFIG, "New", FONT_SIZE, keyColor);
-      cancelKey = new MenuKey(KEYCODE_CURRENT_CONFIG, "Current", FONT_SIZE, keyColor);
+      lastcKey = new MenuKey(KEYCODE_CURRENT_CONFIG, "Last", FONT_SIZE, keyColor);
       menuKey = new MenuKey[numKeys];
       menuKey[0] = zoneKey;
-      menuKey[1] = cancelKey;
-      float w = 1016;
+      menuKey[1] = lastcKey;
+      float w = 640;
       float h = 104;
       float x = 294;
       float y = NX2000Camera.screenHeight ;
@@ -810,7 +828,7 @@ class Gui {
 
 
       zoneKey.setPosition( x, y, w/2, h, 60);
-      cancelKey.setPosition( x+w/2+10, y, w/2, h, 60);
+      lastcKey.setPosition( x+w/2+40, y, w/2, h, 60);
       setActive();
     }
 
@@ -1028,4 +1046,8 @@ void drawIntroductionScreen() {
   text("Written by Andy Modla", 300, 60+150);
   textSize(FONT_SIZE);
   text("Select Camera Configuration File", 300, 400);
+
+  for (int i=0; i<4; i++) {
+    image(cameraImage, width- cameraImage.width, i*cameraImage.height);
+  }
 }

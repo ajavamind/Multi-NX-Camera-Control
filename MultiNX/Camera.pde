@@ -69,7 +69,7 @@ class NX2000Camera {
           afilename = afilename.replace("SRW", "JPG");
         }
         if (!afilenameUrl.equals(filenameUrl)) {
-          filename = afilename;
+          filename = afilename.substring(afilename.lastIndexOf('/')+1);
           filenameUrl = afilenameUrl;
           lastPhoto = loadImage(filenameUrl, "jpg");
           showPhoto = true;
