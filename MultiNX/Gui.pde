@@ -649,7 +649,7 @@ class Gui {
     void create() {
       color keyColor = black;
 
-      cameraInfoKey = new MenuKey(KEYCODE_I, "Info", FONT_SIZE, keyColor);
+      cameraInfoKey = new MenuKey(KEYCODE_I, "Screen", FONT_SIZE, keyColor);
       cameraShowKey = new MenuKey(KEYCODE_SHOW, "Show", FONT_SIZE, keyColor);
       cameraSaveKey = new MenuKey(KEYCODE_SAVE, "Save", FONT_SIZE, keyColor);
       cameraMenuKey = new MenuKey(KEYCODE_M, "MENU", FONT_SIZE, keyColor);

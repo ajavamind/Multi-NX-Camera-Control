@@ -350,7 +350,7 @@ class NX2000Camera {
   }
 
   void startFtp() {
-    client.write("tcpsvd -vE 0.0.0.0 21 ftpd /mnt/mmc\n");
+    client.write("tcpsvd -vE 0.0.0.0 21 ftpd /mnt/mmc &\n");
   }
 
   void stopFtp() {

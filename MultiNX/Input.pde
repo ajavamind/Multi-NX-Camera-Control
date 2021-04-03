@@ -44,6 +44,7 @@ int lastKey;
 int lastKeyCode;
 
 boolean focus = false;
+boolean ftp = false;
 
 void mousePressed() {
 
@@ -80,12 +81,6 @@ void mousePressed() {
   lastKey = 0;
 }
 
-
-void mousePressedm() {
-  // shoot multiple cameras photo
-  focusMultiPhoto(camera);
-}
-
 void keyReleased() {
 }
 
@@ -103,13 +98,17 @@ boolean keyUpdate() {
   }
   if (DEBUG) println("keyUpdate lastKey="+lastKey + " lastKeyCode="+lastKeyCode);
 
-  //if ( lastKeyCode == KEYCODE_ESCAPE ) {
-  //  getActivity().finish();
-  //}
-
-
-  if (lastKeyCode == KEYCODE_LOAD_SCREENSHOT || lastKey==' ') {
+  if (lastKeyCode == KEYCODE_LOAD_SCREENSHOT) {
     screenshot = loadImage("http://"+camera[mainCamera].ipAddr+"/screenshot.bmp");
+  } else if (lastKey==' ') {
+    if (!ftp) {
+      ftp = true;
+      for (int i=0; i<NumCameras; i++) {
+        if (camera[i].isConnected()) {
+          camera[i].startFtp();
+        }
+      }
+    }
   } else if (lastKey >= '1' && lastKey <= '9') {
     int ic = lastKey-'0';
     if (ic <= NumCameras) {
