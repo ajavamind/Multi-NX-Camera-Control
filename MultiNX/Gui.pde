@@ -1045,7 +1045,7 @@ void drawIntroductionScreen() {
 
   text("Written by Andy Modla", 300, 60+150);
   textSize(FONT_SIZE);
-  text("Select Camera Configuration File", 300, 400);
+  text("Select Configuration File for Cameras", 300, 400);
 
   for (int i=0; i<4; i++) {
     image(cameraImage, width- cameraImage.width, i*cameraImage.height);

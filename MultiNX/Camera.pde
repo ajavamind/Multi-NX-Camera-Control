@@ -72,6 +72,7 @@ class NX2000Camera {
           filename = afilename.substring(afilename.lastIndexOf('/')+1);
           filenameUrl = afilenameUrl;
           lastPhoto = loadImage(filenameUrl, "jpg");
+          if (DEBUG) println("loadImage "+filenameUrl);
           showPhoto = true;
         } else {
           

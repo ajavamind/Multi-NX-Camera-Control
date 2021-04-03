@@ -7,16 +7,21 @@
 
 /* autoexec.sh contents:
  
- #!/bin/sh
- 
- mkdir -p /dev/pts
- mount -t devpts none /dev/pts
- 
- telnetd -l /bin/bash -F > /mnt/mmc/telnetd.log 2>&1 &
- #tcpsvd -u root -vE 0.0.0.0 21 ftpd -w  /mnt/mmc & 
- 
- */
+#!/bin/sh
 
+mkdir -p /dev/pts
+mount -t devpts none /dev/pts
+httpd -h /mnt/mmc
+inetd /mnt/mmc/inetd.conf
+
+*/  
+/* inetd.conf contents:
+
+
+21  stream  tcp  nowait  root  ftpd  ftpd -w /mnt/mmc/
+23  stream  tcp  nowait  root  telnet  telnetd -i -l /bin/bash
+
+*/
 
 // ftpd is optional you can remove comment character # to start the FTP server
 // make sure autoexec.sh has UNIX line ending x0a only, no x0dx0a (windows)
@@ -25,8 +30,8 @@
 
 //boolean testGui = true;
 boolean testGui = false;
-final static boolean DEBUG = true;
-//final static boolean DEBUG = false;
+//final static boolean DEBUG = true;
+final static boolean DEBUG = false;
 
 int telnetPort = 23; // telnet port
 
@@ -127,7 +132,7 @@ void draw() {
     return;
   }  
   if (state == SAVE_STATE) {
-    if (DEBUG) println(state);
+    if (DEBUG) println(stateName[state]);
     savePhoto();
     message = null;
     state = RUN_STATE;
