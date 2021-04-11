@@ -73,6 +73,7 @@ void selectPhotoFolder() {
 }
 
 final String configKey = "ConfigFilename";
+final String photoNumberKey = "photoNumber";
 final String myAppPrefs = "MultiNX";
 
 void saveConfig(String config) {
@@ -92,6 +93,25 @@ String loadConfig() {
   if (DEBUG) println("loadConfig "+result);
   return result;
 }
+
+void savePhotoNumber(int number) {
+  if (DEBUG) println("savePhotoNumber "+number);
+  SharedPreferences sharedPreferences;
+  SharedPreferences.Editor editor;
+  sharedPreferences = getContext().getSharedPreferences(myAppPrefs, Context.MODE_PRIVATE);
+  editor = sharedPreferences.edit();
+  editor.putInt(photoNumberKey, number );
+  editor.commit();
+}
+
+int loadPhotoNumber() {
+  SharedPreferences sharedPreferences;
+  sharedPreferences = getContext().getSharedPreferences(myAppPrefs, Context.MODE_PRIVATE);
+  int result = sharedPreferences.getInt(photoNumberKey, 0);
+  if (DEBUG) println("loadPhotoNumber "+result);
+  return result;
+}
+
 
 //..........................................................................
 

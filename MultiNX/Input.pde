@@ -3,10 +3,11 @@
 int KEYCODE_0 = 48;
 int KEYCODE_1 = 49;
 int KEYCODE_DEL = 127;
+int KEYCODE_A = 65;
 int KEYCODE_B = 66;
+int KEYCODE_C = 67;
+int KEYCODE_D = 68;
 int KEYCODE_E = 69;
-int KEYCODE_S = 83;
-int KEYCODE_T = 84;
 int KEYCODE_F = 70;
 int KEYCODE_G = 71;
 int KEYCODE_H = 72;
@@ -17,16 +18,23 @@ int KEYCODE_L = 76;
 int KEYCODE_M = 77;
 int KEYCODE_N = 78;
 int KEYCODE_O = 79;
+int KEYCODE_P = 80;
+int KEYCODE_Q = 81;
+int KEYCODE_R = 82;
+int KEYCODE_S = 83;
+int KEYCODE_T = 84;
+int KEYCODE_U = 85;
+int KEYCODE_V = 86;
+int KEYCODE_W = 87;
+int KEYCODE_X = 88;
+int KEYCODE_Y = 89;
+int KEYCODE_Z = 90;
 int KEYCODE_MEDIA_NEXT;
 int KEYCODE_MEDIA_PLAY_PAUSE = 80;
 int KEYCODE_MEDIA_PREVIOUS;
 int KEYCODE_PAGE_DOWN;
 int KEYCODE_PAGE_UP;
 int KEYCODE_MEDIA_STOP;
-int KEYCODE_R = 82;
-int KEYCODE_P = 80;
-int KEYCODE_V = 86;
-int KEYCODE_W = 87;
 int KEYCODE_ESCAPE = 27;
 int KEYCODE_MOVE_HOME       = 122;
 int KEYCODE_MOVE_END       = 123;
@@ -67,9 +75,16 @@ void mousePressed() {
             for (int i=0; i<NumCameras; i++) {
               if (camera[i].isConnected()) {
                 if (DEBUG) println("mouse x="+(mouseX) + " y="+mouseY);
-                if (mouseX < 2*lcdScreen.width && mouseY<2*lcdScreen.height) {
-                  camera[i].touchFocus((2*lcdScreen.height-mouseY)/2, mouseX/2);
-                  //println("key touch click x="+(2*lcdScreen.height-mouseY)/2 + " y="+mouseX/2);
+                if (DEBUG) println("screen width="+NX2000Camera.screenWidth + " height="+NX2000Camera.screenHeight);
+                if (mouseX < 2*NX2000Camera.screenWidth && mouseY<2*NX2000Camera.screenHeight) {
+                  // multiple cameras have focus shift to the right
+                  //camera[i].touchFocus((2*NX2000Camera.screenHeight-mouseY)/2, int(mouseX+i*camera[i].focusOffset)/2);
+                  camera[i].touchFocus((NX2000Camera.screenHeight-(mouseY)/2), int(mouseX+i*camera[i].focusOffset)/2);
+                  if (mouseX > 2*Gui.xoffset && mouseX < 2*NX2000Camera.screenWidth && 
+                    mouseY>0 && mouseY < 2*NX2000Camera.screenHeight-120) {
+                    gui.xFocusArea = mouseX;
+                    gui.yFocusArea = mouseY;
+                  }
                 }
               }
             }
@@ -126,7 +141,7 @@ boolean keyUpdate() {
     }
     delay(40); // delay draw();
     state = EXIT_STATE;
-  } else if (lastKeyCode == KEYCODE_F || lastKey == 'f' || lastKey == 'F') { // Focus
+  } else if (lastKeyCode == KEYCODE_F) { // Focus
     // focus
     if (!focus) {
       if (DEBUG) println("FOCUS");
@@ -146,7 +161,7 @@ boolean keyUpdate() {
       }
       focus = false;
     }
-  } else if (lastKeyCode == KEYCODE_G || lastKey == 'g' || lastKey == 'G') { // Focus release
+  } else if (lastKeyCode == KEYCODE_G) { // Focus release
     // focus
     if (DEBUG) println("FOCUS RELEASE");
     for (int i=0; i<NumCameras; i++) {
@@ -154,7 +169,7 @@ boolean keyUpdate() {
         camera[i].focusRelease();
       }
     }
-  } else if (lastKeyCode == KEYCODE_S || lastKey == 's' || lastKey == 'S') { // Shutter
+  } else if (lastKeyCode == KEYCODE_S) { // Shutter
     // shutter
     if (DEBUG) println("SHUTTER");
     for (int i=0; i<NumCameras; i++) {
@@ -167,7 +182,7 @@ boolean keyUpdate() {
       }
     }
     focus = false;
-  } else if (lastKey == 't' || lastKey == 'T') { // Take picture
+  } else if (lastKeyCode == KEYCODE_T) { // Take picture
     // take picture
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
@@ -175,48 +190,48 @@ boolean keyUpdate() {
       }
     }
     // back
-  } else if (lastKey == 'b' || lastKey == 'B') {
+  } else if (lastKeyCode == KEYCODE_T) {
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].touchBack();
       }
     }
     // video start and pause if already recording
-  } else if (lastKeyCode == KEYCODE_R || lastKey == 'r' || lastKey == 'R') {
+  } else if (lastKeyCode == KEYCODE_R ) {
     if (DEBUG) println("RECORD");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].record();
       }
     }
-  } else if (lastKey == 'd' || lastKey == 'D') {
+  } else if (lastKeyCode == KEYCODE_D) {
     if (DEBUG) println("State="+stateName[state]);
-  } else if (lastKeyCode == KEYCODE_H || lastKey == 'h' || lastKey == 'H') {
+  } else if (lastKeyCode == KEYCODE_H) {
     if (DEBUG) println("HOME");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].home();
       }
     }
-  } else if (lastKeyCode == KEYCODE_M || lastKey == 'm' || lastKey == 'M') {
+  } else if (lastKeyCode == KEYCODE_M) {
     if (DEBUG) println("MENU");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].menu();
       }
     }
-  } else if (lastKeyCode == KEYCODE_O || lastKey == 'o' || lastKey == 'O') {
+  } else if (lastKeyCode == KEYCODE_O ) {
     if (DEBUG) println("Application Fn Shutter values");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].getCameraFnShutter();
       }
     }
-  } else if (lastKeyCode == KEYCODE_W || lastKey == 'w' || lastKey == 'W') {
+  } else if (lastKeyCode == KEYCODE_W) {
     if (DEBUG) println("Camera MODE");
     modeSelection =! modeSelection;
     selectedCameraMode = cameraMode;
-  } else if (lastKeyCode == KEYCODE_I || lastKey == 'i' || lastKey == 'I') {
+  } else if (lastKeyCode == KEYCODE_I) {
     if (DEBUG) println("Camera INFO");
     camera[mainCamera].screenshot();
     for (int i=0; i<NumCameras; i++) {
@@ -225,49 +240,49 @@ boolean keyUpdate() {
         camera[i].getShutterCount();
       }
     }
-  } else if (lastKeyCode == KEYCODE_K || lastKey == 'k' || lastKey == 'K') {
+  } else if (lastKeyCode == KEYCODE_K) {
     if (DEBUG) println("Camera OK");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].cameraOk();
       }
     }
-  } else if (lastKeyCode == KEYCODE_B || lastKey == 'b' || lastKey == 'B') {
+  } else if (lastKeyCode == KEYCODE_B) {
     if (DEBUG) println("Camera Screenshot");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].screenshot(screenshotFilename);
       }
     }
-  } else if (lastKeyCode == KEYCODE_N || lastKey == 'n' || lastKey == 'N') {
+  } else if (lastKeyCode == KEYCODE_N) {
     if (DEBUG) println("FN");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].function();
       }
     }
-  } else if (lastKeyCode == KEYCODE_P || lastKey == 'p' || lastKey == 'P') {
+  } else if (lastKeyCode == KEYCODE_P) {
     if (DEBUG) println("PLAYBACK");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].playback();
       }
     }
-  } else if (lastKeyCode == KEYCODE_E || lastKey == 'e' || lastKey == 'E') {
+  } else if (lastKeyCode == KEYCODE_E) {
     if (DEBUG) println("EV");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].ev();
       }
     }
-  } else if (lastKeyCode == KEYCODE_J || lastKey == 'j' || lastKey == 'J') {
+  } else if (lastKeyCode == KEYCODE_J) {
     if (DEBUG) println("JOG CW");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].jogcw();
       }
     }
-  } else if (lastKeyCode == KEYCODE_L || lastKey == 'l' || lastKey == 'L') {
+  } else if (lastKeyCode == KEYCODE_L) {
     if (DEBUG) println("JOG CCW");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
@@ -368,14 +383,14 @@ boolean keyUpdate() {
   } else if (lastKeyCode == KEYCODE_CURRENT_CONFIG) {
     gui.configZone.remove();
     state = PRE_CONNECT_STATE;
-  } else if (lastKey == 'v' || lastKey == 'V') {
+  } else if (lastKeyCode == KEYCODE_V) {
     camera[mainCamera].getCameraEv();
-  } else if (lastKey == 'y' || lastKey == 'Y') {
+  } else if (lastKeyCode == KEYCODE_Y) {
     camera[mainCamera].getShutterCount();
-  } else if (lastKey == 'z' || lastKey == 'Z') {
+  } else if (lastKeyCode == KEYCODE_Z) {
     camera[mainCamera].getPrefMem(APPID, APPPREF_ISO_PAS, "l");
     ///prefman get 1 8 v=96
-  } else if (lastKey == 'x' || lastKey == 'X') {
+  } else if (lastKeyCode == KEYCODE_X) {
     camera[mainCamera].getPrefMemBlock(APPID, APPPREF_FNO_INDEX, 96);
     ///prefman get 1 8 v=96
   }

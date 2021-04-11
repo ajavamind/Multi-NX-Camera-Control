@@ -86,6 +86,10 @@ class Gui {
   FnZone fnZone;
   FnTable fnTable;
   ConfigZone configZone;
+  int xFocusArea;
+  int yFocusArea;
+  int focusSize=100;
+  static final int xoffset = 80;
 
   // information zone touch coordinates
   // screen boundaries for click zone use
@@ -140,6 +144,8 @@ class Gui {
     this.base = base;
     WIDTH = base.width;
     HEIGHT = base.height;
+    xFocusArea= 2*(NX2000Camera.screenWidth+xoffset)/2;
+    yFocusArea = 2*NX2000Camera.screenHeight/2;
     iX = WIDTH / 8;
     iY = HEIGHT / 10;
     mX = WIDTH / 2;
@@ -222,6 +228,34 @@ class Gui {
   //        base.line(base.width / 2, 0, base.width / 2, base.height);
   //        base.line(0, base.height / 2, base.width, base.height / 2);
   //    }
+
+  void displayGrid(int numDivisions) {
+    stroke(gray);
+    strokeWeight(4);
+    rectMode(CORNER);
+    float w = 2*(NX2000Camera.screenWidth-xoffset);
+    float h = 2*NX2000Camera.screenHeight;
+    fill(graytransparent);
+    for (int i = 1; i < numDivisions+1; i++) {
+      line(2*xoffset, i*(h/numDivisions), 2*xoffset+w, i*(h/numDivisions));
+    }
+    for (int i = 1; i < numDivisions+1; i++) {
+      line(2*xoffset+i*(w/numDivisions), 0, 2*xoffset+i*(w/numDivisions), h);
+    }
+  }
+
+  void displayFocusArea() {
+    if (showPhoto) {
+      return;
+    }
+    stroke(white);
+    strokeWeight(4);
+    rectMode(CORNER);
+    float w = 2*(NX2000Camera.screenWidth-xoffset);
+    float h = 2*NX2000Camera.screenHeight;
+    noFill();
+    rect(xFocusArea-focusSize/2, yFocusArea-focusSize/2, focusSize, focusSize);
+  }
 
   void displayMessage(String msg, int counter) {
     frameCounter = counter;
@@ -575,9 +609,9 @@ class Gui {
       menuKey[6] = homeKey;
       menuKey[7] = playBackKey;
       float inset = 320 / ((float) numKeys) / 2f;
-      menux = WIDTH - 320 +1.5*inset ;
+      menux = WIDTH - 320 +(2*inset);
       menuy = 0;
-      float w = iX; //WIDTH / ((float) numKeys);
+      float w = iX;
       float h = (HEIGHT-120)/ ((float) numKeys);
       menuBase = menuy;
 
@@ -695,6 +729,7 @@ class Gui {
 
     void display() {
       fill(128);
+      noStroke();
       rect(0, menuBase, WIDTH, HEIGHT-menuBase);
 
       for (int i = 0; i < menuKey.length; i++) {

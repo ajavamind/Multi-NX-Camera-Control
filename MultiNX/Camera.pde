@@ -29,7 +29,9 @@ class NX2000Camera {
   String filenameUrl = "";
   PImage lastPhoto;
   String inString;
-
+  final static float offsetPercent = 3.0; //6.5;
+  float focusOffset = screenWidth*(offsetPercent/100);
+  
   NX2000Camera(String ipAddr, Client client) {
     this.ipAddr = ipAddr;
     this.client = client;
@@ -311,6 +313,7 @@ class NX2000Camera {
   }
 
   void touchFocus(int x, int y) {
+    if (DEBUG) println("touchFocus x="+x + " y="+y);
     client.write("st key touch click "+x +" "+ y+"\n");
   }
 
@@ -375,7 +378,7 @@ class NX2000Camera {
   }
 
   void screenshot(String filename) {
-    client.write("screenshot bmp /mnt/mmc/"+filename+name+convertCounter(screenshotCounter)+"\n");
+    client.write("screenshot bmp /mnt/mmc/"+filename+convertCounter(screenshotCounter)+"_"+name+".bmp\n");
   }
 
   boolean screenshot() {

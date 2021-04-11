@@ -114,6 +114,8 @@ void setup() {
   cameraImage = loadImage("images/nx2000_topview_270x270.jpg");
   if (DEBUG) println("width="+width + " height="+height);
   //println("screen.width="+screen.width + " screen.height="+screen.height);
+  
+  loadPhotoNumber();
 } 
 
 void draw() { 
@@ -234,6 +236,7 @@ void draw() {
     }
     exit();
   }
+  gui.displayGrid(4);
 
   for (int i=0; i<NumCameras; i++) {
     String inString = "";
@@ -304,12 +307,12 @@ void draw() {
       text (camera[i].name+" "+ip[i]+ " Not Connected.", 200, 110+i*50);
     }
   }
+  gui.displayFocusArea();
   gui.displayMenuBar();
   gui.modeTable.display();
   gui.fnTable.display();
   gui.displayMessage(message);
-
-
+  
   // check for first connected camera
   for (int i=0; i<NumCameras; i++) {
     if (camera[i].isConnected()) {
