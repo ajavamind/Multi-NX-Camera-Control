@@ -4,7 +4,7 @@
  */
 
 // Android  Mode
-final boolean ANDROID_MODE = true;
+final static boolean ANDROID_MODE = true;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.content.Context;
@@ -116,7 +116,7 @@ int loadPhotoNumber() {
 //..........................................................................
 
 //// Java mode
-//final boolean ANDROID_MODE = false;
+//final static boolean ANDROID_MODE = false;
 //void openFileSystem() {
 //}
 
@@ -142,4 +142,14 @@ int loadPhotoNumber() {
 //String loadConfig()
 //{
 //  return null;
+//}
+
+//void savePhotoNumber(int number) {
+//  if (DEBUG) println("savePhotoNumber "+number);
+//}
+
+//int loadPhotoNumber() {
+//  int result = 0;
+//  if (DEBUG) println("loadPhotoNumber "+result);
+//  return result;
 //}
