@@ -85,9 +85,9 @@ This library only supports internal memory file access on the device.
 
 [BusyBox HTTP daemon](https://oldwiki.archive.openwrt.org/doc/howto/http.httpd)
 
-[Github NX-remote-controller-mod](https://mewlips.github.io/nx-remote-controller-mod/)
+[Github Wiki NX-remote-controller-mod](https://mewlips.github.io/nx-remote-controller-mod/)
 
-[Github NX-remote-controller-mod](https://github.com/mewlips/nx-remote-controller-mod)
+[Github Code NX-remote-controller-mod](https://github.com/mewlips/nx-remote-controller-mod)
 
 [Bash shell Busybox HTTP](https://www.geekyhacker.com/2018/06/03/bash-shell-cgi-http-server-using-busybox/)
 
