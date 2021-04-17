@@ -1,6 +1,6 @@
 # MultiNX Camera Control
 
- Remotely synchronize and control multiple Samsung NX2000 cameras on a local WiFi network
+ __Remotely synchronize and control multiple Samsung NX2000 cameras on a local WiFi network__
 
  MultiNX is a cross platform application for synchronizing and controlling Samsung NX2000 cameras. It uses Telnet and HTTP protocols to communicate with the connected NX cameras. MultiNX is available for Android and Windows platforms.  MultiNX supports up to four multiple NX2000 camera connections at once. The WiFi connection in each NX camera is made with the E-Mail WiFi setup service on the camera, however it does not use the email service. It has not been tested with more than four camera connections, but should work with many more multiple cameras depending on the resources of the computer running the application.
 
@@ -51,10 +51,13 @@
 6. Now create a text file in a folder for the application to find. The text file contains one line for each camera as follows: IP Address, space, camera name, space, camera type NX2000, space, and camera orientation in degrees 0 (unimplemented feature). The camera name appends to photo file name as a suffix _name.
 	Here is an example file named: twincameras_tplink_101_102.txt
 	
-	> 192.168.0.101 L NX2000 0
-	> 
-	> 192.168.0.102 R NX2000 0
-
+	```
+	
+	192.168.0.101 L NX2000 0 
+	192.168.0.102 R NX2000 0 
+	
+	```
+	
 7. Start the app and select a new configuration. Find the folder with the configuration text file and select it.
 	The app will attempt to connect to each camera in the configuration list with telnet.
 
