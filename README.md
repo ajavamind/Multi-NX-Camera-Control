@@ -24,34 +24,32 @@
 
 ## How to setup and configure the cameras and application
 
-	1. On each camera perform the following HOME setup:
+1. On each camera perform the following HOME setup:
 	
-	Expert -> 	Manual 
+	Expert -> Manual 
 	
-	2. On each camera perform the following MENU setup:
+2. On each camera perform the following MENU setup:
 	
 	AutoShare off
 	Photo Size 2M for quick downloads, otherwise 20M when not saving RAW
 	Quality RAW + Normal (note RAW saves at highest photo size 20M)
-	Manual mode
-	 
 	Auto focus - Single Auto Focus
 	Touch focus
 	Map Direct Link button to E-Mail: Menu - Key Mapping - DIRECT LINK -> Email
 	
-	3. Use Direct Link button to connect to a WiFi router for E-Mail. You will enter a password to access your router. You don't have to be connected to the Internet. Return to camera shoot live view mode. Each time you power on the camera, you will press the Direct link button to automatically sign into your WiFi router. Press OK prompt, and touch back button on the screen to complete the connection. Do not press the cancel button.
+3. Use Direct Link button to connect to a WiFi router for E-Mail. You will enter a password to access your router. You don't have to be connected to the Internet. Return to camera shoot live view mode. Each time you power on the camera, you will press the Direct link button to automatically sign into your WiFi router. Press OK prompt, and touch back button on the screen to complete the connection. Do not press the cancel button.
 	
-	4. From MENU - Settings - Device Information, get the MAC identification address and label each camera with its MAC address.
+4. From MENU - Settings - Device Information, get the MAC identification address and label each camera with its MAC address.
 	
-	5. Use an Android app such as "Network Scanner" on your local WiFi network to show Samsung cameras and write down the IP address associated with each MAC address you found in step 3.
+5. Use an Android app such as "Network Scanner" on your local WiFi network to show Samsung cameras and write down the IP address associated with each MAC address you found in step 3.
 	
-	6. Now create a text file in a folder for the application to find. The text file contains a line for each camera as follows: IP Address, space, camera name, space, camera type NX2000, space, and camera orientation in degrees 0 (unimplemented feature). The camera name appends to photo file name as a suffix _name.
+6. Now create a text file in a folder for the application to find. The text file contains a line for each camera as follows: IP Address, space, camera name, space, camera type NX2000, space, and camera orientation in degrees 0 (unimplemented feature). The camera name appends to photo file name as a suffix _name.
 	Here is an example file named: twincameras_tplink_101_102.txt
 	
 	192.168.0.101 L NX2000 0
     192.168.0.102 R NX2000 0
 
-	7. Start the app and select a new configuration. Find the folder with the configuration text file and select it.
+7. Start the app and select a new configuration. Find the folder with the configuration text file and select it.
 	The app will attempt to connect to each camera in the configuration list with telnet.
 
 ## Building MultiNX for Android
