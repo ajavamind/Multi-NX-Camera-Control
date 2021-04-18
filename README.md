@@ -64,7 +64,8 @@
 ## Building MultiNX for Android
 
 When you build MultiNX for Android you will need to add the SelectFile library to the Processing SDK.
-[SelectFile](https://andrusiv.com/android-select-file/)
+
+[SelectFile Library Documentation](https://andrusiv.com/android-select-file/)
 
 This library only supports internal memory file access on the device.
 
