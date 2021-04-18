@@ -1,20 +1,22 @@
 # MultiNX Camera Control
 
  __Remotely synchronize and control multiple Samsung NX2000 cameras on a local WiFi network__
-
- MultiNX is a cross platform application for synchronizing and controlling Samsung NX2000 cameras. It uses Telnet and HTTP protocols to communicate with the connected NX cameras. MultiNX is available for Android and Windows platforms.  MultiNX supports up to four multiple NX2000 camera connections at once. The WiFi connection in each NX camera is made with the E-Mail WiFi setup service on the camera, however it does not use the email service. It has not been tested with more than four camera connections, but should work with many more multiple cameras depending on the resources of the computer running the application.
-
- The MultiNX application is written in Processing and Java, and runs on a PC or Android device (phone, tablet, Chromebook). It may run Processing SDK on IOS, but I have not tested. The NX2000 camera runs an open-source Linux based (Tizen) operating system and Samsung provided a way to access it on power-up. 
  
- The application connects to each Samsung NX2000 camera over WiFi on a local network. The WiFi network does not have to be connected to the Internet and normally should not be connected to the Internet. I establish a local network with a battery powered mobile router like the TP-Link_290A. I also use my Telecom service provider modem and Android mobile phone hot-spot connection feature. 
+ ![Android phone screenshot Start screen](screenshots/Android/Screenshot0003.jpg]
+
+ MultiNX is a cross platform application for synchronizing and controlling one or more Samsung NX2000 cameras. It uses Telnet and HTTP protocols to communicate with the connected NX cameras. MultiNX is available for Android and Windows platforms.  MultiNX supports up to four multiple NX2000 camera connections at once. The WiFi connection in each NX camera is made with the E-Mail WiFi setup service on the camera, however it does not use the email service. It has not been tested with more than four camera connections, but should work with many more multiple cameras depending on the resources of the computer running the application.
+
+ The MultiNX application is written in [Processing](https://processing.org/) and Java, and runs on a PC or Android device (phone, tablet, Chromebook). The application may run on IOS Processing SDK, but I have not tested. The NX2000 camera uses an open-source Linux based (Tizen) operating system and Samsung provided a way to access it on power-up. 
  
- The application only uses telnet and HTTP protocols to communicate with the cameras. The application does not add shell code to run inside the camera and does not modify the camera firmware. It only uses commands provided by telnet. A start up "autoexec.sh" shell script in the root folder of the SD memory card starts the telnet and HTTP services in the camera. The shell script also starts an optional FTP server for photo transfer after a shoot is finished. The application is not an FTP client. Use Filezilla on a PC to transfer photos from all the connected cameras. The FTP server on each camera can be commented out to improve performance.
+ The application connects to each Samsung NX2000 camera over WiFi on a local network. The WiFi network does not have to be connected to the Internet and normally should not be connected to the Internet. I establish a local network with a battery powered mobile router like the TP-Link_290A. I have also used my Telecom service provider modem and Android mobile phone hot-spot connection feature. 
+ 
+ The application only invokes telnet and HTTP protocols to communicate with the cameras. The application does not add shell code to run inside the camera and does not modify the camera firmware. The application sends commands to the camera provided by telnet. A start up "autoexec.sh" shell script in the root folder of the SD memory card starts the telnet and HTTP services in the camera. The shell script also starts an optional FTP server for photo transfer after a shoot is finished. The application is not an FTP client. Use Filezilla on a PC to transfer photos from all the connected cameras. The FTP server on each camera can be commented out to improve performance.
  
  Using telnet commands incorrectly can lock up the camera, so there is some risk using this application. A power-on restores the camera functions after removing and reinserting the battery. The author is not responsible for uses of this software and the effect on your camera. USE AT YOUR OWN RISK.
  
  This MultiNX application code is a work in progress and is an in-complete rapid prototype. There are many improvements possible.
  
- The application synchronizes each camera's exposure settings, does simultaneous focus, and synchronized shutter release at nearly the same time. It does not provide Live-View with the cameras. The application features are limited by what telnet commands the camera firmware allows to control the camera and read its status.
+ The application synchronizes each camera's exposure settings, does simultaneous focus, and synchronized shutter release at nearly the same time. It does not provide Live-View with the cameras. The application features are limited by what can be done with telnet commands to control the camera and read its status.
 
  The NX2000 camera does not show its local network IP address. Only the camera's MAC address is available in the Menu - Settings - Device Information. The MAC address helps to find the camera's IP address with a "Network Scanner" Google play store app. The IP address is needed to configure the software for the cameras to be connected. A text file informs the application what cameras to connect, camera name, and other (unimplemented) options.
 
@@ -49,16 +51,24 @@
 5. Use an Android app such as "Network Scanner" on your local WiFi network to show Samsung cameras and write down the IP address associated with each MAC address you found in step 3.
 	
 6. Now create a text file in a folder for the application to find. The text file contains one line for each camera as follows: IP Address, space, camera name, space, camera type NX2000, space, and camera orientation in degrees 0 (unimplemented feature). The camera name appends to photo file name as a suffix _name.
-	Here is an example file named: twincameras_tplink_101_102.txt
+
+	Here is an twin camera for 3D example. File named: twincameras_tplink_101_102.txt
 	
 	```
-	
 	192.168.0.101 L NX2000 0 
 	192.168.0.102 R NX2000 0 
-	
 	```
 	
-7. Start the app and select a new configuration. Find the folder with the configuration text file and select it.
+	Here is an example using four cameras connected with a phone WiFi hotstop. File named: cameraphotonet_LL_LM_RM_RR.txt
+	
+	```
+	192.168.216.96 LL NX2000 0
+	192.168.216.18 LM NX2000 0
+	192.168.216.56 RM NX2000 0
+	192.168.216.54 RR NX2000 0
+	```
+	
+7. Start the application and select a new configuration. Find the folder with the configuration text file and select it.
 	The app will attempt to connect to each camera in the configuration list with telnet.
 
 ## Building MultiNX for Android
@@ -69,10 +79,45 @@ When you build MultiNX for Android you will need to add the SelectFile library t
 
 This library only supports internal memory file access on the device.
 
+Comment out Windows code and uncomment Android code.
+
 ## Using MultiNX app
 
-1. x
-2. 
+ ![Android phone screenshot](screenshots/Android/Screenshot0002.jpg]
+ ![Android phone screenshot](screenshots/Android/Screenshot0001.jpg]
+ ![Android phone screenshot](screenshots/Android/Screenshot0004.jpg]
+ ![Android phone screenshot](screenshots/Android/Screenshot0005.jpg]
+ ![Android phone screenshot](screenshots/Android/Screenshot0006.jpg]
+ ![Android phone screenshot](screenshots/Android/Screenshot0007.jpg]
+ ![Android phone screenshot](screenshots/Android/Screenshot0008.jpg]
+ ![Android phone screenshot](screenshots/Android/Screenshot0009.jpg]
+ ![Android phone screenshot](screenshots/Android/Screenshot0010.jpg]
+ ![Android phone screenshot](screenshots/Android/Screenshot0011.jpg]
+
+
+The right hand column of soft keys correspond to physical button keys on the NX2000.
+
+1. Focus - Press and hold focus in the connected cameras. Updates the display with camera shutter, FN, and ISO for main camera.
+2. Shutter - Press the shutter in the connected cameras and release focus.
+3. Left - rotate wheel counter clockwise.
+4. Right - rotate wheel clockwise.
+5. EV - press the EV button
+6. Record - start and stop video recordings.
+7. Home - display the Home menu
+8. PB -  Playback the photos or video
+
+The bottom row of soft keys provide features for accessing menu keys, and viewing screenshots and photos. It also includes functions for buttons the NX2000 does not have but whose function can be invoked.
+
+1. Screen - displays a screenshot of the main camera (first camera in the configuration list file)
+2. Show - display the last photo taken on the connected cameras (up to four images)
+3. Save - save the current displayed photos in a folder. The first invocation selects the folder. Storage is limited to internal storage in Android. The application only saves JPG photo types. To save RAW images, use a FTP client, like FileZilla.
+4. Mode - change the camera mode. The application assumes manual expert mode for its operation, but other modes are possible.
+5. MENU - display the MENU options.
+6. Fn - display the Function options.
+7. OK - invoke the soft OK button.
+8. EXIT - terminate the application.
+
+The middle bottom Manual Settings soft key toggles changes to shutter speed, F-stop, and ISO. All connected cameras are given the same settings.
 
 ## References
 
