@@ -2,7 +2,7 @@
 
  __Remotely synchronize and control multiple Samsung NX2000 cameras on a local WiFi network__
  
- ![Android phone screenshot Start screen](screenshots/Android/Screenshot0003.jpg]
+ ![Android phone screenshot Start screen](screenshots/Android/Screenshot0003.jpg)
 
  MultiNX is a cross platform application for synchronizing and controlling one or more Samsung NX2000 cameras. It uses Telnet and HTTP protocols to communicate with the connected NX cameras. MultiNX is available for Android and Windows platforms.  MultiNX supports up to four multiple NX2000 camera connections at once. The WiFi connection in each NX camera is made with the E-Mail WiFi setup service on the camera, however it does not use the email service. It has not been tested with more than four camera connections, but should work with many more multiple cameras depending on the resources of the computer running the application.
 
@@ -26,15 +26,17 @@
 
 ## How to setup and configure the cameras and application
 
-1. On each camera perform the following HOME setup:
+1. For each camera copy the autoexec.sh and inetd.conf files from the sdcard folder in this repository to the base folder of the camera memory card. Important - do this after Formatting your memory card.
+
+2. On each camera perform the following HOME setup:
 	
 	> Expert - Manual 
 	
-2. On each camera perform the following MENU setup:
+3. On each camera perform the following MENU setup:
 	
 	> AutoShare off
 	> 
-	> Photo Size 2M for quick downloads, otherwise 20M when not saving RAW
+	> Photo Size 2M recommended for quick downloads, otherwise 20M when not saving RAW
 	>
 	> RAW + Normal (note RAW saves at highest photo size 20M)
 	> 
@@ -44,13 +46,13 @@
 	> 
 	> Map Direct Link button to E-Mail: Menu - Key Mapping - DIRECT LINK -> Email
 	
-3. Use Direct Link button to connect to a WiFi router for E-Mail. You will enter a password to access your router. You don't have to be connected to the Internet. Return to camera shoot live view mode. Each time you power on the camera, you will press the Direct link button to automatically sign into your WiFi router. Press OK prompt, and touch back button on the screen to complete the connection. Do not press the cancel button.
+4. Use Direct Link button to connect to a WiFi router for E-Mail. You will enter a password to access your router. You don't have to be connected to the Internet. Return to camera shoot live view mode. Each time you power on the camera, you will press the Direct link button to automatically sign into your WiFi router. Press OK prompt, and touch back button on the screen to complete the connection. Do not press the cancel button.
 	
-4. From MENU - Settings - Device Information, get the MAC identification address and label each camera with its MAC address.
+5. From MENU - Settings - Device Information, get the MAC identification address and label each camera with its MAC address.
 	
-5. Use an Android app such as "Network Scanner" on your local WiFi network to show Samsung cameras and write down the IP address associated with each MAC address you found in step 3.
+56. Use an Android app such as "Network Scanner" on your local WiFi network to show Samsung cameras and write down the IP address associated with each MAC address you found in step 3.
 	
-6. Now create a text file in a folder for the application to find. The text file contains one line for each camera as follows: IP Address, space, camera name, space, camera type NX2000, space, and camera orientation in degrees 0 (unimplemented feature). The camera name appends to photo file name as a suffix _name.
+7. Now create a text file in a folder for the application to find. The text file contains one line for each camera as follows: IP Address, space, camera name, space, camera type NX2000, space, and camera orientation in degrees 0 (unimplemented feature). The camera name appends to photo file name as a suffix _name.
 
 	Here is an twin camera for 3D example. File named: twincameras_tplink_101_102.txt
 	
@@ -68,7 +70,7 @@
 	192.168.216.54 RR NX2000 0
 	```
 	
-7. Start the application and select a new configuration. Find the folder with the configuration text file and select it.
+8. Start the application and select a new configuration. Find the folder with the configuration text file and select it.
 	The app will attempt to connect to each camera in the configuration list with telnet.
 
 ## Building MultiNX for Android
@@ -83,16 +85,16 @@ Comment out Windows code and uncomment Android code.
 
 ## Using MultiNX app
 
- ![Android phone screenshot](screenshots/Android/Screenshot0002.jpg]
- ![Android phone screenshot](screenshots/Android/Screenshot0001.jpg]
- ![Android phone screenshot](screenshots/Android/Screenshot0004.jpg]
- ![Android phone screenshot](screenshots/Android/Screenshot0005.jpg]
- ![Android phone screenshot](screenshots/Android/Screenshot0006.jpg]
- ![Android phone screenshot](screenshots/Android/Screenshot0007.jpg]
- ![Android phone screenshot](screenshots/Android/Screenshot0008.jpg]
- ![Android phone screenshot](screenshots/Android/Screenshot0009.jpg]
- ![Android phone screenshot](screenshots/Android/Screenshot0010.jpg]
- ![Android phone screenshot](screenshots/Android/Screenshot0011.jpg]
+ ![Android phone screenshot](screenshots/Android/Screenshot0002.jpg)
+ ![Android phone screenshot](screenshots/Android/Screenshot0001.jpg)
+ ![Android phone screenshot](screenshots/Android/Screenshot0004.jpg)
+ ![Android phone screenshot](screenshots/Android/Screenshot0005.jpg)
+ ![Android phone screenshot](screenshots/Android/Screenshot0006.jpg)
+ ![Android phone screenshot](screenshots/Android/Screenshot0007.jpg)
+ ![Android phone screenshot](screenshots/Android/Screenshot0008.jpg)
+ ![Android phone screenshot](screenshots/Android/Screenshot0009.jpg)
+ ![Android phone screenshot](screenshots/Android/Screenshot0010.jpg)
+ ![Android phone screenshot](screenshots/Android/Screenshot0011.jpg)
 
 
 The right hand column of soft keys correspond to physical button keys on the NX2000.
