@@ -36,7 +36,8 @@ void saveCameraPhotos() {
           } else {
             cname = camera[i].name;
           }
-          String out = saveFolderPath+File.separator+"MNX"+convertCounter(photoNumber)+"_"+cname+".JPG";
+          String out = saveFolderPath+File.separator+name+convertCounter(photoNumber)+"_"+cname+".JPG";
+          //String out = saveFolderPath+File.separator+"MNX"+convertCounter(photoNumber)+"_"+cname+".JPG";
           if (DEBUG) println("save="+out);
           camera[i].lastPhoto.save(out);
         }

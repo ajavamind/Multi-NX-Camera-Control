@@ -37,7 +37,7 @@ int telnetPort = 23; // telnet port
 
 // List of camera IP addresses to access
 String[] ip = null;
-String[] cameraName = {"LL", "LM", "RM", "RR"};
+String[] cameraName;
 int NumCameras = 0;
 int mainCamera = 0;
 String saveFolderPath;
@@ -200,15 +200,20 @@ void draw() {
     if (DEBUG) println("number of cameras "+config.length);
     NumCameras = config.length;
     ip = new String[NumCameras];
+    cameraName = new String[NumCameras];
     for (int i=0; i<config.length; i++) {
       if (DEBUG) println(config[i]);
       int iv = config[i].indexOf(" ");
       if (iv > 0) {
         ip[i] = config[i].substring(0, iv);
+      } else {
+        ip[i] = "0.0.0.0";
       }
       int in = config[i].indexOf(" ", iv+1);
       if (in > 0) {
         cameraName[i] = config[i].substring(iv+1, in);
+      } else {
+        cameraName[i] = "camera"+i;
       }
     }
 

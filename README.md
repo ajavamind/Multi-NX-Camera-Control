@@ -50,18 +50,18 @@
 	
 5. From MENU - Settings - Device Information, get the MAC identification address and label each camera with its MAC address.
 	
-56. Use an Android app such as "Network Scanner" on your local WiFi network to show Samsung cameras and write down the IP address associated with each MAC address you found in step 3.
+6. Use an Android app such as "Network Scanner" on your local WiFi network to scan for Samsung cameras and write down the IP address associated with each MAC address you found in step 5.
 	
 7. Now create a text file in a folder for the application to find. The text file contains one line for each camera as follows: IP Address, space, camera name, space, camera type NX2000, space, and camera orientation in degrees 0 (unimplemented feature). The camera name appends to photo file name as a suffix _name.
 
-	Here is an twin camera for 3D example. File named: twincameras_tplink_101_102.txt
+	Here is an twin camera configuration for 3D photography. File named: twincameras_tplink_101_102.txt
 	
 	```
 	192.168.0.101 L NX2000 0 
 	192.168.0.102 R NX2000 0 
 	```
 	
-	Here is an example using four cameras connected with a phone WiFi hotstop. File named: cameraphotonet_LL_LM_RM_RR.txt
+	Here is a four camera configuration connected using a phone WiFi hotstop. File named: cameraphotonet_LL_LM_RM_RR.txt
 	
 	```
 	192.168.216.96 LL NX2000 0

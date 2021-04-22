@@ -89,7 +89,11 @@ class Gui {
   int xFocusArea;
   int yFocusArea;
   int focusSize=100;
-  static final int xoffset = 80;
+  
+  // an option to change focus point for stereo or lenticular cameras
+  // change xoffset to shift focus point by a fixed amount for each camera
+  static final int xoffset = 0;
+  // static final int xoffset = 80;
 
   // information zone touch coordinates
   // screen boundaries for click zone use
