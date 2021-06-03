@@ -5,6 +5,8 @@
  ![Android phone screenshot Start screen](screenshots/Android/Screenshot0003.jpg)
 
  MultiNX is a cross platform application for synchronizing and controlling one or more Samsung NX2000 cameras. It uses Telnet and HTTP protocols to communicate with the connected NX cameras. MultiNX is available for Android and Windows platforms.  MultiNX supports up to four multiple NX2000 camera connections at once. The WiFi connection in each NX camera is made with the E-Mail WiFi setup service on the camera, however it does not use the email service. It has not been tested with more than four camera connections, but should work with many more multiple cameras depending on the resources of the computer running the application.
+ 
+ Note: The NX500 implementation is incomplete. 
 
  The MultiNX application is written in [Processing](https://processing.org/) and Java, and runs on a PC or Android device (phone, tablet, Chromebook). The application may run on IOS Processing SDK, but I have not tested. The NX2000 camera uses an open-source Linux based (Tizen) operating system and Samsung provided a way to access it on power-up. 
  
@@ -26,13 +28,13 @@
 
 ## How to setup and configure the cameras and application
 
-1. For each camera copy the autoexec.sh and inetd.conf files from the sdcard folder in this repository to the base folder of the camera memory card. Important - do this after Formatting your memory card.
+1. For each NX2000 camera copy the autoexec.sh and inetd.conf files from the sdcard-NX2000 folder in this repository to the base folder of the camera memory card. Important - do this after Formatting your memory card. For the NX500 camera copy the contents of the folder sdcard-NX500 to the base folder of the camera memory card.
 
-2. On each camera perform the following HOME setup:
+2. On each NX2000 camera perform the following HOME setup:
 	
 	> Expert - Manual 
 	
-3. On each camera perform the following MENU setup:
+3. On each NX2000 camera perform the following MENU setup:
 	
 	> AutoShare off
 	> 
@@ -43,6 +45,8 @@
 	> Auto focus - Single Auto Focus
 	> 
 	> Touch focus
+	>
+	> ISO Customizing - ISO Step  1 Step, Auto ISO Range - ISO 3200
 	> 
 	> Map Direct Link button to E-Mail: Menu - Key Mapping - DIRECT LINK -> Email
 	
@@ -52,7 +56,7 @@
 	
 6. Use an Android app such as "Network Scanner" on your local WiFi network to scan for Samsung cameras and write down the IP address associated with each MAC address you found in step 5.
 	
-7. Now create a text file in a folder for the application to find. The text file contains one line for each camera as follows: IP Address, space, camera name, space, camera type NX2000, space, and camera orientation in degrees 0 (unimplemented feature). The camera name appends to photo file name as a suffix _name.
+7. Create a text file in a folder for the application to find. The text file contains one line for each camera as follows: IP Address, space, camera name, space, camera type NX2000, space, and camera orientation in degrees 0 (unimplemented feature). The camera name appends to photo file name as a suffix _name.
 
 	Here is an twin camera configuration for 3D photography. File named: twincameras_tplink_101_102.txt
 	

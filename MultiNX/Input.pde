@@ -55,33 +55,31 @@ boolean focus = false;
 boolean ftp = false;
 
 void mousePressed() {
-
-  lastKeyCode = gui.vertMenuBar.mousePressed(mouseX, mouseY);
-  if (lastKeyCode == 0) {
-    lastKeyCode = gui.horzMenuBar.mousePressed(mouseX, mouseY);
-    if (lastKeyCode == 0 && modeSelection) {
-      lastKeyCode = gui.modeTable.mousePressed(mouseX, mouseY);
-    }
-    if (lastKeyCode == 0 && fnSelection) {
-      lastKeyCode = gui.fnTable.mousePressed(mouseX, mouseY);
-    }
+  if (state == RUN_STATE && NumCameras > 0) {
+    lastKeyCode = gui.vertMenuBar.mousePressed(mouseX, mouseY);
     if (lastKeyCode == 0) {
-      lastKeyCode = gui.fnZone.mousePressed(mouseX, mouseY);
+      lastKeyCode = gui.horzMenuBar.mousePressed(mouseX, mouseY);
+      if (lastKeyCode == 0 && modeSelection) {
+        lastKeyCode = gui.modeTable.mousePressed(mouseX, mouseY);
+      }
+      if (lastKeyCode == 0 && fnSelection) {
+        lastKeyCode = gui.fnTable.mousePressed(mouseX, mouseY);
+      }
       if (lastKeyCode == 0) {
-        lastKeyCode = gui.configZone.mousePressed(mouseX, mouseY);
+        lastKeyCode = gui.fnZone.mousePressed(mouseX, mouseY);
         // touch focus
         if (lastKeyCode == 0) {
           if (mouseX >0 && mouseX<= width-320 && mouseY > 0 && mouseY < height-120) {
             for (int i=0; i<NumCameras; i++) {
               if (camera[i].isConnected()) {
                 if (DEBUG) println("mouse x="+(mouseX) + " y="+mouseY);
-                if (DEBUG) println("screen width="+NX2000Camera.screenWidth + " height="+NX2000Camera.screenHeight);
-                if (mouseX < 2*NX2000Camera.screenWidth && mouseY<2*NX2000Camera.screenHeight) {
+                if (DEBUG) println("screen width="+camera[i].screenWidth + " height="+camera[i].screenHeight);
+                if (mouseX < 2*camera[i].screenWidth && mouseY<2*camera[i].screenHeight) {
                   // multiple cameras have focus shift to the right
                   //camera[i].touchFocus((2*NX2000Camera.screenHeight-mouseY)/2, int(mouseX+i*camera[i].focusOffset)/2);
-                  camera[i].touchFocus((NX2000Camera.screenHeight-(mouseY)/2), int(mouseX+i*camera[i].focusOffset)/2);
-                  if (mouseX > 2*Gui.xoffset && mouseX < 2*NX2000Camera.screenWidth && 
-                    mouseY>0 && mouseY < 2*NX2000Camera.screenHeight-120) {
+                  camera[i].touchFocus((camera[i].screenHeight-(mouseY)/2), int(mouseX+i*camera[i].focusOffset)/2);
+                  if (mouseX > 2*Gui.xoffset && mouseX < 2*camera[i].screenWidth && 
+                    mouseY>0 && mouseY < 2*camera[i].screenHeight-120) {
                     gui.xFocusArea = mouseX;
                     gui.yFocusArea = mouseY;
                   }
@@ -91,6 +89,10 @@ void mousePressed() {
           }
         }
       }
+    }
+  } else {
+    if (lastKeyCode == 0) {
+      lastKeyCode = gui.configZone.mousePressed(mouseX, mouseY);
     }
   }
   lastKey = 0;
@@ -114,16 +116,23 @@ boolean keyUpdate() {
   if (DEBUG) println("keyUpdate lastKey="+lastKey + " lastKeyCode="+lastKeyCode);
 
   if (lastKeyCode == KEYCODE_LOAD_SCREENSHOT) {
-    screenshot = loadImage("http://"+camera[mainCamera].ipAddr+"/screenshot.bmp");
-  } else if (lastKey==' ') {
-    if (!ftp) {
-      ftp = true;
-      for (int i=0; i<NumCameras; i++) {
-        if (camera[i].isConnected()) {
-          camera[i].startFtp();
-        }
-      }
+    if (DEBUG) println("KEYCODE_LOAD_SCREENSHOT");
+    if (screenshot != null) {
+      //screenshot.dispose();  //reclaim space TODO
+      screenshot=null;
     }
+    if (camera[mainCamera].type == NX2000) {
+      screenshot = loadImage("http://"+camera[mainCamera].ipAddr+"/screenshot.bmp");
+    } else if (camera[mainCamera].type == NX500) {
+      delay(2000);  // wait for screenshot capture to finish
+      screenshot = loadImage("http://"+camera[mainCamera].ipAddr+"/OSD0001.jpg");
+    }
+    //       if (showPhoto) {
+    gui.fnZone.show(false, true);
+    //    } else {
+    //      gui.fnZone.show(true, true);
+    //    }
+  } else if (lastKey==' ') {
   } else if (lastKey >= '1' && lastKey <= '9') {
     int ic = lastKey-'0';
     if (ic <= NumCameras) {
@@ -133,10 +142,12 @@ boolean keyUpdate() {
     }
   } else if (lastKeyCode == 111 || lastKeyCode == KEYCODE_ESCAPE || lastKey == 'q' || lastKey == 'Q') {  // quit/ESC key
     if (DEBUG) println("QUIT");
-    gui.horzMenuBar.backKey.setHighlight(true);
-    for (int i=0; i<NumCameras; i++) {
-      if (camera[i].isConnected()) {
-        camera[i].sendMsg("exit\n");
+    if (NumCameras > 0) {
+      gui.horzMenuBar.backKey.setHighlight(true);
+      for (int i=0; i<NumCameras; i++) {
+        if (camera[i].isConnected()) {
+          camera[i].sendMsg("exit\n");
+        }
       }
     }
     delay(40); // delay draw();
@@ -310,8 +321,8 @@ boolean keyUpdate() {
       camera[mainCamera].getCameraFnShutterEvISO();
     }
   } else if (lastKeyCode == KEYCODE_FN_ZONE_UPDATE) {
-    gui.fnZone.zoneKey.cap = " "+ getSsName(camera[mainCamera].getShutterSpeed())+"    "+getFnName(camera[mainCamera].getFn())+"    EV "+
-      evName[camera[mainCamera].getEv()]+"    ISO "+isoName[camera[mainCamera].getISO()];
+    gui.fnZone.zoneKey.cap = " "+ camera[mainCamera].getSsName(camera[mainCamera].getShutterSpeed())+"    "+camera[mainCamera].getFnName(camera[mainCamera].getFn())+"    EV "+
+      camera[mainCamera].getEvName()+"    ISO "+isoName[camera[mainCamera].getISO()];
     if (DEBUG) println("Camera state "+gui.fnZone.zoneKey.cap);
   } else if (lastKeyCode >= KEYCODE_FN_UPDATE && lastKeyCode <= 2012) {
     if (lastKeyCode == 2012) {
@@ -327,12 +338,12 @@ boolean keyUpdate() {
       if (lastKeyCode == 2005) {// left Fn
         if (fnId > 0) {
           fnId--;
-          gui.fnTable.setFn(fnId);
+          gui.fnTable.setFnId(fnId);
         }
       } else if (lastKeyCode == 2007) {// right Fn
-        if (fnId < fnName.length-1) {
+        if (fnId < camera[mainCamera].getFnLength()-1) {
           fnId++;
-          gui.fnTable.setFn(fnId);
+          gui.fnTable.setFnId(fnId);
         }
       }
 
@@ -342,7 +353,7 @@ boolean keyUpdate() {
           gui.fnTable.setShutterId(shutterId);
         }
       } else if (lastKeyCode == 2003) {// right Shutter
-        if (shutterId < shutterName.length-1) {
+        if (shutterId < camera[mainCamera].getShutterNameLength()-1) {
           shutterId++;
           gui.fnTable.setShutterId(shutterId);
         }
@@ -388,10 +399,18 @@ boolean keyUpdate() {
   } else if (lastKeyCode == KEYCODE_Y) {
     camera[mainCamera].getShutterCount();
   } else if (lastKeyCode == KEYCODE_Z) {
-    camera[mainCamera].getPrefMem(APPID, APPPREF_ISO_PAS, "l");
+    if (camera[mainCamera].type == NX2000) {
+      camera[mainCamera].getPrefMem(NX2000Camera.APPID, NX2000Camera.APPPREF_ISO_PAS, "l");
+    } else if (camera[mainCamera].type == NX500) {
+      camera[mainCamera].getPrefMem(NX500Camera.APPID, NX500Camera.APPPREF_ISO_PAS, "l");
+    } 
     ///prefman get 1 8 v=96
   } else if (lastKeyCode == KEYCODE_X) {
-    camera[mainCamera].getPrefMemBlock(APPID, APPPREF_FNO_INDEX, 96);
+    if (camera[mainCamera].type == NX2000) {
+      camera[mainCamera].getPrefMemBlock(NX2000Camera.APPID, NX2000Camera.APPPREF_FNO_INDEX, 96);
+    } else if (camera[mainCamera].type == NX500) {
+      camera[mainCamera].getPrefMem(NX500Camera.APPID, NX500Camera.APPPREF_FNO_INDEX, "l");
+    } 
     ///prefman get 1 8 v=96
   }
   lastKey = 0;

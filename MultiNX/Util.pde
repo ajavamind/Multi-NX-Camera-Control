@@ -1,28 +1,4 @@
 // utility helper functionsPreference IDs:
-/**
- 0 : system
- 1 : application
- 2 : line
- 3 : system_rw
- */
-
-int SYSID = 0;
-int APPID = 1;
-int LINEID = 2;
-int SYSRWID = 3;
-
-// application
-int APPPREF_FNO_INDEX = 0x00000008;
-int APPPREF_FNO_INDEX_OTHER_MODE = 0x0000000C;
-int APPPREF_SHUTTER_SPEED_INDEX = 0x00000010; 
-int APPPREF_SHUTTER_SPEED_INDEX_OTHER_MODE = 0x00000014;
-int APPPREF_EVC = 0x00000018 ;
-int APPPREF_ISO_PAS = 0x00000064;
-int APPPREF_B_DISABLE_MOVIE_REC_LIMIT =  0x00000308; 
-int APPPREF_B_ENABLE_NO_LENS_RELEASE = 0x0000030c;
-
-// System rw
-int SYSRWPREF_SHUTTER_COUNT = 0x00000008;  
 
 //boolean decoded = false;
 int NO_TYPE = 0;
@@ -49,6 +25,18 @@ int resultType = NO_TYPE;
 //    decoded = true;
 //  }
 //}
+
+void takeMultiPhoto(NX2000Camera[] camera) {
+  for (int i=0; i<NumCameras; i++) {
+    camera[i].takePhoto();
+  }
+}
+
+void focusMultiPhoto(NX2000Camera[] camera) {
+  for (int i=0; i<NumCameras; i++) {
+    camera[i].client.write("st key push s1;sleep 1;st key release s1\n"); // focus
+  }
+}
 
 String convertCounter(int value) {
   if (value <10) {

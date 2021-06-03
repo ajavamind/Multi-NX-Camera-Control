@@ -11,71 +11,15 @@ String[] cameraModes ={"lens", "magic", "wi-fi", "scene", "movie", "smart", "p",
 String[] cameraKeyModes ={"Lens", "Magic", "WiFi", "Scene", "Movie", "Smart", "P", "A", "S", "M", "", ""};
 // setting "movie" mode does not function in NX2000 with "st key mode"
 
-String[] shutterName = { "Bulb", "30\"", "25\"", "20\"", "15\"", "13\"", "10\"", "8\"", "6\"", "5\"", 
-  "4\"", "3\"", "2.5\"", "2\"", "1.6\"", "1.3\"", "1\"", "0.8\"", "0.6\"", "0.5\"", 
-  "0.4\"", "0.3\"", "1/4", "1/5", "1/6", "1/8", "1/10", "1/13", "1/15", "1/20", 
-  "1/25", "1/30", "1/40", "1/50", "1/60", "1/80", "1/100", "1/125", "1/160", "1/200", 
-  "1/250", "1/320", "1/400", "1/500", "1/640", "1/800", "1/1000", "1/1250", "1/1600", "1/2000", 
-  "1/2500", "1/3200", "1/4000"
-};
-int[] shutterValue = { -80, -80, -75, -69, -64, -59, -53, -48, -43, -37, 
-  -32, -27, -21, -16, -11, -5, 0, 5, 11, 16, 
-  21, 27, 32, 37, 43, 48, 53, 59, 64, 69, 
-  75, 80, 85, 91, 96, 101, 107, 112, 117, 123, 
-  128, 133, 139, 144, 149, 155, 160, 165, 171, 176, 
-  181, 187, 192};
 int shutterId = 1;
-
-String[] fnName = { "F3.5", "F4.0", "F4.5", "F5.0", 
-  "F5.6", "F6.3", "F7.1", "F8.0", 
-  "F9.0", "F10", "F11", "F13", 
-  "F14", "F16", "F18", "F20", "F22" };
-int[] fnValue = {58, 64, 69, 75, 
-  80, 85, 91, 96, 
-  101, 107, 112, 117, 
-  123, 128, 133, 139, 144 };
 int fnId = 7;
 int savedFnId = 7;
-
-String getFnName(int value) {
-  String name = "";
-  for (int i=0; i<fnValue.length; i++) {
-    if (fnValue[i] == value) {
-      name = fnName[i];
-      break;
-    }
-  }
-  return name;
-}
-
-int getFnId(int value) {
-  for (int i=0; i<fnValue.length; i++) {
-    if (fnValue[i] == value) {
-      return i;
-    }
-  }
-  return 0;
-}
-
-String getSsName(int value) {
-  String name = "";
-  for (int i=0; i<shutterValue.length; i++) {
-    if (shutterValue[i] == value) {
-      name = shutterName[i];
-      break;
-    }
-  }
-  return name;
-}
 
 String[] isoName = { "AUTO", "100", "200", "400", "800", "1600", "3200", "6400", "12800", "25600" };
 String[] isoName3 = { "AUTO", "100", "125", "160", "200", "250", "320", "400", "500", "640", "800", "1000", 
   "1250", "1600", "2000", "2500", "3200", "4000", "5000", "6400", "8000", "10000", "12800", "16000", "20000", "25600" };
 int isoId = 1;
 
-String[] evName = { "-3.0", "-2.6", "-2.3", "-2.0", "-1.6", "-1.3", "-1.0", "-0.6", "-0.3", 
-  "0.0", "+0.3", "+0.6", "+1.0", "+1.3", "+1.6", "+2.0", "+2.3", "+2.6", "+3.0" };
-int evId = 9;
 
 // The GUI assumes the camera screen image is at (0,0)
 class Gui {
@@ -89,7 +33,7 @@ class Gui {
   int xFocusArea;
   int yFocusArea;
   int focusSize=100;
-  
+
   // an option to change focus point for stereo or lenticular cameras
   // change xoffset to shift focus point by a fixed amount for each camera
   static final int xoffset = 0;
@@ -148,8 +92,10 @@ class Gui {
     this.base = base;
     WIDTH = base.width;
     HEIGHT = base.height;
-    xFocusArea= 2*(NX2000Camera.screenWidth+xoffset)/2;
-    yFocusArea = 2*NX2000Camera.screenHeight/2;
+    //xFocusArea= 2*(camera[mainCamera].screenWidth+xoffset)/2;
+    //yFocusArea = 2*camera[mainCamera].screenHeight/2;
+    xFocusArea= 2*(NX2000Camera.SCREEN_WIDTH+xoffset)/2;
+    yFocusArea = 2*NX2000Camera.SCREEN_HEIGHT/2;
     iX = WIDTH / 8;
     iY = HEIGHT / 10;
     mX = WIDTH / 2;
@@ -168,7 +114,9 @@ class Gui {
     silver = color(193, 194, 186);
     brown = color(69, 66, 61);
     bague = color(183, 180, 139);
-
+  }
+  
+  void createGui() {
     horzMenuBar = new HorzMenuBar();
     horzMenuBar.create();
     horzMenuBar.setVisible(hfull);
@@ -186,7 +134,9 @@ class Gui {
     fnZone.create();
     fnTable = new FnTable();
     fnTable.create();
-
+  }
+  
+  void createConfigZone() {
     configZone = new ConfigZone();
     configZone.create();
   }
@@ -208,7 +158,6 @@ class Gui {
   void highlightFocusKey(boolean hold) {
     vertMenuBar.focusKey.setHighlight(hold);
   }
-
 
   //    void testGrid() {
   //        // debug
@@ -237,8 +186,8 @@ class Gui {
     stroke(gray);
     strokeWeight(4);
     rectMode(CORNER);
-    float w = 2*(NX2000Camera.screenWidth-xoffset);
-    float h = 2*NX2000Camera.screenHeight;
+    float w = 2*(camera[mainCamera].screenWidth-xoffset);
+    float h = 2*camera[mainCamera].screenHeight;
     fill(graytransparent);
     for (int i = 1; i < numDivisions+1; i++) {
       line(2*xoffset, i*(h/numDivisions), 2*xoffset+w, i*(h/numDivisions));
@@ -255,8 +204,8 @@ class Gui {
     stroke(white);
     strokeWeight(4);
     rectMode(CORNER);
-    float w = 2*(NX2000Camera.screenWidth-xoffset);
-    float h = 2*NX2000Camera.screenHeight;
+    //float w = 2*(camera[mainCamera].screenWidth-xoffset);
+    //float h = 2*camera[mainCamera].screenHeight;
     noFill();
     rect(xFocusArea-focusSize/2, yFocusArea-focusSize/2, focusSize, focusSize);
   }
@@ -447,17 +396,17 @@ class Gui {
     void create() {
       int keyColor = black;
       int arrowKeyColor = aqua;
-      shutterNameKey = new MenuKey(2000, "SHUTTER", FONT_SIZE, white);
+      shutterNameKey = new MenuKey(KEYCODE_FN_UPDATE, "SHUTTER", FONT_SIZE, white);
       shutterNameKey.setActive(false);
       shutterNameKey.setCorner(false);
       shutterLeftKey = new MenuKey(2001, LEFT_TRIANGLE, MEDIUM_FONT_SIZE, arrowKeyColor);
-      shutterKey = new MenuKey(2002, shutterName[shutterId], FONT_SIZE, keyColor);
+      shutterKey = new MenuKey(2002, camera[mainCamera].getSsName(shutterId), FONT_SIZE, keyColor);
       shutterRightKey = new MenuKey(2003, RIGHT_TRIANGLE, MEDIUM_FONT_SIZE, arrowKeyColor);
       fnNameKey = new MenuKey(2004, "FN", FONT_SIZE, white);
       fnNameKey.setActive(false);
       fnNameKey.setCorner(false);
       fnLeftKey = new MenuKey(2005, LEFT_TRIANGLE, MEDIUM_FONT_SIZE, arrowKeyColor);
-      fnKey = new MenuKey(2006, fnName[fnId], FONT_SIZE, keyColor);
+      fnKey = new MenuKey(2006, camera[mainCamera].getFn(fnId), FONT_SIZE, keyColor);
       fnRightKey = new MenuKey(2007, RIGHT_TRIANGLE, MEDIUM_FONT_SIZE, arrowKeyColor);
       isoNameKey = new MenuKey(2008, "ISO", FONT_SIZE, white);
       isoNameKey.setActive(false);
@@ -512,32 +461,22 @@ class Gui {
     }
 
     void setShutter(int value) {
-      for (int i=0; i<shutterValue.length; i++) {
-        if (shutterValue[i] == value) {
-          shutterId = i;
-          break;
-        }
-      }
-      shutterKey.setCap(shutterName[shutterId]);
+      shutterId = camera[mainCamera].getSsId(value);
+      shutterKey.setCap(camera[mainCamera].getShutterName(shutterId));
     }
 
     void setShutterId(int id) {
-      shutterKey.setCap(shutterName[shutterId]);
+      shutterId = id;
+      shutterKey.setCap(camera[mainCamera].getShutterName(id));
     }
 
-
     void setFn(int value) {
-      for (int i=0; i<fnValue.length; i++) {
-        if (fnValue[i] == value) {
-          fnId = i;
-          break;
-        }
-      }
-      fnKey.setCap(fnName[fnId]);
+      fnId = camera[mainCamera].getFnId(value);
+      fnKey.setCap(camera[mainCamera].getFn(fnId));
     }
 
     void setFnId(int id) {
-      fnKey.setCap(fnName[id]);
+      fnKey.setCap(camera[mainCamera].getFn(id));
     }
 
     void setVisible(boolean[] visible) {
@@ -709,7 +648,7 @@ class Gui {
       y = HEIGHT - iY;
       w = WIDTH / ((float) numKeys);
       h = iY-4;
-      menuBase = 2*NX2000Camera.screenHeight;
+      menuBase = 2*camera[mainCamera].screenHeight;
 
       float inset = WIDTH / ((float) numKeys) / 7f;
       for (int i = 0; i < numKeys; i++) {
@@ -780,8 +719,8 @@ class Gui {
       float w = 1016;
       float h = 104;
       float x = 294;
-      float y = 2*NX2000Camera.screenHeight -h;
-      menuBase = 2*NX2000Camera.screenHeight -h;
+      float y = 2*camera[mainCamera].screenHeight -h;
+      menuBase = 2*camera[mainCamera].screenHeight -h;
 
 
       menuKey[0].setPosition( x, y, w, h, 0);
@@ -828,9 +767,11 @@ class Gui {
       if (y > menuBase ) {
         // menu touch control area at bottom of screen or sides
         for (int i = 0; i < numKeys; i++) {
-          if (menuKey[i].visible && menuKey[i].active) {
+          //if (menuKey[i].visible && menuKey[i].active) {
+          if (menuKey[i].active) {
             if ((x <= (menuKey[i].x + menuKey[i].w)) && (x >= (menuKey[i].x))) {
               mkeyCode = menuKey[i].keyCode;
+              menuKey[i].visible = true;
               break;
             }
           }
@@ -862,8 +803,9 @@ class Gui {
       float w = 640;
       float h = 104;
       float x = 294;
-      float y = NX2000Camera.screenHeight ;
-      menuBase = NX2000Camera.screenHeight ;
+      //float y = camera[mainCamera].screenHeight ;
+      float y = NX2000Camera.SCREEN_HEIGHT ;
+      menuBase = y ;
 
 
       zoneKey.setPosition( x, y, w/2, h, 60);
@@ -1077,9 +1019,9 @@ void drawIntroductionScreen() {
   text("MultiNX", 300, 60);
   text("Control Multiple NX Cameras", 300, 60+50);
   if (DEBUG) {
-    text("Version 1.0 DEBUG", 300, 60+100);
+    text("Version 1.1 DEBUG", 300, 60+100);
   } else {
-    text("Version 1.0", 300, 60+100);
+    text("Version 1.1", 300, 60+100);
   }
 
   text("Written by Andy Modla", 300, 60+150);

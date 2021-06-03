@@ -7,56 +7,46 @@
 
 /* autoexec.sh contents:
  
-#!/bin/sh
-
-mkdir -p /dev/pts
-mount -t devpts none /dev/pts
-httpd -h /mnt/mmc
-inetd /mnt/mmc/inetd.conf
-
-*/  
+ #!/bin/sh
+ 
+ mkdir -p /dev/pts
+ mount -t devpts none /dev/pts
+ httpd -h /mnt/mmc
+ inetd /mnt/mmc/inetd.conf
+ 
+ */
 /* inetd.conf contents:
-
-
-21  stream  tcp  nowait  root  ftpd  ftpd -w /mnt/mmc/
-23  stream  tcp  nowait  root  telnet  telnetd -i -l /bin/bash
-
-*/
+ 
+ 
+ 21  stream  tcp  nowait  root  ftpd  ftpd -w /mnt/mmc/
+ 23  stream  tcp  nowait  root  telnet  telnetd -i -l /bin/bash
+ 
+ */
 
 // ftpd is optional you can remove comment character # to start the FTP server
-// make sure autoexec.sh has UNIX line ending x0a only, no x0dx0a (windows)
+// make sure autoexec.sh has UNIX line ending x0a only, no x0dx0a line ending characters (windows)
 // Use email WiFi cofiguration on NX2000 to connect to a local network.
 // Exit email to shoot photos and videos after connection to your local WiFi network.
 
 //boolean testGui = true;
 boolean testGui = false;
-//final static boolean DEBUG = true;
-final static boolean DEBUG = false;
+final static boolean DEBUG = true;
+//final static boolean DEBUG = false;
 
 int telnetPort = 23; // telnet port
 
 // List of camera IP addresses to access
 String[] ip = null;
 String[] cameraName;
+String[] cameraType;
+String[] cameraOrientation;
 int NumCameras = 0;
 int mainCamera = 0;
 String saveFolderPath;
 String defaultFilename = "default.txt";
 String configFilename;
 
-//{ 
-//  //"192.168.216.56"
-//  "192.168.0.102", 
-//  "192.168.0.103"
-//  // "10.0.0.245",
-//  //  "10.0.0.25", 
-//  //  "10.0.0.180", 
-//  //  "10.0.0.30"
-//  //, "10.0.0.58"
-//  //, "10.0.0.41"
-//};
-
-NX2000Camera[] camera;
+NXCamera[] camera;
 PImage lcdScreen;  // camera LCD screen image
 PImage cameraImage;
 PImage screenshot;
@@ -94,11 +84,14 @@ String[] stateName = {
 String message=null;
 int frameCounter = 60; 
 boolean showPhoto = false;
+//boolean showScreenshot = false;
+boolean forceExit = false;
 
 void settings() {
   size(1920, 1080);
   smooth();
   gui = new Gui();
+  gui.createConfigZone();
   gui.create(this);
 }
 
@@ -108,13 +101,10 @@ void setup() {
 
   textSize(FONT_SIZE);
 
-  //lcdScreen = loadImage("screenshot/nx2000/readytoshoot.png");
-  //lcdScreen = loadImage("screenshot/nx2000/readyfocustoshootmin.png");
   lcdScreen = loadImage("screenshot/nx2000/blankscreen.png");
   cameraImage = loadImage("images/nx2000_topview_270x270.jpg");
   if (DEBUG) println("width="+width + " height="+height);
-  //println("screen.width="+screen.width + " screen.height="+screen.height);
-  
+
   loadPhotoNumber();
 } 
 
@@ -127,6 +117,9 @@ void draw() {
     frameCounter--;
   } else {
     message = null;
+    if (forceExit) {
+      lastKeyCode = KEYCODE_ESCAPE;
+    }
   }
 
   if (state == PRE_SAVE_STATE) {
@@ -142,13 +135,17 @@ void draw() {
   //background(128);
   background(0);
   if (screenshot != null) {
-    imageMode(CENTER);
-    pushMatrix();
-    translate(lcdScreen.width, lcdScreen.height);
-    rotate(3*PI/2.0);
-    image(screenshot, 0, 0, 2*screenshot.width, 2*screenshot.height);
-    popMatrix();
-    imageMode(CORNER);
+    if (camera[mainCamera].type == NX2000) {
+      imageMode(CENTER);
+      pushMatrix();
+      translate(lcdScreen.width, lcdScreen.height);
+      rotate(3*PI/2.0);
+      image(screenshot, 0, 0, 2*screenshot.width, 2*screenshot.height);
+      popMatrix();
+      imageMode(CORNER);
+    } else {
+      image(screenshot, 0, 0, 2*screenshot.width, 2*screenshot.height);
+    }
   } else {
     image(lcdScreen, 0, 0, 2*lcdScreen.width, 2*lcdScreen.height);
   }
@@ -159,7 +156,6 @@ void draw() {
     }
     if (state == CONFIGURATION_STATE) {
 
-      //gui.removeConfigZone();
       state = CONFIGURATION_DIALOG_STATE;
       selectConfigurationFile();
     }
@@ -177,7 +173,6 @@ void draw() {
     gui.displayMessage("Using Last Configuration");
     return;
   } else if (state == CONNECT_STATE) {
-    //gui.removeConfigZone();
     String[] config = null;
     if (configFilename == null) {
       if (DEBUG) println("configFilename="+configFilename);
@@ -201,33 +196,44 @@ void draw() {
     NumCameras = config.length;
     ip = new String[NumCameras];
     cameraName = new String[NumCameras];
+    cameraType = new String[NumCameras];
+    cameraOrientation = new String[NumCameras];
+
     for (int i=0; i<config.length; i++) {
       if (DEBUG) println(config[i]);
-      int iv = config[i].indexOf(" ");
-      if (iv > 0) {
-        ip[i] = config[i].substring(0, iv);
-      } else {
-        ip[i] = "0.0.0.0";
-      }
-      int in = config[i].indexOf(" ", iv+1);
-      if (in > 0) {
-        cameraName[i] = config[i].substring(iv+1, in);
-      } else {
-        cameraName[i] = "camera"+i;
-      }
+
+      String[] group = splitTokens(config[i]);
+      ip[i] = group[0];
+      cameraName[i] = group[1];
+      cameraType[i] = group[2];
+      cameraOrientation[i] = group[3];
     }
 
     // Create telnet clients to connect to Samsung NX2000 cameras.
-    camera = new NX2000Camera[NumCameras];
+    camera = new NXCamera[NumCameras];
     for (int i=0; i<NumCameras; i++) {
+      if (DEBUG) println("configuration: "+ i + " " + ip[i] + " " + cameraName[i] + " " + cameraType[i] + " " + cameraOrientation[i]);
       Client client = null;
       if (!testGui) {
         client = new Client(this, ip[i], telnetPort);
         if (DEBUG) println("client="+client);
         if (DEBUG) println("active="+client.active());
       }
-      camera[i] = new NX2000Camera(ip[i], client);
-      camera[i].setName(cameraName[i]);
+      if (cameraType[i].equals("NX2000")) {
+        camera[i] = new NX2000Camera(ip[i], client);
+        camera[i].setName(cameraName[i]);
+      } else if (cameraType[i].equals("NX500")) {
+        camera[i] = new NX500Camera(ip[i], client);
+        camera[i].setName(cameraName[i]);
+      } else {
+        if (DEBUG) println("Configuration Error!");
+        NumCameras = 0;
+        message = "Configuration File Error!";
+        forceExit = true;
+      }
+    }
+    if (NumCameras > 0) {
+      gui.createGui();
     }
   }
   state = RUN_STATE;
@@ -241,17 +247,23 @@ void draw() {
     }
     exit();
   }
-  gui.displayGrid(4);
-
+  if (NumCameras > 0) {
+    gui.displayGrid(4);
+  }
   for (int i=0; i<NumCameras; i++) {
     String inString = "";
     if (!camera[i].isConnected()) {
       if (camera[i].client != null && camera[i].client.active()) {
-        while (!inString.endsWith(prompt)) {
+        while (!inString.endsWith(camera[i].prompt)) {
           if (camera[i].client.available() > 0) { 
             inString += camera[i].client.readString(); 
             if (DEBUG) println(inString); 
-            if (inString.endsWith(prompt)) {
+            // NX500 needs login: root response
+            if (inString.endsWith("login: ")) {
+              camera[i].sendMsg("root\n");
+              break;
+            }
+            if (inString.endsWith(camera[i].prompt)) {
               camera[i].setConnected(true);
               if (DEBUG) println("Camera "+camera[i].name+" "+ip[i]+" connected");
               camera[i].getCameraFnShutterEvISO();
@@ -286,18 +298,18 @@ void draw() {
         }
 
         if (w > 0 && h > 0) {
-          float offset = (2*NX2000Camera.screenWidth-((2*NX2000Camera.screenHeight)*ar))/2;
+          float offset = (2*camera[i].screenWidth-((2*camera[i].screenHeight)*ar))/2;
           if (NumCameras == 1) {
-            image(camera[i].lastPhoto, offset, 0, (2*NX2000Camera.screenHeight)*ar, 2*NX2000Camera.screenHeight);
+            image(camera[i].lastPhoto, offset, 0, (2*camera[i].screenHeight)*ar, 2*camera[i].screenHeight);
             text(camera[i].name + " "+camera[i].ipAddr+" "+camera[i].filename, 10, 30);
           } else if (NumCameras == 2) {
-            image(camera[i].lastPhoto, i*NX2000Camera.screenWidth, 0, (NX2000Camera.screenWidth), NX2000Camera.screenWidth/ar);
-            text(camera[i].name + " "+camera[i].ipAddr+" "+camera[i].filename, i*NX2000Camera.screenWidth+10, 30);
+            image(camera[i].lastPhoto, i*camera[i].screenWidth, 0, (camera[i].screenWidth), camera[i].screenWidth/ar);
+            text(camera[i].name + " "+camera[i].ipAddr+" "+camera[i].filename, i*camera[i].screenWidth+10, 30);
           } else {
             //image(camera[i].lastPhoto, 180+(i%2)*(w/div), 0+(i/2)*(h/div), w/div, h/div);
             //image(camera[i].lastPhoto, (i%2)*NX2000Camera.screenWidth, (i/2)*(NX2000Camera.screenWidth/ar), (NX2000Camera.screenWidth), NX2000Camera.screenWidth/ar);
-            image(camera[i].lastPhoto, (i%2)*NX2000Camera.screenWidth, (i/2)*(NX2000Camera.screenHeight), (NX2000Camera.screenHeight)*ar, NX2000Camera.screenHeight);
-            text(camera[i].name + " "+camera[i].ipAddr+" "+camera[i].filename, (i%2)*NX2000Camera.screenWidth+10, 30+ (i/2)*(NX2000Camera.screenHeight));
+            image(camera[i].lastPhoto, (i%2)*camera[i].screenWidth, (i/2)*(camera[i].screenHeight), (camera[i].screenHeight)*ar, camera[i].screenHeight);
+            text(camera[i].name + " "+camera[i].ipAddr+" "+camera[i].filename, (i%2)*camera[i].screenWidth+10, 30+ (i/2)*(camera[i].screenHeight));
           }
         }
       } else {
@@ -312,12 +324,14 @@ void draw() {
       text (camera[i].name+" "+ip[i]+ " Not Connected.", 200, 110+i*50);
     }
   }
-  gui.displayFocusArea();
-  gui.displayMenuBar();
-  gui.modeTable.display();
-  gui.fnTable.display();
+  if (NumCameras > 0) {
+    gui.displayFocusArea();
+    gui.displayMenuBar();
+    gui.modeTable.display();
+    gui.fnTable.display();
+  }
   gui.displayMessage(message);
-  
+
   // check for first connected camera
   for (int i=0; i<NumCameras; i++) {
     if (camera[i].isConnected()) {
