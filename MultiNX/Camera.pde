@@ -1,18 +1,24 @@
 // Camera parameters and control
 
-int screenshotCounter = 1;
-String screenshotFilename = "screenshot";
-
-//most recent file
-//FILENAME=`ls -t /mnt/mmc/DCIM/100PHOTO | head -1`;echo "filename=/DCIM/100PHOTO/$FILENAME"
-
 // Camera types supported
 static final int NX2000 = 0;
 static final int NX300 = 1;
 static final int NX500 = 2;
 
-int screenWidth = 800;
-int screenHeight = 480;
+// Camera modes
+int MANUAL_MODE = 9;
+int SMART_MODE = 5;
+int cameraMode = MANUAL_MODE;
+int selectedCameraMode = MANUAL_MODE;
+String[] cameraModes ={"lens", "magic", "wi-fi", "scene", "movie", "smart", "p", "a", "s", "m", "", ""};
+String[] cameraKeyModes ={"Lens", "Magic", "WiFi", "Scene", "Movie", "Auto", "P", "A", "S", "M", "", ""};
+// setting "movie" mode does not function in NX2000 with "st key mode"
+
+// ISO common to NX2000, NX300, NX500
+String[] isoName = { "AUTO", "100", "200", "400", "800", "1600", "3200", "6400", "12800", "25600" };
+String[] isoName3 = { "AUTO", "100", "125", "160", "200", "250", "320", "400", "500", "640", "800", "1000", 
+  "1250", "1600", "2000", "2500", "3200", "4000", "5000", "6400", "8000", "10000", "12800", "16000", "20000", "25600" };
+int isoId = 1;
 
 interface NXCommand {
   int[] getCameraResult();
@@ -41,6 +47,7 @@ interface NXCommand {
   void cameraMode(int m);
   int getShutterSpeed();
   int getSsId(int value);
+  int getSsId();
   String getSsName(int i);
   String getShutterName(int id);
   int getShutterNameLength();
@@ -48,6 +55,7 @@ interface NXCommand {
   String getFn(int id);
   String getFnName(int value);
   int getFnId(int value);
+  int getFnId();
   int getFnLength();
   void save();
   void getFilename();
@@ -82,6 +90,8 @@ abstract class NXCamera implements NXCommand {
   int type; // NX2000, NX500
   int screenWidth;
   int screenHeight;
+  int shutterId;
+  int fnId;
 
   boolean isConnected() {
     return connected;
@@ -97,6 +107,14 @@ abstract class NXCamera implements NXCommand {
 
   String getName() {
     return this.name;
+  }
+  
+  int getSsId() {
+    return shutterId;
+  }
+  
+  int getFnId() {
+    return fnId;
   }
 }
 
@@ -131,25 +149,32 @@ class NX2000Camera extends NXCamera {
   static final int SCREEN_HEIGHT = 480;
   static final float offsetPercent = 3.0; //6.5;
 
-  String[] shutterName = { "Bulb", "30\"", "25\"", "20\"", "15\"", "13\"", "10\"", "8\"", "6\"", "5\"", 
+  final String[] shutterName = { "Bulb", "30\"", "25\"", "20\"", "15\"", "13\"", "10\"", "8\"", "6\"", "5\"", 
     "4\"", "3\"", "2.5\"", "2\"", "1.6\"", "1.3\"", "1\"", "0.8\"", "0.6\"", "0.5\"", 
     "0.4\"", "0.3\"", "1/4", "1/5", "1/6", "1/8", "1/10", "1/13", "1/15", "1/20", 
     "1/25", "1/30", "1/40", "1/50", "1/60", "1/80", "1/100", "1/125", "1/160", "1/200", 
     "1/250", "1/320", "1/400", "1/500", "1/640", "1/800", "1/1000", "1/1250", "1/1600", "1/2000", 
     "1/2500", "1/3200", "1/4000"
+    , "1/5000", "1/6000"
   };
-  int[] shutterValue = { -80, -80, -75, -69, -64, -59, -53, -48, -43, -37, 
+  final int[] shutterValue = { -80, -80, -75, -69, -64, -59, -53, -48, -43, -37, 
     -32, -27, -21, -16, -11, -5, 0, 5, 11, 16, 
     21, 27, 32, 37, 43, 48, 53, 59, 64, 69, 
     75, 80, 85, 91, 96, 101, 107, 112, 117, 123, 
     128, 133, 139, 144, 149, 155, 160, 165, 171, 176, 
-    181, 187, 192};
+    181, 187, 192
+    , 192, 192
+//    , 197, 202
+};
 
-  String[] fnName = { "F3.5", "F4.0", "F4.5", "F5.0", 
+// other lens available may have minimum F-stops: F1.4 F1.8 F2 
+
+  final String[] fnName = { "F2.4", "F2.8", "F3.2", "F3.5", "F4.0", "F4.5", "F5.0", 
     "F5.6", "F6.3", "F7.1", "F8.0", 
     "F9.0", "F10", "F11", "F13", 
     "F14", "F16", "F18", "F20", "F22" };
-  int[] fnValue = {58, 64, 69, 75, 
+    
+  final int[] fnValue = {58, 58, 58, 58, 64, 69, 75, 
     80, 85, 91, 96, 
     101, 107, 112, 117, 
     123, 128, 133, 139, 144 };
@@ -168,6 +193,8 @@ class NX2000Camera extends NXCamera {
     prefix = "nx2000";
     focusOffset = screenWidth*(offsetPercent/100);
     type = NX2000;
+    shutterId = 1;
+    fnId = 10;
     screenWidth = SCREEN_WIDTH;
     screenHeight = SCREEN_HEIGHT;
   }
@@ -246,6 +273,8 @@ class NX2000Camera extends NXCamera {
             shutterCount = result[0];
           }
         }
+      } else if (count == 3) {
+        lastKeyCode = KEYCODE_FN_ZONE_REFRESH;
       } else if (count > 4) {
         if (decodeLongSequence(inString, result)) {
           for (int j=0; j<count; j++)
@@ -1330,24 +1359,27 @@ class NX500Camera extends NXCamera {
   static final int SCREEN_HEIGHT = 480;
   static final float offsetPercent = 3.0; //6.5;
 
-  String[] shutterName = { "Bulb", "30\"", "25\"", "20\"", "15\"", "13\"", "10\"", "8\"", "6\"", "5\"", 
+  final String[] shutterName = { "Bulb", "30\"", "25\"", "20\"", "15\"", "13\"", "10\"", "8\"", "6\"", "5\"", 
     "4\"", "3\"", "2.5\"", "2\"", "1.6\"", "1.3\"", "1\"", "0.8\"", "0.6\"", "0.5\"", 
     "0.4\"", "0.3\"", "1/4", "1/5", "1/6", "1/8", "1/10", "1/13", "1/15", "1/20", 
     "1/25", "1/30", "1/40", "1/50", "1/60", "1/80", "1/100", "1/125", "1/160", "1/200", 
     "1/250", "1/320", "1/400", "1/500", "1/640", "1/800", "1/1000", "1/1250", "1/1600", "1/2000", 
     "1/2500", "1/3200", "1/4000", "1/5000", "1/6000"
   };
-  int[] shutterValue = { -80, -80, -75, -69, -64, -59, -53, -48, -43, -37, 
+  
+  final int[] shutterValue = { -80, -80, -75, -69, -64, -59, -53, -48, -43, -37, 
     -32, -27, -21, -16, -11, -5, 0, 5, 11, 16, 
     21, 27, 32, 37, 43, 48, 53, 59, 64, 69, 
     75, 80, 85, 91, 96, 101, 107, 112, 117, 123, 
     128, 133, 139, 144, 149, 155, 160, 165, 171, 176, 
     181, 187, 192, 197, 202};
-  String[] fnName = { "F2.4", "F2.8", "F3.2", "F3.5", "F4.0", "F4.5", "F5.0", 
+    
+  final String[] fnName = { "F2.4", "F2.8", "F3.2", "F3.5", "F4.0", "F4.5", "F5.0", 
     "F5.6", "F6.3", "F7.1", "F8.0", 
     "F9.0", "F10", "F11", "F13", 
     "F14", "F16", "F18", "F20", "F22" };
-  int[] fnValue = {41, 48, 53, 59, 64, 69, 75, 
+    
+  final int[] fnValue = {41, 48, 53, 59, 64, 69, 75, 
     80, 85, 91, 96, 
     101, 107, 112, 117, 
     123, 128, 133, 139, 144 };
@@ -1366,6 +1398,9 @@ class NX500Camera extends NXCamera {
     prefix = "[root";
     focusOffset = screenWidth*(offsetPercent/100);
     type = NX500;
+    shutterId = 1;
+    fnId = 10;
+
     screenWidth = SCREEN_WIDTH;
     screenHeight = SCREEN_HEIGHT;
   }
@@ -1438,6 +1473,8 @@ class NX500Camera extends NXCamera {
 
         ev = result[3];
         lastKeyCode = KEYCODE_FN_ZONE_UPDATE;
+      } else if (count == 3) {
+        lastKeyCode = KEYCODE_FN_ZONE_REFRESH;
       } else if (count == 1) {
         if (decodeLong(inString, result)) {
           if (DEBUG) println("result="+result[0]);

@@ -23,7 +23,7 @@
  
  */
 
-// ftpd is optional you can remove comment character # to start the FTP server
+// ftpd is optional you can add comment character # to prevent the FTP server from starting
 // make sure autoexec.sh has UNIX line ending x0a only, no x0dx0a line ending characters (windows)
 // Use email WiFi cofiguration on NX2000 to connect to a local network.
 // Exit email to shoot photos and videos after connection to your local WiFi network.
@@ -85,6 +85,8 @@ String message=null;
 int frameCounter = 60; 
 boolean showPhoto = false;
 //boolean showScreenshot = false;
+int screenshotCounter = 1;
+String screenshotFilename = "screenshot";
 boolean forceExit = false;
 
 void settings() {

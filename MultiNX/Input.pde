@@ -40,9 +40,10 @@ int KEYCODE_MOVE_HOME       = 122;
 int KEYCODE_MOVE_END       = 123;
 int KEYCODE_FN_ZONE = 500;
 int KEYCODE_FN_ZONE_UPDATE = 501;
-int KEYCODE_LOAD_SCREENSHOT = 502;
-int KEYCODE_NEW_CONFIG = 503;
-int KEYCODE_CURRENT_CONFIG = 504;
+int KEYCODE_FN_ZONE_REFRESH = 502;
+int KEYCODE_LOAD_SCREENSHOT = 503;
+int KEYCODE_NEW_CONFIG = 504;
+int KEYCODE_CURRENT_CONFIG = 505;
 int KEYCODE_MODE_TABLE = 1000;
 int KEYCODE_FN_UPDATE = 2000;
 int KEYCODE_SHOW = 3000;
@@ -320,6 +321,9 @@ boolean keyUpdate() {
     if (fnSelection) {
       camera[mainCamera].getCameraFnShutterEvISO();
     }
+  } else if (lastKeyCode == KEYCODE_FN_ZONE_REFRESH) {
+    if (DEBUG) println("Camera Fn refresh parameters");
+      camera[mainCamera].getCameraFnShutterEvISO();
   } else if (lastKeyCode == KEYCODE_FN_ZONE_UPDATE) {
     gui.fnZone.zoneKey.cap = " "+ camera[mainCamera].getSsName(camera[mainCamera].getShutterSpeed())+"    "+camera[mainCamera].getFnName(camera[mainCamera].getFn())+"    EV "+
       camera[mainCamera].getEvName()+"    ISO "+isoName[camera[mainCamera].getISO()];
@@ -331,31 +335,32 @@ boolean keyUpdate() {
         if (camera[i].isConnected()) {
           camera[i].focusRelease();
           camera[i].updateFn();
-          camera[i].setCameraFnShutterISO(fnId, shutterId, isoId);
+          camera[i].setCameraFnShutterISO(camera[i].getFnId(), camera[i].getSsId(), isoId);
         }
       }
     } else {
+      int id = camera[mainCamera].getFnId();
       if (lastKeyCode == 2005) {// left Fn
-        if (fnId > 0) {
-          fnId--;
-          gui.fnTable.setFnId(fnId);
+        if (id > 0) {
+          id--;
+          gui.fnTable.setFnId(id);
         }
       } else if (lastKeyCode == 2007) {// right Fn
-        if (fnId < camera[mainCamera].getFnLength()-1) {
-          fnId++;
-          gui.fnTable.setFnId(fnId);
+        if (id < camera[mainCamera].getFnLength()-1) {
+          id++;
+          gui.fnTable.setFnId(id);
         }
       }
-
+      id = camera[mainCamera].getSsId();
       if (lastKeyCode == 2001) {// left Shutter
-        if (shutterId > 0) {
-          shutterId--;
-          gui.fnTable.setShutterId(shutterId);
+        if (id > 0) {
+          id--;
+          gui.fnTable.setShutterId(id);
         }
       } else if (lastKeyCode == 2003) {// right Shutter
-        if (shutterId < camera[mainCamera].getShutterNameLength()-1) {
-          shutterId++;
-          gui.fnTable.setShutterId(shutterId);
+        if (id < camera[mainCamera].getShutterNameLength()-1) {
+          id++;
+          gui.fnTable.setShutterId(id);
         }
       } else if (lastKeyCode == 2009) {// left ISO
         if (isoId > 0) {

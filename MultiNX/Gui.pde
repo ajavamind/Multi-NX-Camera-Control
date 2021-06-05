@@ -3,24 +3,6 @@
 volatile boolean modeSelection = false;
 volatile boolean fnSelection = false;
 
-int MANUAL_MODE = 9;
-int SMART_MODE = 5;
-int cameraMode = MANUAL_MODE;
-int selectedCameraMode = MANUAL_MODE;
-String[] cameraModes ={"lens", "magic", "wi-fi", "scene", "movie", "smart", "p", "a", "s", "m", "", ""};
-String[] cameraKeyModes ={"Lens", "Magic", "WiFi", "Scene", "Movie", "Smart", "P", "A", "S", "M", "", ""};
-// setting "movie" mode does not function in NX2000 with "st key mode"
-
-int shutterId = 1;
-int fnId = 7;
-int savedFnId = 7;
-
-String[] isoName = { "AUTO", "100", "200", "400", "800", "1600", "3200", "6400", "12800", "25600" };
-String[] isoName3 = { "AUTO", "100", "125", "160", "200", "250", "320", "400", "500", "640", "800", "1000", 
-  "1250", "1600", "2000", "2500", "3200", "4000", "5000", "6400", "8000", "10000", "12800", "16000", "20000", "25600" };
-int isoId = 1;
-
-
 // The GUI assumes the camera screen image is at (0,0)
 class Gui {
   MultiNX base;
@@ -400,13 +382,13 @@ class Gui {
       shutterNameKey.setActive(false);
       shutterNameKey.setCorner(false);
       shutterLeftKey = new MenuKey(2001, LEFT_TRIANGLE, MEDIUM_FONT_SIZE, arrowKeyColor);
-      shutterKey = new MenuKey(2002, camera[mainCamera].getSsName(shutterId), FONT_SIZE, keyColor);
+      shutterKey = new MenuKey(2002, camera[mainCamera].getShutterName(camera[mainCamera].getSsId()), FONT_SIZE, keyColor);
       shutterRightKey = new MenuKey(2003, RIGHT_TRIANGLE, MEDIUM_FONT_SIZE, arrowKeyColor);
       fnNameKey = new MenuKey(2004, "FN", FONT_SIZE, white);
       fnNameKey.setActive(false);
       fnNameKey.setCorner(false);
       fnLeftKey = new MenuKey(2005, LEFT_TRIANGLE, MEDIUM_FONT_SIZE, arrowKeyColor);
-      fnKey = new MenuKey(2006, camera[mainCamera].getFn(fnId), FONT_SIZE, keyColor);
+      fnKey = new MenuKey(2006, camera[mainCamera].getFn(camera[mainCamera].getFnId()), FONT_SIZE, keyColor);
       fnRightKey = new MenuKey(2007, RIGHT_TRIANGLE, MEDIUM_FONT_SIZE, arrowKeyColor);
       isoNameKey = new MenuKey(2008, "ISO", FONT_SIZE, white);
       isoNameKey.setActive(false);
@@ -461,21 +443,32 @@ class Gui {
     }
 
     void setShutter(int value) {
-      shutterId = camera[mainCamera].getSsId(value);
-      shutterKey.setCap(camera[mainCamera].getShutterName(shutterId));
+      int id = camera[mainCamera].getSsId(value);
+      shutterKey.setCap(camera[mainCamera].getShutterName(id));
+      for (int i=0; i<NumCameras; i++) {
+        camera[i].shutterId = id;
+      }
     }
 
     void setShutterId(int id) {
-      shutterId = id;
+      for (int i=0; i<NumCameras; i++) {
+        camera[i].shutterId = id;
+      }
       shutterKey.setCap(camera[mainCamera].getShutterName(id));
     }
 
     void setFn(int value) {
-      fnId = camera[mainCamera].getFnId(value);
-      fnKey.setCap(camera[mainCamera].getFn(fnId));
+      int id = camera[mainCamera].getFnId(value);
+      fnKey.setCap(camera[mainCamera].getFn(id));
+      for (int i=0; i<NumCameras; i++) {
+        camera[i].fnId = id;
+      }
     }
 
     void setFnId(int id) {
+      for (int i=0; i<NumCameras; i++) {
+        camera[i].fnId = id;
+      }
       fnKey.setCap(camera[mainCamera].getFn(id));
     }
 
@@ -483,9 +476,6 @@ class Gui {
       for (int i = 0; i < table.length; i++) {
         table[i].setVisible(visible[i]);
       }
-    }
-
-    void saveSelection(int selected) {
     }
 
     void display() {
