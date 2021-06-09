@@ -232,13 +232,13 @@ boolean keyUpdate() {
         camera[i].menu();
       }
     }
-  } else if (lastKeyCode == KEYCODE_O ) {
-    if (DEBUG) println("Application Fn Shutter values");
-    for (int i=0; i<NumCameras; i++) {
-      if (camera[i].isConnected()) {
-        camera[i].getCameraFnShutter();
-      }
-    }
+  //} else if (lastKeyCode == KEYCODE_O ) {
+  //  if (DEBUG) println("Application Fn Shutter values");
+  //  for (int i=0; i<NumCameras; i++) {
+  //    if (camera[i].isConnected()) {
+  //      camera[i].getCameraFnShutter();
+  //    }
+  //  }
   } else if (lastKeyCode == KEYCODE_W) {
     if (DEBUG) println("Camera MODE");
     modeSelection =! modeSelection;

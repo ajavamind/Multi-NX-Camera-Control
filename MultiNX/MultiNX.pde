@@ -28,12 +28,9 @@
 // Use email WiFi cofiguration on NX2000 to connect to a local network.
 // Exit email to shoot photos and videos after connection to your local WiFi network.
 
-//boolean testGui = true;
-boolean testGui = false;
-final static boolean DEBUG = true;
-//final static boolean DEBUG = false;
-
-int telnetPort = 23; // telnet port
+static final boolean testGui = false;
+static final boolean DEBUG = true;
+//static final boolean DEBUG = false;
 
 // List of camera IP addresses to access
 String[] ip = null;
@@ -211,47 +208,50 @@ void draw() {
       cameraOrientation[i] = group[3];
     }
 
-    // Create telnet clients to connect to Samsung NX2000 cameras.
+    // Create camera instances
     camera = new NXCamera[NumCameras];
     for (int i=0; i<NumCameras; i++) {
       if (DEBUG) println("configuration: "+ i + " " + ip[i] + " " + cameraName[i] + " " + cameraType[i] + " " + cameraOrientation[i]);
-      Client client = null;
-      if (!testGui) {
-        client = new Client(this, ip[i], telnetPort);
-        if (DEBUG) println("client="+client);
-        if (DEBUG) println("active="+client.active());
-      }
       if (cameraType[i].equals("NX2000")) {
-        camera[i] = new NX2000Camera(ip[i], client);
+        camera[i] = new NX2000Camera(this, ip[i]);
         camera[i].setName(cameraName[i]);
       } else if (cameraType[i].equals("NX500")) {
-        camera[i] = new NX500Camera(ip[i], client);
+        camera[i] = new NX500Camera(this, ip[i]);
+        camera[i].setName(cameraName[i]);
+      } else if (cameraType[i].equals("NX300")) {
+        camera[i] = new NX300Camera(this, ip[i]);
+        camera[i].setName(cameraName[i]);
+      } else if (cameraType[i].equals("NXOCR")) {
+        camera[i] = new NXOCRCamera(this, ip[i]);
         camera[i].setName(cameraName[i]);
       } else {
-        if (DEBUG) println("Configuration Error!");
+        if (DEBUG) println(ip[i] + " Configuration Error!");
         NumCameras = 0;
-        message = "Configuration File Error!";
+        message = ip[i] + " Configuration Error!";
         forceExit = true;
       }
     }
+    // initialze GUI when the configuration is OK
     if (NumCameras > 0) {
       gui.createGui();
     }
   }
   state = RUN_STATE;
 
-
+  // process key and mouse inputs on this main sketch loop
   keyUpdate();
 
   if (state == EXIT_STATE) {
     for (int i=0; i<NumCameras; i++) {
-      camera[i].client.stop();
+      camera[i].stop();
     }
     exit();
   }
+  
   if (NumCameras > 0) {
     gui.displayGrid(4);
   }
+  
   for (int i=0; i<NumCameras; i++) {
     String inString = "";
     if (!camera[i].isConnected()) {
@@ -281,7 +281,7 @@ void draw() {
     textSize(FONT_SIZE);
     fill(255);
     textAlign(LEFT);
-    if (!camera[i].client.active() ) {
+    if (!camera[i].isActive() ) {
       camera[i].setConnected(false);
     }
 
@@ -326,6 +326,7 @@ void draw() {
       text (camera[i].name+" "+ip[i]+ " Not Connected.", 200, 110+i*50);
     }
   }
+  
   if (NumCameras > 0) {
     gui.displayFocusArea();
     gui.displayMenuBar();
@@ -334,7 +335,7 @@ void draw() {
   }
   gui.displayMessage(message);
 
-  // check for first connected camera
+  // set main camera index as first connected camera
   for (int i=0; i<NumCameras; i++) {
     if (camera[i].isConnected()) {
       mainCamera = i;
