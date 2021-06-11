@@ -1,9 +1,10 @@
 // Andy Modla
 // Copyright 2021 Andrew Modla
-// Java sketch for telnet control of multiple Samsung NX2000 cameras
-// SD memory card root folder in the camera needs the following file
-// for starting telnet and ftp:
-// autoexec.sh
+// Java sketch for simultaneous telnet control of compatible multiple Samsung NX cameras
+// and multiple phones running the Android camera app: Open Camera Remote.
+// The SD memory card root folder in each camera needs the following files depending on 
+// the camera for starting telnet and ftp:
+// autoexec.sh and inetd.conf
 
 /* autoexec.sh contents:
  
@@ -38,7 +39,8 @@ String[] cameraName;
 String[] cameraType;
 String[] cameraOrientation;
 int NumCameras = 0;
-int mainCamera = 0;
+int mainCamera = 0;  // current display camera 
+boolean allCameras = true;  // synchronize all cameras to same settings as mainCamera
 String saveFolderPath;
 String defaultFilename = "default.txt";
 String configFilename;
@@ -108,7 +110,7 @@ void setup() {
 } 
 
 void draw() { 
-  int[] result = null;
+  int[] result = null; // keep
 
   // update message display visible counter
   // 
@@ -134,7 +136,7 @@ void draw() {
   //background(128);
   background(0);
   if (screenshot != null) {
-    if (camera[mainCamera].type == NX2000) {
+    if (camera[mainCamera].type == NX2000 || camera[mainCamera].type == NX300) {
       imageMode(CENTER);
       pushMatrix();
       translate(lcdScreen.width, lcdScreen.height);
@@ -336,10 +338,10 @@ void draw() {
   gui.displayMessage(message);
 
   // set main camera index as first connected camera
-  for (int i=0; i<NumCameras; i++) {
-    if (camera[i].isConnected()) {
-      mainCamera = i;
-      break;
-    }
-  }
+  //for (int i=0; i<NumCameras; i++) {
+  //  if (camera[i].isConnected()) {
+  //    mainCamera = i;
+  //    break;
+  //  }
+  //}
 } 

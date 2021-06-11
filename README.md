@@ -44,7 +44,7 @@
 	> 
 	> Auto focus - Single Auto Focus
 	> 
-	> Touch focus
+	> Touch Focus  - ON
 	>
 	> ISO Customizing - ISO Step  1 Step, Auto ISO Range - ISO 3200
 	> 

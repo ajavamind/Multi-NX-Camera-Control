@@ -2,6 +2,7 @@
 
 int KEYCODE_0 = 48;
 int KEYCODE_1 = 49;
+int KEYCODE_9 = 57;
 int KEYCODE_DEL = 127;
 int KEYCODE_A = 65;
 int KEYCODE_B = 66;
@@ -110,6 +111,8 @@ void keyPressed() {
 }
 
 // Process key from main loop not in keyPressed()
+// returns false no key processed
+// returns true when a key is processed
 boolean keyUpdate() {
   if (lastKey == 0 && lastKeyCode == 0) {
     return false;
@@ -127,6 +130,9 @@ boolean keyUpdate() {
     } else if (camera[mainCamera].type == NX500) {
       delay(2000);  // wait for screenshot capture to finish
       screenshot = loadImage("http://"+camera[mainCamera].ipAddr+"/OSD0001.jpg");
+    } else if (camera[mainCamera].type == NX300) {
+      delay(2000);  // wait for screenshot capture to finish
+      screenshot = loadImage("http://"+camera[mainCamera].ipAddr+"/screenshot.bmp");
     }
     //       if (showPhoto) {
     gui.fnZone.show(false, true);
@@ -134,13 +140,28 @@ boolean keyUpdate() {
     //      gui.fnZone.show(true, true);
     //    }
   } else if (lastKey==' ') {
-  } else if (lastKey >= '1' && lastKey <= '9') {
-    int ic = lastKey-'0';
-    if (ic <= NumCameras) {
-      if (camera[ic-1].isConnected()) {
-        camera[ic-1].takePhoto();
+    if (allCameras) {
+      for (int i=0; i<NumCameras; i++) {
+        if (camera[i].isConnected()) {
+          camera[i].takePhoto();
+        }
       }
+    } else {
+      camera[mainCamera].takePhoto();
     }
+  } else if (lastKeyCode == KEYCODE_0) {
+    mainCamera = 0;
+    allCameras = true;
+    lastKeyCode = KEYCODE_FN_ZONE_UPDATE;
+    return true;
+  } else if (lastKeyCode >= KEYCODE_1 && lastKeyCode <= KEYCODE_9) {
+    int ic = lastKeyCode-KEYCODE_0-1;
+    if (ic < NumCameras) {
+      mainCamera = ic;
+    }
+    allCameras = false;
+    lastKeyCode = KEYCODE_FN_ZONE_UPDATE;
+    return true;
   } else if (lastKeyCode == 111 || lastKeyCode == KEYCODE_ESCAPE || lastKey == 'q' || lastKey == 'Q') {  // quit/ESC key
     if (DEBUG) println("QUIT");
     if (NumCameras > 0) {
@@ -232,13 +253,13 @@ boolean keyUpdate() {
         camera[i].menu();
       }
     }
-  //} else if (lastKeyCode == KEYCODE_O ) {
-  //  if (DEBUG) println("Application Fn Shutter values");
-  //  for (int i=0; i<NumCameras; i++) {
-  //    if (camera[i].isConnected()) {
-  //      camera[i].getCameraFnShutter();
-  //    }
-  //  }
+    //} else if (lastKeyCode == KEYCODE_O ) {
+    //  if (DEBUG) println("Application Fn Shutter values");
+    //  for (int i=0; i<NumCameras; i++) {
+    //    if (camera[i].isConnected()) {
+    //      camera[i].getCameraFnShutter();
+    //    }
+    //  }
   } else if (lastKeyCode == KEYCODE_W) {
     if (DEBUG) println("Camera MODE");
     modeSelection =! modeSelection;
@@ -323,9 +344,14 @@ boolean keyUpdate() {
     }
   } else if (lastKeyCode == KEYCODE_FN_ZONE_REFRESH) {
     if (DEBUG) println("Camera Fn refresh parameters");
-      camera[mainCamera].getCameraFnShutterEvISO();
+    camera[mainCamera].getCameraFnShutterEvISO();
   } else if (lastKeyCode == KEYCODE_FN_ZONE_UPDATE) {
-    gui.fnZone.zoneKey.cap = " "+ camera[mainCamera].getSsName(camera[mainCamera].getShutterSpeed())+"    "+camera[mainCamera].getFnName(camera[mainCamera].getFn())+"    EV "+
+    String who = "Sync";
+    if (!allCameras) {
+      who = camera[mainCamera].name;
+    }
+    gui.fnZone.zoneKey.cap = who + ": " + camera[mainCamera].getSsName(camera[mainCamera].getShutterSpeed())
+      +"    "+camera[mainCamera].getFnName(camera[mainCamera].getFn())+"    EV "+
       camera[mainCamera].getEvName()+"    ISO "+isoName[camera[mainCamera].getISO()];
     if (DEBUG) println("Camera state "+gui.fnZone.zoneKey.cap);
   } else if (lastKeyCode >= KEYCODE_FN_UPDATE && lastKeyCode <= 2012) {
@@ -408,6 +434,8 @@ boolean keyUpdate() {
       camera[mainCamera].getPrefMem(NX2000Camera.APPID, NX2000Camera.APPPREF_ISO_PAS, "l");
     } else if (camera[mainCamera].type == NX500) {
       camera[mainCamera].getPrefMem(NX500Camera.APPID, NX500Camera.APPPREF_ISO_PAS, "l");
+    } else if (camera[mainCamera].type == NX500) {
+      camera[mainCamera].getPrefMem(NX300Camera.APPID, NX300Camera.APPPREF_ISO_PAS, "l");
     } 
     ///prefman get 1 8 v=96
   } else if (lastKeyCode == KEYCODE_X) {
@@ -415,6 +443,8 @@ boolean keyUpdate() {
       camera[mainCamera].getPrefMemBlock(NX2000Camera.APPID, NX2000Camera.APPPREF_FNO_INDEX, 96);
     } else if (camera[mainCamera].type == NX500) {
       camera[mainCamera].getPrefMem(NX500Camera.APPID, NX500Camera.APPPREF_FNO_INDEX, "l");
+    } else if (camera[mainCamera].type == NX300) {
+      camera[mainCamera].getPrefMem(NX300Camera.APPID, NX300Camera.APPPREF_FNO_INDEX, "l");
     } 
     ///prefman get 1 8 v=96
   }

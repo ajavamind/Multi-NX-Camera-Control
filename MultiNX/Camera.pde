@@ -95,7 +95,7 @@ abstract class NXCamera implements NXCommand {
   String systemrw;
   String screenShot;
   float focusOffset;
-  int type; // NX2000, NX500
+  int type; // NX2000, NX500, NX300
   int screenWidth;
   int screenHeight;
   int shutterId;
@@ -422,7 +422,7 @@ abstract class NXCamera implements NXCommand {
     this.shutterSpeed = shutterValue[shutterId];
     this.fn = fnValue[fnId];
     this.iso = isoId;
-    if (DEBUG) println("prefman set " + appId +" " +appFnoIndex + " l " + this.fn +
+    if (DEBUG) println(" setCameraFnShutter prefman set " + appId +" " +appFnoIndex + " l " + this.fn +
       ";prefman set "+ appId + " "  +appShutterSpeedIndex + " l " + this.shutterSpeed +
       ";prefman set "+ appId + " "  + appIsoPas + " l " + iso +
       //      ";prefman get "+ appId + " "  + appEvc + " l" +

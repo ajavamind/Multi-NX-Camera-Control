@@ -1,23 +1,23 @@
 class NX300Camera extends NXCamera {
 
-  static final int APPID = 0;
-  static final int APP_RESTOREID = 1;
+  static final int SYSID = 0;
+  static final int APPID = 1;
   static final int LINEID = 2;
   static final int SYSRWID = 3;
 
-  static final int APPPREF_FNO_INDEX = 0x0000a338;
-  static final int APPPREF_SHUTTER_SPEED_INDEX = 0x0000a340; 
-  static final int APPPREF_EVC = 0x0000a344;
-  static final int APPPREF_VAR_EVC = 0x0000c2b4;  
-  static final int APPPREF_IFN_EV = 0x0000a658;
-  static final int APPPREF_ISO_PAS = 0x0000a388;
-  static final int APPPREF_B_DISABLE_MOVIE_REC_LIMIT =  0x0000c2d9; 
-  static final int APPPREF_B_ENABLE_NO_LENS_RELEASE = 0x0000c2dd;
+  static final int APPPREF_FNO_INDEX = 0x00000008;
+  static final int APPPREF_SHUTTER_SPEED_INDEX = 0x00000010; 
+  static final int APPPREF_EVC = 0x00000018;
+  static final int APPPREF_VAR_EVC = 0x00000448;  
+  static final int APPPREF_IFN_EV = 0x00000248;
+  static final int APPPREF_ISO_PAS = 0x00000064;
+  static final int APPPREF_B_DISABLE_MOVIE_REC_LIMIT =  0x00000308; 
+  static final int APPPREF_B_ENABLE_NO_LENS_RELEASE = 0x0000030c;
 
-  static final int SYSRWPREF_SHUTTER_COUNT = 0x00000208;  
+  static final int SYSRWPREF_SHUTTER_COUNT = 0x00000008;  
 
   // LCD screen dimensions
-  static final int SCREEN_WIDTH = 720;
+  static final int SCREEN_WIDTH = 800;
   static final int SCREEN_HEIGHT = 480;
   static final float offsetPercent = 3.0; //6.5;
 
@@ -41,13 +41,13 @@ class NX300Camera extends NXCamera {
     "F9.0", "F10", "F11", "F13", 
     "F14", "F16", "F18", "F20", "F22" };
 
-  final int[] FN_VALUE = {41, 48, 53, 59, 64, 69, 75, 
+  final int[] FN_VALUE = {41, 48, 53, 58, 64, 69, 75, 
     80, 85, 91, 96, 
     101, 107, 112, 117, 
     123, 128, 133, 139, 144 };
 
-  final String[] EV_NAME = { "-5.0", "-4.6", "-4.3", "-4.0", "-3.6", "-3.3", "-3.0", "-2.6", "-2.3", "-2.0", "-1.6", "-1.3", "-1.0", "-0.6", "-0.3", 
-    "0.0", "+0.3", "+0.6", "+1.0", "+1.3", "+1.6", "+2.0", "+2.3", "+2.6", "+3.0", "+3.3", "+3.6", "+4.0", "+4.3", "+4.6", "+5.0" };
+  final String[] EV_NAME = { "-3.0", "-2.6", "-2.3", "-2.0", "-1.6", "-1.3", "-1.0", "-0.6", "-0.3", 
+    "0.0", "+0.3", "+0.6", "+1.0", "+1.3", "+1.6", "+2.0", "+2.3", "+2.6", "+3.0" };
   //int evId = 9;
 
   NX300Camera(PApplet app, String ipAddr) {
@@ -65,7 +65,7 @@ class NX300Camera extends NXCamera {
     prompt = "nx300:/# ";
     prefix = "nx300";
     systemrw = "system_rw";
-    screenShot = "/mnt/mmc/screenshot";
+    screenShot = "screenshot";
     focusOffset = screenWidth*(offsetPercent/100);
     type = NX300;
     shutterId = 1;
@@ -87,18 +87,27 @@ class NX300Camera extends NXCamera {
     screenHeight = SCREEN_HEIGHT;
   }
 
+  void setFnUpdate() {
+    if (DEBUG) println("setFnUpdate");
+    //client.write(
+    //  "st key mode "+ cameraModes[SMART_MODE]+
+    //  ";sleep 1"+
+    // ";st key mode "+ cameraModes[MANUAL_MODE]+
+    // "\n");
+  }
+  
   void jogcw() {
-    client.write("st key jog jog1_cw\n");
+    client.write("st key jog cw\n");
   }
 
   void jogccw() {
-    client.write("st key jog jog1_ccw\n");
+    client.write("st key jog ccw\n");
   }
 
   void screenshot(String filename) {
     if (DEBUG) println("screenshot("+filename+")");
     if (client.active()) {
-      client.write("/mnt/mmc/screenshot.sh\n");
+      client.write("screenshot bmp /mnt/mmc/"+filename+convertCounter(screenshotCounter)+"_"+name+".bmp\n");
     }
   }
 
@@ -107,11 +116,65 @@ class NX300Camera extends NXCamera {
     if (!client.active()) {
       return false;
     }
-    client.write("/mnt/mmc/screenshot.sh\n");
+    client.write("screenshot bmp /mnt/mmc/screenshot.bmp\n");
     return true;
   }
 
   void updateFn() {
+    updateSs();
     if (DEBUG) println("updateFn()");
+    int currentFnId = getFnId(getFn());
+    int nextFnId = fnId;
+    int count = nextFnId - currentFnId;
+    if (DEBUG) println("fn jog count="+count);
+    if (count == 0) {
+      if (DEBUG) println("no change updateFn");
+      updateIso();
+      return;
+    }
+    String jog = "cw";
+    if (count < 0) {
+      count = -count;
+      jog = "ccw";
+    }
+    String cmd = "st key push ev";
+
+    for (int i=0; i<count; i++) {
+      cmd += ";st key jog "+jog;
+    }
+    cmd += ";st key release ev\n";
+    client.write(cmd);
+    
+    updateIso();
+  }
+  
+  void updateSs() {
+    if (DEBUG) println("updateSs() "+ getShutterSpeed()+ " "+getSsId(getShutterSpeed())+ " "+getSsId());
+    int currentSsId = getSsId(getShutterSpeed());
+    int nextSsId = getSsId();
+    int count = nextSsId - currentSsId;
+    if (DEBUG) println("ss jog count="+count);
+    if (count == 0) {
+      if (DEBUG) println("no change updateSs");
+      return;
+    }
+    String jog = "cw";
+    if (count < 0) {
+      count = -count;
+      jog = "ccw";
+    }
+    String cmd = "st key jog "+jog;
+    for (int i=0; i<count-1; i++) {
+      cmd += ";st key jog "+jog;
+    }
+    cmd += "\n";
+    client.write(cmd);
+  }
+  
+  void updateIso() {
+    if (DEBUG) println("updateIso() ");
+    //client.write("prefman set "+ appId + " "  + appIsoPas + " l " + iso + "\n");
+    String cmd = "st key click down;sleep 1;st key click ok\n";
+    client.write(cmd);
   }
 }
