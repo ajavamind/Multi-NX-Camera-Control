@@ -121,7 +121,6 @@ class NX300Camera extends NXCamera {
   }
 
   void updateFn() {
-    updateSs();
     if (DEBUG) println("updateFn()");
     int currentFnId = getFnId(getFn());
     int nextFnId = fnId;
@@ -129,7 +128,6 @@ class NX300Camera extends NXCamera {
     if (DEBUG) println("fn jog count="+count);
     if (count == 0) {
       if (DEBUG) println("no change updateFn");
-      updateIso();
       return;
     }
     String jog = "cw";
@@ -145,7 +143,6 @@ class NX300Camera extends NXCamera {
     cmd += ";st key release ev\n";
     client.write(cmd);
     
-    updateIso();
   }
   
   void updateSs() {
@@ -173,7 +170,6 @@ class NX300Camera extends NXCamera {
   
   void updateIso() {
     if (DEBUG) println("updateIso() ");
-    //client.write("prefman set "+ appId + " "  + appIsoPas + " l " + iso + "\n");
     String cmd = "st key click down;sleep 1;st key click ok\n";
     client.write(cmd);
   }

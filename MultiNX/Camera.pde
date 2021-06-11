@@ -68,6 +68,8 @@ interface NXCommand {
   int getEv();
   String getEvName();
   void updateFn();
+  void updateSs();
+  void updateIso();
   void setCameraFnShutterISO(int fnId, int shutterId, int isoId);
   void getCameraEv();
   void getPrefMem(int id, int offset, String type);

@@ -390,6 +390,12 @@ class NXOCRCamera extends NXCamera {
     if (DEBUG) println("updateFn()");
   }
 
+  void updateSs() {
+  }
+  
+  void updateIso() {
+  }
+  
   String number(int index) {
     // fix size of index number at 4 characters long
     if (index == 0)

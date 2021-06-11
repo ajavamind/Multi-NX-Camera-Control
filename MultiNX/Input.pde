@@ -361,7 +361,12 @@ boolean keyUpdate() {
         if (camera[i].isConnected()) {
           camera[i].focusRelease();
           camera[i].updateFn();
+          camera[i].updateSs();
+          int currentIso = isoId;
+          int nextIso = camera[i].getISO();
+          int count = nextIso - currentIso;
           camera[i].setCameraFnShutterISO(camera[i].getFnId(), camera[i].getSsId(), isoId);
+          if (count != 0) camera[i].updateIso();
         }
       }
     } else {

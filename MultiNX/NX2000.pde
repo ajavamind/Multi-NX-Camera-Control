@@ -138,4 +138,11 @@ class NX2000Camera extends NXCamera {
     cmd += ";st key click ev;st key click ev\n";
     client.write(cmd);
   }
+  
+  void updateSs() {
+  }
+  
+  void updateIso() {
+  }
+  
 }

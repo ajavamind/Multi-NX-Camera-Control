@@ -114,4 +114,11 @@ class NX500Camera extends NXCamera {
   void updateFn() {
     if (DEBUG) println("updateFn()");
   }
+  
+  void updateSs() {
+  }
+  
+  void updateIso() {
+  }
+
 }
