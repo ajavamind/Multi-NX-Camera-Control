@@ -37,6 +37,7 @@ int KEYCODE_PAGE_DOWN;
 int KEYCODE_PAGE_UP;
 int KEYCODE_MEDIA_STOP;
 int KEYCODE_ESCAPE = 27;
+int KEYCODE_BACKSPACE = 8;
 int KEYCODE_MOVE_HOME       = 122;
 int KEYCODE_MOVE_END       = 123;
 int KEYCODE_FN_ZONE = 500;
@@ -223,7 +224,7 @@ boolean keyUpdate() {
       }
     }
     // back
-  } else if (lastKeyCode == KEYCODE_T) {
+  } else if (lastKeyCode == KEYCODE_BACKSPACE) {
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].touchBack();
@@ -451,7 +452,6 @@ boolean keyUpdate() {
     } else if (camera[mainCamera].type == NX300) {
       camera[mainCamera].getPrefMem(NX300Camera.APPID, NX300Camera.APPPREF_FNO_INDEX, "l");
     } 
-    ///prefman get 1 8 v=96
   }
   lastKey = 0;
   lastKeyCode = 0;

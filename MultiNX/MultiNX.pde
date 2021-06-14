@@ -2,8 +2,8 @@
 // Copyright 2021 Andrew Modla
 // Java sketch for simultaneous telnet control of compatible multiple Samsung NX cameras
 // and multiple phones running the Android camera app: Open Camera Remote.
-// The SD memory card root folder in each camera needs the following files depending on 
-// the camera for starting telnet and ftp:
+// The SD memory card root folder in each Samsung camera needs the following files depending on 
+// the camera for starting telnet, http and ftp servers:
 // autoexec.sh and inetd.conf
 
 /* autoexec.sh contents:
@@ -30,8 +30,8 @@
 // Exit email to shoot photos and videos after connection to your local WiFi network.
 
 static final boolean testGui = false;
-static final boolean DEBUG = true;
-//static final boolean DEBUG = false;
+//static final boolean DEBUG = true;
+static final boolean DEBUG = false;
 
 // List of camera IP addresses to access
 String[] ip = null;
@@ -251,7 +251,7 @@ void draw() {
   }
   
   if (NumCameras > 0) {
-    gui.displayGrid(4);
+    //gui.displayGrid(4);
   }
   
   for (int i=0; i<NumCameras; i++) {
