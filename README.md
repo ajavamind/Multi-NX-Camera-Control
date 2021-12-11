@@ -203,4 +203,4 @@ Many thanks to Samsung camera enthusiasts for information on how to modify, acce
 
 [Samsung Open Source - Digital Cameras -> Hybrid DSC - NX1 NX300M NX2000 ](https://opensource.samsung.com/main)
 
-
+[DpReview NX300 NX2000 discussion about video quality - NX1000 VXWorks/ NX2000 Tizen](https://www.dpreview.com/forums/thread/3772908?page=2) 
