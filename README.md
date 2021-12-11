@@ -6,7 +6,7 @@
 
  MultiNX is a cross platform application for synchronizing and controlling one or more Samsung NX2000, NX300, and NX500 cameras. The application can also control Android phone cameras running the [Open Camera Remote app](https://play.google.com/store/apps/details?id=net.sourceforge.opencameraremote). Possible uses for the MultiNX application are photo and video capture sessions where one or more cameras are not easily accessible or wire focus/shutter control is not possible. I have used MultiNX with twin NX2000, NX300, and NX500 cameras in a stereo camera rig to set camera parameters, while using USB wired focus/shutter control to take photos. 
  
-The NX cameras use the open-source Linux based (Tizen) operating system and Samsung provided a way to access it on power-up for diagnostics and testing. This project does not apply to the NX1000 or NX1100 cameras because those cameras use a different underlying operating system, not Linux (Tizen).
+The NX cameras use the open-source Linux based (Tizen) operating system and Samsung provided a way to access it on power-up for diagnostics and testing. This project does not apply to the NX1000 or NX1100 cameras because those cameras use a different underlying operating system VxWorks, not Linux (Tizen).
  
  MultiNX uses Telnet and HTTP protocol commands to communicate with the connected NX cameras. MultiNX runs on Android and Windows PC platforms.
 
