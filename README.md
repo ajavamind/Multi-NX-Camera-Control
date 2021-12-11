@@ -4,7 +4,9 @@
  
  ![Android phone screenshot Start screen](screenshots/Android/Screenshot0003.jpg)
 
- MultiNX is a cross platform application for synchronizing and controlling one or more Samsung NX2000, NX300, and NX500 cameras. The application can also control Android phone cameras running the [Open Camera Remote app](https://play.google.com/store/apps/details?id=net.sourceforge.opencameraremote). Possible uses for the MultiNX application are photo and video capture sessions where one or more cameras are not easily accessible or wire focus/shutter control is not possible. I have used MultiNX with twin NX2000 and NX500 cameras in a stereo camera rig for settings setup, while using USB wired focus/shutter control. 
+ MultiNX is a cross platform application for synchronizing and controlling one or more Samsung NX2000, NX300, and NX500 cameras. The application can also control Android phone cameras running the [Open Camera Remote app](https://play.google.com/store/apps/details?id=net.sourceforge.opencameraremote). Possible uses for the MultiNX application are photo and video capture sessions where one or more cameras are not easily accessible or wire focus/shutter control is not possible. I have used MultiNX with twin NX2000, NX300, and NX500 cameras in a stereo camera rig to set camera parameters, while using USB wired focus/shutter control to take photos. 
+ 
+The NX cameras use the open-source Linux based (Tizen) operating system and Samsung provided a way to access it on power-up for diagnostics and testing. This project does not apply to the NX1000 or NX1100 cameras because those cameras use a different underlying operating system, not Linux (Tizen).
  
  MultiNX uses Telnet and HTTP protocol commands to communicate with the connected NX cameras. MultiNX runs on Android and Windows PC platforms.
 
@@ -12,7 +14,7 @@
  
  Note: The NX300 and NX500 implementations are not yet complete because not all hardware keys can be controlled remotely. 
 
- The MultiNX application is written in [Processing](https://processing.org/) and Java, and runs on a PC or Android device (phone, tablet, and Chromebook). The application may also run in the IOS Processing SDK, but I have not tested. The NX cameras use the open-source Linux based (Tizen) operating system and Samsung provided a way to access it on power-up for diagnostics and testing. 
+ The MultiNX application is written in [Processing](https://processing.org/) and Java, and runs on a PC or Android device (phone, tablet, and Chromebook). The application may also run in the IOS Processing SDK, but I have not tested. 
  
  The application connects to each Samsung NX camera over WiFi on a local network. The WiFi network does not have to be connected to the Internet and normally should not be connected to the Internet due to security issues with telnet. For my use, I establish a local network with a USB battery powered mobile router like the TP-Link_290A and other AC powered routers. I have used my Telecom service provider modem router and Android mobile phone hot-spot connection feature. These are connected to the Internet for a short period of time during my tests.
  
@@ -22,7 +24,7 @@
  
  The application synchronizes each camera's exposure settings, does simultaneous focus, and synchronized shutter release at nearly the same time. It does not provide Live-View with the cameras. The application features are limited by what can be done with telnet commands to control the camera and read its status.
 
- The NX cameras do not show their local network IP address. Only the camera's MAC address is available in the Menu - Settings - Device Information. The MAC address helps to find the camera's IP address with an app like "Network Scanner" in the Google play store. The IP address is needed to configure the software for the cameras to be connected. A text file informs the application what cameras to connect, camera name, and other (unimplemented) options.
+ The NX cameras do not show their local network IP address. Only the camera's MAC address is available in the Menu - Settings - Device Information. The MAC address helps to find the camera's IP address with an app like "Network Scanner" in the Google play store. [https://play.google.com/store/apps/details?id=com.myprog.netscan&hl=en_US&gl=US](https://play.google.com/store/apps/details?id=com.myprog.netscan&hl=en_US&gl=US) The IP address is needed to configure the software for the cameras to be connected. A text file informs the application what cameras to connect, camera name, and other (unimplemented) options.
  
  Using telnet commands incorrectly can lock up the camera, so there is some risk using this application. After removing and reinserting the battery, a power-on restores the camera functions. The author is not responsible for uses of this software and its effect on your camera. __USE AT YOUR OWN RISK__.
  
