@@ -1,4 +1,4 @@
-class NX300Camera extends NXCamera {
+class NX300Camera extends RCamera {
 
   static final int SYSID = 0;
   static final int APPID = 1;
@@ -55,7 +55,7 @@ class NX300Camera extends NXCamera {
     client = null;
     port = TelnetPort;
     if (!testGui) {
-      client = new Client(app, ipAddr, port);
+      client = new TelnetClient(app, ipAddr, port);
       if (DEBUG) println("Client "+ ipAddr + " active="+client.active());
     }
     
@@ -87,6 +87,10 @@ class NX300Camera extends NXCamera {
     screenHeight = SCREEN_HEIGHT;
   }
 
+  Client getClient() {
+    return client;
+  }
+  
   void setFnUpdate() {
     if (DEBUG) println("setFnUpdate");
     //client.write(

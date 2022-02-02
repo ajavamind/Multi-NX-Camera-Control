@@ -131,7 +131,7 @@ boolean keyUpdate() {
     } else if (camera[mainCamera].type == NX500) {
       delay(2000);  // wait for screenshot capture to finish
       screenshot = loadImage("http://"+camera[mainCamera].ipAddr+"/OSD0001.jpg");
-    } else if (camera[mainCamera].type == NX300) {
+    } else if (camera[mainCamera].type == NX300 || camera[mainCamera].type == NX30) {
       delay(2000);  // wait for screenshot capture to finish
       screenshot = loadImage("http://"+camera[mainCamera].ipAddr+"/screenshot.bmp");
     }
@@ -440,8 +440,10 @@ boolean keyUpdate() {
       camera[mainCamera].getPrefMem(NX2000Camera.APPID, NX2000Camera.APPPREF_ISO_PAS, "l");
     } else if (camera[mainCamera].type == NX500) {
       camera[mainCamera].getPrefMem(NX500Camera.APPID, NX500Camera.APPPREF_ISO_PAS, "l");
-    } else if (camera[mainCamera].type == NX500) {
+    } else if (camera[mainCamera].type == NX300) {
       camera[mainCamera].getPrefMem(NX300Camera.APPID, NX300Camera.APPPREF_ISO_PAS, "l");
+    } else if (camera[mainCamera].type == NX30) {
+      camera[mainCamera].getPrefMem(NX30Camera.APPID, NX300Camera.APPPREF_ISO_PAS, "l");
     } 
     ///prefman get 1 8 v=96
   } else if (lastKeyCode == KEYCODE_X) {
@@ -451,6 +453,8 @@ boolean keyUpdate() {
       camera[mainCamera].getPrefMem(NX500Camera.APPID, NX500Camera.APPPREF_FNO_INDEX, "l");
     } else if (camera[mainCamera].type == NX300) {
       camera[mainCamera].getPrefMem(NX300Camera.APPID, NX300Camera.APPPREF_FNO_INDEX, "l");
+    } else if (camera[mainCamera].type == NX30) {
+      camera[mainCamera].getPrefMem(NX30Camera.APPID, NX300Camera.APPPREF_FNO_INDEX, "l");
     } 
   }
   lastKey = 0;

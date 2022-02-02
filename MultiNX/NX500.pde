@@ -1,4 +1,4 @@
-class NX500Camera extends NXCamera {
+class NX500Camera extends RCamera {
 
   static final int APPID = 0;
   static final int APP_RESTOREID = 1;
@@ -55,7 +55,7 @@ class NX500Camera extends NXCamera {
     client = null;
     port = TelnetPort;
     if (!testGui) {
-      client = new Client(app, ipAddr, port);
+      client = new TelnetClient(app, ipAddr, port);
       if (DEBUG) println("Client "+ ipAddr + " active="+client.active());
     }
     
@@ -87,6 +87,10 @@ class NX500Camera extends NXCamera {
     screenHeight = SCREEN_HEIGHT;
   }
 
+  Client getClient() {
+    return client;
+  }
+  
   void jogcw() {
     client.write("st key jog jog1_cw\n");
   }

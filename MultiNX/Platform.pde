@@ -3,7 +3,7 @@
  Important Comment out the platform not used in the build
  */
 
-//// Android  Mode
+// Android  Mode
 //final static boolean ANDROID_MODE = true;
 //import android.content.SharedPreferences;
 //import android.preference.PreferenceManager;

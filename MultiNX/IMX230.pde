@@ -1,5 +1,6 @@
-// Open Camera Remote 
-// Android camera app
+// Raspberry Pi controlled Arducam Pivariety IMX230 21 MP Camera
+// Requires libCamera library on Raspberry PI OS - Buster legacy tested with library from Arducam
+// Does not invoke raspistill commands.
 
 import netP5.*;
 //import oscP5.*; // does not use this part of oscP5 library
@@ -10,23 +11,7 @@ import java.util.Locale;
 
 import java.net.DatagramSocket;
 
-class NXOCRCamera extends NXCamera {
-
-  static final int APPID = 0;
-  static final int APP_RESTOREID = 1;
-  static final int LINEID = 2;
-  static final int SYSRWID = 3;
-
-  static final int APPPREF_FNO_INDEX = 0x0000a338;
-  static final int APPPREF_SHUTTER_SPEED_INDEX = 0x0000a340; 
-  static final int APPPREF_EVC = 0x0000a344;
-  static final int APPPREF_VAR_EVC = 0x0000c2b4;  
-  static final int APPPREF_IFN_EV = 0x0000a658;
-  static final int APPPREF_ISO_PAS = 0x0000a388;
-  static final int APPPREF_B_DISABLE_MOVIE_REC_LIMIT =  0x0000c2d9; 
-  static final int APPPREF_B_ENABLE_NO_LENS_RELEASE = 0x0000c2dd;
-
-  static final int SYSRWPREF_SHUTTER_COUNT = 0x00000208;  
+class IMX230Camera extends RCamera {
 
   // LCD screen dimensions
   static final int SCREEN_WIDTH = 720;
@@ -62,12 +47,12 @@ class NXOCRCamera extends NXCamera {
     "0.0", "+0.3", "+0.6", "+1.0", "+1.3", "+1.6", "+2.0", "+2.3", "+2.6", "+3.0", "+3.3", "+3.6", "+4.0", "+4.3", "+4.6", "+5.0" };
   //int evId = 9;
 
-  UdpClient client;
   int photoIndex = 0;  // next photo index for filename
   int videoIndex = 0;  // next video index for filename
   boolean useTimeStamp = true;
   String numberFilename = ""; // last used number filename
   String datetimeFilename = ""; // last used date_time filename
+  String lastFilename = ""; // last used filename
 
   static final int SAME = 0;
   static final int UPDATE = 1;
@@ -75,43 +60,40 @@ class NXOCRCamera extends NXCamera {
   static final int PHOTO_MODE = 0;
   static final int VIDEO_MODE = 1;
   int mode = PHOTO_MODE;
+  SshClient sshClient; // SSH Client
 
-  NXOCRCamera(PApplet app, String ipAddr) {
+  IMX230Camera(PApplet app, String ipAddr, String user, String password) {
     this.ipAddr = ipAddr;
-    client = null;
-    port = UDPport;
+    sshClient = null;
+    port = 22;  // use SSH port with Raspberry Pi controlled cameras
+
     try {
       if (!testGui) {
-        client = new UdpClient( ipAddr, port);
-        if (DEBUG) println("UdpClient "+ ipAddr);
+        sshClient = new SshClient( app, ipAddr, port, user, password);
+        if (DEBUG) println("SshClient host="+ ipAddr + " port=" + port);
       }
     }
     catch (Exception e) {
       if (DEBUG) println("Wifi problem");
-      client = null;
+      sshClient = null;
     }
+
     connected = false;
-    if (client != null) {
+    if (sshClient != null) {
       connected = true;
     }
 
+    client = sshClient;
     name = "";
     inString = "";
-    prompt = "]# ";
-    prefix = "[root";
+    prompt = "~$ "; // pi@raspberrypi:~$
+    prefix = "pi@raspberrypi:";
     systemrw = "sysrw";
     screenShot = "/mnt/mmc/screenshot";
     focusOffset = screenWidth*(offsetPercent/100);
-    type = NX500;
+    type = IMX230;
     shutterId = 1;
     fnId = 10;
-    appId = APPID;
-    sysrwId = SYSRWID;
-    appFnoIndex = APPPREF_FNO_INDEX;
-    appShutterSpeedIndex = APPPREF_SHUTTER_SPEED_INDEX;
-    appIsoPas = APPPREF_ISO_PAS;
-    appEvc = APPPREF_EVC;
-    sysrwShutterCount = SYSRWPREF_SHUTTER_COUNT;
     evName = EV_NAME;
     shutterName = SHUTTER_NAME;
     shutterValue = SHUTTER_VALUE;
@@ -120,6 +102,10 @@ class NXOCRCamera extends NXCamera {
 
     screenWidth = SCREEN_WIDTH;
     screenHeight = SCREEN_HEIGHT;
+  }
+
+  Client getClient() {
+    return sshClient;
   }
 
   void updatePhotoIndex() {
@@ -148,11 +134,109 @@ class NXOCRCamera extends NXCamera {
     return timeStamp;
   }
 
+  int[] getCameraResult() {
+    //println("Camera getCameraResult "+ client.available());
+    if (client.available() == 0) {
+      return null;
+    }
+
+    while (!inString.endsWith(prompt)) {
+      if (client.available() > 0) { 
+        inString += client.readString(); 
+        if (DEBUG) println("inString="+inString);
+        if (inString.startsWith("exit")) {
+          inString = "";
+          return null;
+        }
+      } else {
+        return null;
+      }
+    }
+
+    // TODO update for RPI
+    if (inString.startsWith("FILENAME=")) {
+      if (DEBUG) println("FILENAME found");                       
+      int fin = inString.lastIndexOf("FILENAME=");
+      int lin = inString.lastIndexOf(prefix);
+      if (fin > 0 && lin > 0) {
+        String afilename = inString.substring(fin+9, lin);
+        String afilenameUrl = "http://"+ipAddr+inString.substring(fin+9, lin);
+        afilenameUrl.trim();
+        afilenameUrl = afilenameUrl.replaceAll("(\\r|\\n)", "");
+        afilename = afilename.replaceAll("(\\r|\\n)", "");
+        if (DEBUG) println("result filename = " + afilename + " filenameURL= "+afilenameUrl);
+        if (afilenameUrl.endsWith("SRW")) {
+          afilenameUrl = afilenameUrl.replace("SRW", "JPG");
+          afilename = afilename.replace("SRW", "JPG");
+        }
+        if (!afilenameUrl.equals(filenameUrl)) {
+          filename = afilename.substring(afilename.lastIndexOf('/')+1);
+          filenameUrl = afilenameUrl;
+          lastPhoto = loadImage(filenameUrl, "jpg");
+          if (DEBUG) println("loadImage "+filenameUrl);
+          if (lastPhoto == null || lastPhoto.width == -1 || lastPhoto.height == -1) {
+            showPhoto = false;
+            gui.displayMessage("Photo Missing "+ filenameUrl, 60);
+          } else {
+            showPhoto = true;
+          }
+        } else {
+          //gui.displayMessage("Duplicate Photo \n"+ filenameUrl, 60);
+          if (DEBUG) println("same filename "+ afilenameUrl + " "+ filenameUrl);
+        }
+      }
+      inString = "";
+      return null;
+    } else if (inString.startsWith(screenShot)) {
+      lastKeyCode = KEYCODE_LOAD_SCREENSHOT;
+    }
+    if (inString.endsWith(prompt)) {
+      String strFind = "memory:";
+      int count = 0, fromIndex = 0;
+      while ((fromIndex = inString.indexOf(strFind, fromIndex)) != -1 ) {
+        count++;
+        fromIndex++;
+      }
+      result = new int[count];
+      if (count == 4 && decodeLongSequence(inString, result)) {
+        for (int i=0; i<result.length; i++) {
+          if (DEBUG) println("result="+result[i]);
+        }
+        fn = result[0];
+        gui.fnTable.setFn(fn);
+
+        shutterSpeed = result[1];
+        gui.fnTable.setShutter(shutterSpeed);
+
+        iso = result[2];
+        gui.fnTable.setIso(iso);
+
+        ev = result[3];
+        lastKeyCode = KEYCODE_FN_ZONE_UPDATE;
+      } else if (count == 1) {
+        if (decodeLong(inString, result)) {
+          if (DEBUG) println("result="+result[0]);
+          if (inString.indexOf(systemrw)>0) {
+            shutterCount = result[0];
+          }
+        }
+      } else if (count == 3) {
+        lastKeyCode = KEYCODE_FN_ZONE_REFRESH;
+      } else if (count > 4) {
+        if (decodeLongSequence(inString, result)) {
+          for (int j=0; j<count; j++)
+            if (DEBUG) println("result="+result[j]);
+        }
+      }
+    }
+    inString = "";
+    return result;
+  }
+
   /**
-   * get filename for Open Camera Remote
-   *  param 0 same
-   *  param 1 update
-   *  param 2 next
+   * get filename for RPI
+   *  param 0 update: SAME, UPDATE, NEXT
+   *  param 1 mode
    */
   String getFilename(int update, int mode) {
     String fn = "";
@@ -188,125 +272,106 @@ class NXOCRCamera extends NXCamera {
         }
       }
     }
+    lastFilename = fn;
     return fn;
   }
 
   boolean isActive() {
-    //if (client != null && client.active()) {
     if (client != null) {
       return true;
     }
     return false;
   }
 
-  void stop() {
-    if (client != null) {
-      DatagramSocket ds = client.socket();
-      if (ds != null) {     
-        ds.close();
-        ds.disconnect();
-      }
-    }
-  }
-
-  int[] getCameraResult() {
-    return null;
-  }
-
   void getCameraFnShutterEvISO() {
   }
-
-  //void getCameraFnShutter() {
-  //  client.write(  
-  //    "prefman get " + appId + " "  +appFnoIndex + " l" + 
-  //    ";prefman get "+ appId + " "  +appShutterSpeedIndex + " l" +
-  //    "\n");
-  //}
 
   void setCameraFnShutterISO(int fnId, int shutterId, int isoId) {
     this.shutterSpeed = shutterValue[shutterId];
     this.fn = fnValue[fnId];
     this.iso = isoId;
-    if (DEBUG) println("prefman set " + appId +" " +appFnoIndex + " l " + this.fn +
-      ";prefman set "+ appId + " "  +appShutterSpeedIndex + " l " + this.shutterSpeed +
-      ";prefman set "+ appId + " "  + appIsoPas + " l " + iso +
-      //      ";prefman get "+ appId + " "  + appEvc + " l" +
-      "\n");
-    //client.write(
-    //  "prefman set "+ appId + " "  + appFnoIndex + " l " + this.fn +
-    //  ";prefman set "+ appId + " "  + appShutterSpeedIndex + " l " + this.shutterSpeed +
-    //  ";prefman set "+ appId + " "  + appIsoPas + " l " + iso +
-    //  //      ";prefman get "+ appId + " "  + appEvc + " l" +
-    //  ";st key mode "+ cameraModes[SMART_MODE]+
-    //  ";sleep 1"+
-    //  ";st key mode "+ cameraModes[MANUAL_MODE]+
-    //  "\n");
   }
 
   void getCameraEv() {
   }
 
   void focusPush() {
-    client.send("F");
+    client.write("libcamera-still -t 0 -n -k -o "+getFilename(UPDATE, PHOTO_MODE) + "\n");
+    client.write("F\n");
+    focus = true;
   }
 
   void focusRelease() {
+    if (focus) {
+      char ctrl_C = 0x03;
+      client.write(Character.toString(ctrl_C));
+    }
     focus = false;
-    client.send("R");
   }
 
   void shutterPush() {
-    client.send("S"+getFilename(UPDATE, PHOTO_MODE));
   }
 
   void shutterRelease() {
-    client.send("R");
+    focus = false;
+  }
+
+  void shutterPushRelease() {
+    if (focus) {
+      client.write("\n");
+      gui.displayMessage(lastFilename, 45);
+    }
+  }
+
+  void takePhoto() {
+    client.write("libcamera-still -t 1 -n --autofocus -o "+"Media/IMG_"+getFilename(UPDATE, PHOTO_MODE) + "_"+name+".jpg" + "\n");
+    gui.displayMessage(lastFilename, 45);
   }
 
   void record() {
-    client.send("V"+getFilename(UPDATE, VIDEO_MODE));
+    client.write("libcamera-vid -t 10000 -n --autofocus --width 1920 --height 1080 -o "+"Media/IMG_"+getFilename(UPDATE, PHOTO_MODE) + "_"+name+".h264" + "\n");
+    gui.displayMessage(lastFilename, 45);
   }
 
   void end() {
-    //client.write("st key click end\n");
   }
 
   void menu() {
-    //client.write("st key click menu\n");
   }
 
   void cameraMode(int m) {
-    //client.write("st key mode "+ cameraModes[m]+";sleep 1\n");
-    if (DEBUG) println("st key mode "+ cameraModes[m]+"\n");
+    if (DEBUG) println("cameraModes[m]\n");
   }
 
   void cameraInfo() {
-    //client.write("st key "+"\n");
+    if (DEBUG) println("cameraInfo\n");
   }
 
   void cameraOk() {
-    client.send("P"); // pause in video mode
+    if (DEBUG) println("OK\n");
+    client.write("\n"); // pause in video mode
   }
 
   void touchBack() {
-    //client.write("st key touch click 40 40\n");
   }
 
   void touchFocus(int x, int y) {
     if (DEBUG) println("touchFocus x="+x + " y="+y);
-    //client.write("st key touch click "+x +" "+ y+"\n");
   }
 
   void function() {
-    //client.write("st key click fn\n");
   }
 
   void home() {
-    //client.write("st key click scene\n");
+    useTimeStamp = !useTimeStamp;
+    if (useTimeStamp) {
+      gui.displayMessage("Date-Time Filename Prefix", 45);
+    } else {
+      gui.displayMessage("Counter Number Filename Prefix", 45);
+    }
   }
 
   void playback() {
-    //client.write("st key click pb\n");
   }
 
   boolean toggleEv = false;
@@ -319,14 +384,6 @@ class NXOCRCamera extends NXCamera {
     }
   }
 
-  void shutterPushRelease() {
-    client.send("S"+getFilename(UPDATE, PHOTO_MODE));
-  }
-
-  void takePhoto() {
-    client.send("C"+getFilename(UPDATE, PHOTO_MODE));
-  }
-
   void sendMsg(String msg) {
     //    if (client.active()) {
     //      client.write(msg);
@@ -334,11 +391,9 @@ class NXOCRCamera extends NXCamera {
   }
 
   void jogcw() {
-    //client.write("st key jog jog1_cw\n");
   }
 
   void jogccw() {
-    //client.write("st key jog jog1_ccw\n");
   }
 
   void screenshot(String filename) {
@@ -358,8 +413,8 @@ class NXOCRCamera extends NXCamera {
   }
 
   void getFilename() {
-    String afilenameUrl = "http://"+ipAddr+":8080/"+"IMG_"+
-    getFilename(SAME, PHOTO_MODE)+ "_"+name+".jpg";
+    String aFilename = getFilename(SAME, PHOTO_MODE)+ "_"+name+".jpg";
+    String afilenameUrl = "http://"+ipAddr+":8080/"+"IMG_"+ aFilename;
     afilenameUrl.trim();
     afilenameUrl = afilenameUrl.replaceAll("(\\r|\\n)", "");
     String afilename = filename.replaceAll("(\\r|\\n)", "");
@@ -368,22 +423,24 @@ class NXOCRCamera extends NXCamera {
       filename = afilename.substring(afilename.lastIndexOf('/')+1);
       filenameUrl = afilenameUrl;
       lastPhoto = loadImage(filenameUrl, "jpg");
-      if (DEBUG) println("loadImage "+filenameUrl);
-      showPhoto = true;
+      if (DEBUG) println("OCR getFilename loadImage "+filenameUrl);
+      if (lastPhoto == null || lastPhoto.width == -1 || lastPhoto.height == -1) {
+        showPhoto = false;
+        gui.displayMessage("Photo Missing \n"+ filenameUrl, 60);
+      } else {
+        showPhoto = true;
+      }
     } else {
+      //gui.displayMessage("Duplicate Photo \n"+ filenameUrl, 60);
       if (DEBUG) println("same filename "+ afilenameUrl + " "+ filenameUrl);
     }
   }
 
   void save() {
-    //client.write("prefman save "+ appId + "\n");
-    //if (DEBUG) println("prefman save "+ appId + " ");
   }
 
   void getShutterCount() {
     if (DEBUG) println("get shutter count");
-    //client.write("prefman get "+sysrwId + " "+ sysrwShutterCount+" l\n");
-    //if (DEBUG) println("prefman get "+sysrwId + " "+ sysrwShutterCount+" l\n");
   }
 
   void updateFn() {
@@ -392,10 +449,10 @@ class NXOCRCamera extends NXCamera {
 
   void updateSs() {
   }
-  
+
   void updateIso() {
   }
-  
+
   String number(int index) {
     // fix size of index number at 4 characters long
     if (index == 0)

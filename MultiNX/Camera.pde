@@ -1,12 +1,24 @@
 // Camera parameters and control
 
+// Raspberry Pi Camera support uses libcamera library
 // Camera types supported
-static final int NX2000 = 0;
-static final int NX300 = 1;
-static final int NX500 = 2;
+static final int NX2000 = 0; // Samsung NX2000 Camera
+static final int NX300 = 1; // Samsung NX300 Camera
+static final int NX30 = 2; // Samsung NX30 Camera
+static final int NX500 = 3; // Samsung NX500 Camera
+static final int OCR = 4; // Open Camera Remote Android Camera App
+static final int IMX230 = 5; // Raspberry PI Arducam Pivariety 21 MP IMX230 Camera
+
+static final String NX2000S = "NX2000"; // Samsung NX2000 Camera
+static final String NX300S = "NX300"; // Samsung NX300 Camera
+static final String NX30S = "NX30"; // Samsung NX30 Camera
+static final String NX500S = "NX500"; // Samsung NX500 Camera
+static final String OCRS = "OCR"; // Open Camera Remote Android Camera App
+static final String IMX230S = "IMX230"; // Raspberry PI Arducam Pivariety 21 MP IMX230 Camera
 
 static final int TelnetPort = 23; // telnet port
-static final int UDPport = 8000;
+static final int SSH_Port = 22; // SSH port
+static final int UDPport = 8000;  // UDP port for Open Camera Remote app
 
 // Camera modes
 int MANUAL_MODE = 9;
@@ -15,7 +27,8 @@ int cameraMode = MANUAL_MODE;
 int selectedCameraMode = MANUAL_MODE;
 String[] cameraModes ={"lens", "magic", "wi-fi", "scene", "movie", "smart", "p", "a", "s", "m", "", ""};
 String[] cameraKeyModes ={"Lens", "Magic", "WiFi", "Scene", "Movie", "Auto", "P", "A", "S", "M", "", ""};
-// setting "movie" mode does not function in NX2000 with "st key mode"
+String[] cameraKeyOCRModes ={"Photo", "Video", "", "", "", "", "", "", "", "", "", ""};
+// setting "movie" mode does not function in NX2000 with shell command "st key mode"
 
 // ISO common to NX2000, NX300, NX500
 // iso index 
@@ -76,13 +89,12 @@ interface NXCommand {
   void getPrefMemBlock(int id, int offset, int size);
 }
 
-abstract class NXCamera implements NXCommand {
+abstract class RCamera implements NXCommand {
   int iso;
   int shutterSpeed;
   int fn;
   int ev;
   int port;
-  Client client; // telnet client
   boolean connected;
   String ipAddr;
   int shutterCount;
@@ -97,7 +109,7 @@ abstract class NXCamera implements NXCommand {
   String systemrw;
   String screenShot;
   float focusOffset;
-  int type; // NX2000, NX500, NX300
+  int type; // NX2000, NX500, NX300. OCR, IMX230
   int screenWidth;
   int screenHeight;
   int shutterId;
@@ -114,30 +126,35 @@ abstract class NXCamera implements NXCommand {
   String[] shutterName;
   String[] fnName;
   int[] fnValue;
+  Client client;
   
   boolean isConnected() {
+    //println("Camera Client isConnected()="+connected);
     return connected;
   }
-
+  
   boolean isActive() {
     if (client != null && client.active()) {
       return true;
     }
     return false;
   }
-  
+
   void stop() {
     if (client != null && client.active()) {
       client.stop();
     }
   }
-  
+
   void setConnected(boolean value) {
     connected = value;
   }
 
   void setName(String name) {
     this.name = name;
+  }
+  
+  void jogccw() {
   }
 
   String getName() {
@@ -153,6 +170,7 @@ abstract class NXCamera implements NXCommand {
   }
 
   int[] getCameraResult() {
+    //println("Camera getCameraResult "+ client.available());
     if (client.available() == 0) {
       return null;
     }
@@ -165,6 +183,8 @@ abstract class NXCamera implements NXCommand {
           inString = "";
           return null;
         }
+      } else {  // TODO retest for NX cameras and OCR
+        return null;
       }
     }
     if (inString.startsWith("FILENAME=")) {
@@ -187,8 +207,14 @@ abstract class NXCamera implements NXCommand {
           filenameUrl = afilenameUrl;
           lastPhoto = loadImage(filenameUrl, "jpg");
           if (DEBUG) println("loadImage "+filenameUrl);
-          showPhoto = true;
+          if (lastPhoto == null || lastPhoto.width == -1 || lastPhoto.height == -1) {
+            showPhoto = false;
+            gui.displayMessage("Photo Missing "+ filenameUrl, 60);
+          } else {
+            showPhoto = true;
+          }
         } else {
+          //gui.displayMessage("Duplicate Photo \n"+ filenameUrl, 60);
           if (DEBUG) println("same filename "+ afilenameUrl + " "+ filenameUrl);
         }
       }
@@ -387,7 +413,9 @@ abstract class NXCamera implements NXCommand {
     }
   }
 
+
   void getCameraFnShutterEvISO() {
+    // common for NX2000, NX300, NX500
     if (client.active()) {
       client.write(  
         "prefman get " + appId + " " +appFnoIndex + " l" + 

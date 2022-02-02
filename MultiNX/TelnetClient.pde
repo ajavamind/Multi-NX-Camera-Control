@@ -1,7 +1,7 @@
 /* -*- mode: java; c-basic-offset: 2; indent-tabs-mode: nil -*- */
 
 /*
-  Client - basic network client implementation
+ Derived from Client - basic network client implementation
  Part of the Processing project - http://processing.org
  
  Copyright (c) 2004-2007 Ben Fry and Casey Reas
@@ -44,7 +44,7 @@ import java.net.*;
  * @usage Application
  * @see_external LIB_net/clientEvent
  */
-class Client implements Runnable {
+public class TelnetClient implements Client, Runnable {
 
   protected static final int MAX_BUFFER_SIZE = 1 << 27; // 128 MB
 
@@ -68,13 +68,16 @@ class Client implements Runnable {
 
   boolean disposeRegistered = false;
 
-
+  Client getClient() {
+    return this;
+  }
+  
   /**
    * @param parent typically use "this"
    * @param host address of the server
    * @param port port to read/write from on the server
    */
-  Client(PApplet parent, String host, int port) {
+  TelnetClient(PApplet parent, String host, int port) {
     this.parent = parent;
     this.host = host;
     this.port = port;
@@ -123,7 +126,7 @@ class Client implements Runnable {
    * @param socket any object of type Socket
    * @throws IOException
    */
-  Client(PApplet parent, Socket socket) throws IOException {
+  TelnetClient(PApplet parent, Socket socket) throws IOException {
     this.parent = parent;
     this.socket = socket;
 
@@ -153,6 +156,9 @@ class Client implements Runnable {
     }
   }
 
+  boolean isConnected() {
+    return false;  // force valid prompt to determine connected status
+  }
 
   /**
    * ( begin auto-generated from Client_stop.xml )

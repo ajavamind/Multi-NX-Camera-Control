@@ -49,7 +49,7 @@ String convertCounter(int value) {
 }
 
 //..........................................................................
-// common to android and java platforms
+// common to Android and Java platforms
 
 void folderSelected(File selection) {
   if (selection == null) {

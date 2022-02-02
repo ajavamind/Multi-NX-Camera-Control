@@ -1,0 +1,2 @@
+# Single Samsung NX300 test configuration
+192.168.0.107 Main NX300 0

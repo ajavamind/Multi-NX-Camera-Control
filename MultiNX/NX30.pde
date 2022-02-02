@@ -1,21 +1,19 @@
-class NX2000Camera extends RCamera {
+class NX30Camera extends RCamera {
 
   static final int SYSID = 0;
   static final int APPID = 1;
   static final int LINEID = 2;
   static final int SYSRWID = 3;
 
-  // application
   static final int APPPREF_FNO_INDEX = 0x00000008;
-  static final int APPPREF_FNO_INDEX_OTHER_MODE = 0x0000000C;
   static final int APPPREF_SHUTTER_SPEED_INDEX = 0x00000010; 
-  static final int APPPREF_SHUTTER_SPEED_INDEX_OTHER_MODE = 0x00000014;
-  static final int APPPREF_EVC = 0x00000018 ;
+  static final int APPPREF_EVC = 0x00000018;
+  static final int APPPREF_VAR_EVC = 0x00000448;  
+  static final int APPPREF_IFN_EV = 0x00000248;
   static final int APPPREF_ISO_PAS = 0x00000064;
   static final int APPPREF_B_DISABLE_MOVIE_REC_LIMIT =  0x00000308; 
   static final int APPPREF_B_ENABLE_NO_LENS_RELEASE = 0x0000030c;
 
-  // System rw
   static final int SYSRWPREF_SHUTTER_COUNT = 0x00000008;  
 
   // LCD screen dimensions
@@ -28,18 +26,15 @@ class NX2000Camera extends RCamera {
     "0.4\"", "0.3\"", "1/4", "1/5", "1/6", "1/8", "1/10", "1/13", "1/15", "1/20", 
     "1/25", "1/30", "1/40", "1/50", "1/60", "1/80", "1/100", "1/125", "1/160", "1/200", 
     "1/250", "1/320", "1/400", "1/500", "1/640", "1/800", "1/1000", "1/1250", "1/1600", "1/2000", 
-    "1/2500", "1/3200", "1/4000"
-    , "1/5000", "1/6000"
+    "1/2500", "1/3200", "1/4000", "1/5000", "1/6000"
   };
+
   final int[] SHUTTER_VALUE = { -80, -80, -75, -69, -64, -59, -53, -48, -43, -37, 
     -32, -27, -21, -16, -11, -5, 0, 5, 11, 16, 
     21, 27, 32, 37, 43, 48, 53, 59, 64, 69, 
     75, 80, 85, 91, 96, 101, 107, 112, 117, 123, 
     128, 133, 139, 144, 149, 155, 160, 165, 171, 176, 
-    181, 187, 192, 197, 202
-  };
-
-  // other lens available may have minimum F-stops: F1.4 F1.8 F2 
+    181, 187, 192, 197, 202};
 
   final String[] FN_NAME = { "F2.4", "F2.8", "F3.2", "F3.5", "F4.0", "F4.5", "F5.0", 
     "F5.6", "F6.3", "F7.1", "F8.0", 
@@ -55,7 +50,7 @@ class NX2000Camera extends RCamera {
     "0.0", "+0.3", "+0.6", "+1.0", "+1.3", "+1.6", "+2.0", "+2.3", "+2.6", "+3.0" };
   //int evId = 9;
 
-  NX2000Camera(PApplet app, String ipAddr) {
+  NX30Camera(PApplet app, String ipAddr) {
     this.ipAddr = ipAddr;
     client = null;
     port = TelnetPort;
@@ -63,16 +58,16 @@ class NX2000Camera extends RCamera {
       client = new TelnetClient(app, ipAddr, port);
       if (DEBUG) println("Client "+ ipAddr + " active="+client.active());
     }
-
+    
     connected = false;
     name = "";
     inString = "";
-    prompt = "nx2000:/# ";
-    prefix = "nx2000";
+    prompt = "nx30:/# ";
+    prefix = "nx30";
     systemrw = "system_rw";
     screenShot = "screenshot";
     focusOffset = screenWidth*(offsetPercent/100);
-    type = NX2000;
+    type = NX30;
     shutterId = 1;
     fnId = 10;
     appId = APPID;
@@ -87,12 +82,22 @@ class NX2000Camera extends RCamera {
     shutterValue = SHUTTER_VALUE;
     fnName = FN_NAME;
     fnValue = FN_VALUE;
+
     screenWidth = SCREEN_WIDTH;
     screenHeight = SCREEN_HEIGHT;
   }
 
   Client getClient() {
     return client;
+  }
+  
+  void setFnUpdate() {
+    if (DEBUG) println("setFnUpdate");
+    //client.write(
+    //  "st key mode "+ cameraModes[SMART_MODE]+
+    //  ";sleep 1"+
+    // ";st key mode "+ cameraModes[MANUAL_MODE]+
+    // "\n");
   }
   
   void jogcw() {
@@ -124,28 +129,52 @@ class NX2000Camera extends RCamera {
     int currentFnId = getFnId(getFn());
     int nextFnId = fnId;
     int count = nextFnId - currentFnId;
-    if (DEBUG) println("jog count="+count);
+    if (DEBUG) println("fn jog count="+count);
     if (count == 0) {
+      if (DEBUG) println("no change updateFn");
       return;
     }
-    String jog = "ccw";
+    String jog = "cw";
     if (count < 0) {
       count = -count;
-      jog = "cw";
+      jog = "ccw";
     }
-    String cmd = "st key click ev" +
-      ";st key click ev";
+    String cmd = "st key push ev";
+
     for (int i=0; i<count; i++) {
       cmd += ";st key jog "+jog;
     }
-    cmd += ";st key click ev;st key click ev\n";
+    cmd += ";st key release ev\n";
     client.write(cmd);
+    
   }
   
   void updateSs() {
+    if (DEBUG) println("updateSs() "+ getShutterSpeed()+ " "+getSsId(getShutterSpeed())+ " "+getSsId());
+    int currentSsId = getSsId(getShutterSpeed());
+    int nextSsId = getSsId();
+    int count = nextSsId - currentSsId;
+    if (DEBUG) println("ss jog count="+count);
+    if (count == 0) {
+      if (DEBUG) println("no change updateSs");
+      return;
+    }
+    String jog = "cw";
+    if (count < 0) {
+      count = -count;
+      jog = "ccw";
+    }
+    String cmd = "st key jog "+jog;
+    for (int i=0; i<count-1; i++) {
+      cmd += ";st key jog "+jog;
+    }
+    cmd += "\n";
+    client.write(cmd);
   }
   
   void updateIso() {
+    if (DEBUG) println("updateIso() ");
+    String cmd = "st key click down;sleep 1;st key click ok\n";
+    client.write(cmd);
   }
-  
 }

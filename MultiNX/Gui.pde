@@ -1,5 +1,11 @@
 // Graphical User Interface
 
+int SMALL_FONT_SIZE = 24;
+int FONT_SIZE = 48;
+int MEDIUM_FONT_SIZE =  72;
+int LARGE_FONT_SIZE = 96;
+int GIANT_FONT_SIZE = 128;
+
 volatile boolean modeSelection = false;
 volatile boolean fnSelection = false;
 
@@ -65,6 +71,8 @@ class Gui {
   color bague;
   final boolean[] vfull = {true, true, true, true, true, true, true, true, true, true};
   final boolean[] hfull = {true, true, true, true, true, true, true, true};
+  final boolean[] ocrVfull = {true, true, false, false, false, true, true, false, false, false};
+  final boolean[] ocrHfull = {false, true, true, false, false, false, true, true};
   final boolean[] modefull = {true, true, true, true, true, true, true, true, true, true, true, true, true};
 
   Gui() {
@@ -97,27 +105,37 @@ class Gui {
     brown = color(69, 66, 61);
     bague = color(183, 180, 139);
   }
-  
-  void createGui() {
+
+  void createGui(int cameraType) {
     horzMenuBar = new HorzMenuBar();
-    horzMenuBar.create();
-    horzMenuBar.setVisible(hfull);
-    horzMenuBar.setActive(hfull);
+    horzMenuBar.create(cameraType);
+    if (cameraType == OCR || cameraType == IMX230) {
+      horzMenuBar.setVisible(ocrHfull);
+      horzMenuBar.setActive(ocrHfull);
+    } else {
+      horzMenuBar.setVisible(hfull);
+      horzMenuBar.setActive(hfull);
+    }
 
     vertMenuBar = new VertMenuBar();
-    vertMenuBar.create();
-    vertMenuBar.setVisible(vfull);
-    vertMenuBar.setActive(vfull);
+    vertMenuBar.create(cameraType);
+    if (cameraType == OCR || cameraType == IMX230) {
+      vertMenuBar.setVisible(ocrVfull);
+      vertMenuBar.setActive(ocrVfull);
+    } else {
+      vertMenuBar.setVisible(vfull);
+      vertMenuBar.setActive(vfull);
+    }
 
     modeTable = new ModeTable();
-    modeTable.create();
+    modeTable.create(cameraType);
 
     fnZone = new FnZone();
-    fnZone.create();
+    fnZone.create(cameraType);
     fnTable = new FnTable();
-    fnTable.create();
+    fnTable.create(cameraType);
   }
-  
+
   void createConfigZone() {
     configZone = new ConfigZone();
     configZone.create();
@@ -180,7 +198,8 @@ class Gui {
   }
 
   void displayFocusArea() {
-    if (showPhoto) {
+    if (showPhoto || camera[mainCamera].type == OCR || camera[mainCamera].type == IMX230) {
+      // TODO not implemented for OCR nor IMX230
       return;
     }
     stroke(white);
@@ -209,20 +228,25 @@ class Gui {
     //rect(width/2 - w/2-2*d, height / 2-h, w+4*d, 2*h, h);
     //rectMode(CORNER);
     fill(192, 0, 0);
-    textSize(MEDIUM_FONT_SIZE);
+    //textSize(MEDIUM_FONT_SIZE);
+    textSize(FONT_SIZE);
     textAlign(CENTER, CENTER);
-    text(message, width / 2, base.height / 2);
+    //text(message, (width / 2), base.height / 2);
+    text(message, xFocusArea, base.height / 2);
     textAlign(LEFT);
   }
 
 
   /**
    * ModeTable appears in center of the screen.
+   * The mode table select one mutually exclusive mode for the camera.
    */
   class ModeTable {
     // initialize Mode Keys
     MenuKey lensKey;
     MenuKey magicKey;
+    MenuKey photoKey;
+    MenuKey videoKey;
     MenuKey wifiKey;
     MenuKey sceneKey;
     MenuKey movieKey;
@@ -239,7 +263,7 @@ class Gui {
     float insetY;
     float insetX;
 
-    void create() {
+    void create(int cameraType) {
       int keyColor = black;
       //PImage imgab = base.loadImage("icons/ab.png");
       //PImage imgana = base.loadImage("icons/ana.png");
@@ -257,6 +281,9 @@ class Gui {
 
       lensKey = new MenuKey(KEYCODE_MODE_TABLE, cameraKeyModes[0], FONT_SIZE, keyColor);
       magicKey = new MenuKey(KEYCODE_MODE_TABLE+1, cameraKeyModes[1], FONT_SIZE, keyColor);
+      photoKey = new MenuKey(KEYCODE_MODE_TABLE, cameraKeyOCRModes[0], FONT_SIZE, keyColor);
+      videoKey = new MenuKey(KEYCODE_MODE_TABLE+1, cameraKeyOCRModes[1], FONT_SIZE, keyColor);
+
       wifiKey = new MenuKey(1002, cameraKeyModes[2], FONT_SIZE, keyColor);
       sceneKey = new MenuKey(1003, cameraKeyModes[3], FONT_SIZE, keyColor);
       movieKey = new MenuKey(1004, cameraKeyModes[4], FONT_SIZE, keyColor);
@@ -272,6 +299,142 @@ class Gui {
       table = new MenuKey[numKeys];
       table[0] = lensKey;
       table[1] = magicKey;
+      table[2] = wifiKey;
+      table[3] = sceneKey;
+      table[4] = movieKey;
+      table[5] = smartKey;
+      table[6] = emptyKey;
+      table[7] = empty2Key;
+      table[8] = pKey;
+      table[9] = aKey;
+      table[10] = sKey;
+      table[11] = mKey;
+      table[12] = okKey;
+      //int[] valueTable = {0, 1, 2, 3, 
+      //  4, 5, 6, 7, 
+      //  8, 9, 10, 11, 
+      //  12
+      //};
+      int[] valueTable = {0, 1, 2, 3, 
+        4, 5, 10, 11, 6, 7, 8, 9, 12
+      };
+      insetY = iY/8;
+      insetX = iX/8;
+      float x = (mX)-insetX-iX-2*insetX- iX - iX/2; // table start from left
+      float y = 3*iY;  // table start from middle
+      int ROWS = 3;
+      int COLS = 4;
+      int ok = 12;
+      for (int i = 0; i < ROWS; i++) {
+        for (int j = 0; j < COLS; j++) {
+          table[COLS*i+j].setPosition(x + ((float)j) * (iX + 2 * insetX), y + ((float)i) * (iY + 2 * insetY), iX, iY, 0);
+          table[COLS*i+j].setVisible(true);
+          if (COLS*i+j == 6 || COLS*i+j == 7) {
+            table[COLS*i+j].setVisible(false);
+          }
+          table[COLS*i+j].setValue(valueTable[COLS*i+j]);
+        }
+      }
+      table[ok].setPosition(mX-iX, y + ((float)ROWS) * (iY + 2 * insetY), iX, iY, WIDTH / 64f);
+      table[ok].setVisible(true);
+      table[ok].setValue(1012);
+    }
+
+    void setVisible(boolean[] visible) {
+      for (int i = 0; i < table.length; i++) {
+        table[i].setVisible(visible[i]);
+      }
+    }
+
+    void saveSelection(int selected) {
+    }
+
+    void display() {
+      if (modeSelection) {
+        int mode = selectedCameraMode;
+        for (int i = 0; i < table.length; i++) {
+          if (table[i].getValue() == mode) {
+            table[i].setHighlight(true);
+          } else {
+            table[i].setHighlight(false);
+          }
+          table[i].draw();
+        }
+      }
+    }
+
+    int mousePressed(int x, int y) {
+      int keyCode = -1;
+      // table touch control area at bottom of screen or sides
+      for (int i = 0; i < numKeys; i++) {
+        if (table[i].visible) {
+          if ((x <= (table[i].x + table[i].w)) && (x >= (table[i].x)) &&
+            (y >= table[i].y) && (y <= (table[i].y +table[i].h))) {
+            keyCode = table[i].keyCode;
+            break;
+          }
+        }
+      }
+      return keyCode;
+    }
+  }
+
+  /**
+   * ModeTable appears in center of the screen.
+   */
+  class ModeTableOCR {
+    // initialize Mode Keys
+    MenuKey photoKey;
+    MenuKey videoKey;
+    MenuKey wifiKey;
+    MenuKey sceneKey;
+    MenuKey movieKey;
+    MenuKey smartKey;
+    MenuKey pKey;
+    MenuKey aKey;
+    MenuKey sKey;
+    MenuKey mKey;
+    MenuKey emptyKey;
+    MenuKey empty2Key;
+    MenuKey okKey;
+    MenuKey[] table;
+    int numKeys = 13;
+    float insetY;
+    float insetX;
+
+    void create(int cameraType) {
+      int keyColor = black;
+      //PImage imgab = base.loadImage("icons/ab.png");
+      //PImage imgana = base.loadImage("icons/ana.png");
+      //PImage imgcan = base.loadImage("icons/can.png");
+      //PImage imgcol = base.loadImage("icons/col.png");
+      //PImage imgdub = base.loadImage("icons/dub.png");
+      //PImage imghhab = base.loadImage("icons/hhab.png");
+      //PImage imghwsbs = base.loadImage("icons/hwsbs.png");
+      //PImage imgl2D = base.loadImage("icons/l2D.png");
+      //PImage imgr2D = base.loadImage("icons/r2D.png");
+      //PImage imgrow = base.loadImage("icons/row.png");
+      //PImage imgsbs = base.loadImage("icons/sbs.png");
+      //PImage imgxsbs = base.loadImage("icons/xsbs.png");
+      //"lens", "magic", "wi-fi", "scene", "movie", "smart", "p", "a", "s", "m"
+
+      photoKey = new MenuKey(KEYCODE_MODE_TABLE, cameraKeyOCRModes[0], FONT_SIZE, keyColor);
+      videoKey = new MenuKey(KEYCODE_MODE_TABLE+1, cameraKeyOCRModes[1], FONT_SIZE, keyColor);
+      wifiKey = new MenuKey(1002, cameraKeyModes[2], FONT_SIZE, keyColor);
+      sceneKey = new MenuKey(1003, cameraKeyModes[3], FONT_SIZE, keyColor);
+      movieKey = new MenuKey(1004, cameraKeyModes[4], FONT_SIZE, keyColor);
+      smartKey = new MenuKey(1005, cameraKeyModes[5], FONT_SIZE, keyColor);
+      pKey = new MenuKey(1006, cameraKeyModes[6], FONT_SIZE, keyColor);
+      aKey = new MenuKey(1007, cameraKeyModes[7], FONT_SIZE, keyColor);
+      sKey = new MenuKey(1008, cameraKeyModes[8], FONT_SIZE, keyColor);
+      mKey = new MenuKey(1009, cameraKeyModes[9], FONT_SIZE, keyColor);
+      emptyKey = new MenuKey(1010, cameraKeyModes[10], FONT_SIZE, keyColor);
+      empty2Key = new MenuKey(1011, cameraKeyModes[11], FONT_SIZE, keyColor);
+      okKey = new MenuKey(1012, CHECK_MARK, FONT_SIZE, keyColor);
+
+      table = new MenuKey[numKeys];
+      table[0] = photoKey;
+      table[1] = videoKey;
       table[2] = wifiKey;
       table[3] = sceneKey;
       table[4] = movieKey;
@@ -375,7 +538,7 @@ class Gui {
     float insetY;
     float insetX;
 
-    void create() {
+    void create(int cameraType) {
       int keyColor = black;
       int arrowKeyColor = aqua;
       shutterNameKey = new MenuKey(KEYCODE_FN_UPDATE, "SHUTTER", FONT_SIZE, white);
@@ -520,7 +683,8 @@ class Gui {
     float menuBase;
     float menux;
     float menuy;
-    void create() {
+
+    void create(int cameraType) {
       color keyColor = black;
       //PImage imgeye = base.loadImage("icons/eye.png");
 
@@ -530,7 +694,11 @@ class Gui {
       jogcwKey = new MenuKey(KEYCODE_J, LEFT_TRIANGLE, FONT_SIZE, keyColor);
       jogccwKey = new MenuKey(KEYCODE_L, RIGHT_TRIANGLE, FONT_SIZE, keyColor);
       recordKey = new MenuKey(KEYCODE_R, "Record", FONT_SIZE, red);
-      homeKey = new MenuKey(KEYCODE_H, "Home", FONT_SIZE, keyColor);
+      if (cameraType == OCR || cameraType == IMX230) {
+        homeKey = new MenuKey(KEYCODE_H, "Home", FONT_SIZE, keyColor);
+      } else {
+        homeKey = new MenuKey(KEYCODE_H, "Home", FONT_SIZE, keyColor);
+      }
       playBackKey = new MenuKey(KEYCODE_P, "PB", FONT_SIZE, keyColor);
       menuKey = new MenuKey[numKeys];
       menuKey[0] = focusKey;
@@ -613,7 +781,7 @@ class Gui {
     float menuBase;
     float x, y, w, h;
 
-    void create() {
+    void create(int cameraType) {
       color keyColor = black;
 
       cameraInfoKey = new MenuKey(KEYCODE_I, "Screen", FONT_SIZE, keyColor);
@@ -699,7 +867,7 @@ class Gui {
     int numKeys = 1;
     float menuBase;
 
-    void create() {
+    void create(int cameraType) {
       color keyColor = black;
 
       zoneKey = new MenuKey(KEYCODE_FN_ZONE, "Manual Settings", FONT_SIZE, keyColor);
@@ -1006,17 +1174,17 @@ void drawIntroductionScreen() {
   textAlign(LEFT);
   textSize(FONT_SIZE);
 
-  text("MultiNX", 300, 60);
-  text("Control Multiple NX Cameras", 300, 60+50);
+  text(TITLE, 300, 60);
+  text(SUBTITLE, 300, 60+50);
   if (DEBUG) {
-    text("Version 1.1 DEBUG", 300, 60+100);
+    text(VERSION_DEBUG, 300, 60+100);
   } else {
-    text("Version 1.1", 300, 60+100);
+    text(VERSION, 300, 60+100);
   }
 
-  text("Written by Andy Modla", 300, 60+150);
+  text(CREDITS, 300, 60+150);
   textSize(FONT_SIZE);
-  text("Select Configuration File for Cameras", 300, 400);
+  text("Select Multi-Camera Configuration File", 300, 400);
 
   for (int i=0; i<4; i++) {
     image(cameraImage, width- cameraImage.width, i*cameraImage.height);
