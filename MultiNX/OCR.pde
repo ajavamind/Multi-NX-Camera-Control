@@ -327,7 +327,7 @@ class OCRCamera extends RCamera {
   void getFilename() {
     String aFilename = "IMG_"+ getFilename(SAME, PHOTO_MODE)+ "_"+name+".jpg";
     filename = aFilename;
-    String afilenameUrl = "http://"+ipAddr+":8080/"+ aFilename;
+    String afilenameUrl = "http://"+ipAddr + ":" + HTTPport + "/" + aFilename;
     afilenameUrl.trim();
     afilenameUrl = afilenameUrl.replaceAll("(\\r|\\n)", "");
     String afilename = filename.replaceAll("(\\r|\\n)", "");

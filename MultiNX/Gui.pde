@@ -109,7 +109,7 @@ class Gui {
   void createGui(int cameraType) {
     horzMenuBar = new HorzMenuBar();
     horzMenuBar.create(cameraType);
-    if (cameraType == OCR || cameraType == IMX230) {
+    if (cameraType == OCR || cameraType == RPI) {
       horzMenuBar.setVisible(ocrHfull);
       horzMenuBar.setActive(ocrHfull);
     } else {
@@ -119,7 +119,7 @@ class Gui {
 
     vertMenuBar = new VertMenuBar();
     vertMenuBar.create(cameraType);
-    if (cameraType == OCR || cameraType == IMX230) {
+    if (cameraType == OCR || cameraType == RPI) {
       vertMenuBar.setVisible(ocrVfull);
       vertMenuBar.setActive(ocrVfull);
     } else {
@@ -198,7 +198,7 @@ class Gui {
   }
 
   void displayFocusArea() {
-    if (showPhoto || camera[mainCamera].type == OCR || camera[mainCamera].type == IMX230) {
+    if (showPhoto || camera[mainCamera].type == OCR || camera[mainCamera].type == RPI) {
       // TODO not implemented for OCR nor IMX230
       return;
     }
@@ -694,7 +694,7 @@ class Gui {
       jogcwKey = new MenuKey(KEYCODE_J, LEFT_TRIANGLE, FONT_SIZE, keyColor);
       jogccwKey = new MenuKey(KEYCODE_L, RIGHT_TRIANGLE, FONT_SIZE, keyColor);
       recordKey = new MenuKey(KEYCODE_R, "Record", FONT_SIZE, red);
-      if (cameraType == OCR || cameraType == IMX230) {
+      if (cameraType == OCR || cameraType == RPI) {
         homeKey = new MenuKey(KEYCODE_H, "Home", FONT_SIZE, keyColor);
       } else {
         homeKey = new MenuKey(KEYCODE_H, "Home", FONT_SIZE, keyColor);

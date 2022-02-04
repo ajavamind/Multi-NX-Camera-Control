@@ -1,4 +1,4 @@
-rem Windows batch file runs magick to create 2x2 JPG for Leia Inc LumePad glasses free 3D tablet display
+rem Windows batch file runs Image magick to create 2x2 JPG for Leia Inc LumePad glasses free 3D tablet display
 rem 4V full size remove -resize x1600 option
 rem 4V resized to vertical 1600 pixels, no alignment
 rem appends _2x2 suffix for LumePad

@@ -45,7 +45,7 @@ static final boolean DEBUG = true;
 // Configuration file parsed settings for cameras
 String[] ip = null; // List of camera IP addresses to access
 String[] cameraName;  // Camera name, location, or identifier - no spaces, use underscore instead
-String[] cameraSType; // NX2000, NX300, NX500, OCR, IMX230
+String[] cameraSType; // NX2000, NX300, NX500, OCR, RPI
 String[] cameraOrientation;  // default 0 otherwise use 90, 180, or 270 degree rotation of camera
 String[] cameraUserId; // Raspberry PI user id
 String[] cameraPassword; // Raspberry PI password
@@ -270,8 +270,8 @@ void draw() {
       } else if (cameraSType[i].equals(OCRS)) {
         camera[i] = new OCRCamera(this, ip[i]);
         camera[i].setName(cameraName[i]);
-      } else if (cameraSType[i].equals(IMX230S)) {
-        camera[i] = new IMX230Camera(this, ip[i], cameraUserId[i], cameraPassword[i]);
+      } else if (cameraSType[i].equals(RPIS)) {
+        camera[i] = new RPICamera(this, ip[i], cameraUserId[i], cameraPassword[i]);
         camera[i].setName(cameraName[i]);
       } else {
         if (DEBUG) println(ip[i] + " Configuration Error!");
@@ -317,7 +317,7 @@ void draw() {
           if (camera[i].client.available() > 0) { 
             inString += camera[i].client.readString(); 
             if (DEBUG) println(inString); 
-            // NX500 needs login: root response
+            // NX500 and NX30 needs login: root response
             if (inString.endsWith("login: ")) {
               camera[i].sendMsg("root\n");
               break;

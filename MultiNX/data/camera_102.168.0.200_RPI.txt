@@ -1,0 +1,5 @@
+# Raspberry Pi Computer with IMX230 camera
+# Use libcamera library framework on Raspberry Pi
+# Requires web server on Raspberry Pi at port 8080
+# Requires a user id and password for SSH access
+192.168.0.200 PI RPI 0 pi password

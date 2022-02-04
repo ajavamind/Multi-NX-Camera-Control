@@ -7,18 +7,22 @@ static final int NX300 = 1; // Samsung NX300 Camera
 static final int NX30 = 2; // Samsung NX30 Camera
 static final int NX500 = 3; // Samsung NX500 Camera
 static final int OCR = 4; // Open Camera Remote Android Camera App
-static final int IMX230 = 5; // Raspberry PI Arducam Pivariety 21 MP IMX230 Camera
+//static final int IMX230 = 5; // Raspberry PI Arducam Pivariety 21 MP IMX230 Camera
+static final int RPI = 5; // Raspberry PI Computer Camera: Tested with Arducam Pivariety 21 MP IMX230 Camera
+// Raspberry PI requires libcamera stack and web server at port 8080
 
 static final String NX2000S = "NX2000"; // Samsung NX2000 Camera
 static final String NX300S = "NX300"; // Samsung NX300 Camera
 static final String NX30S = "NX30"; // Samsung NX30 Camera
 static final String NX500S = "NX500"; // Samsung NX500 Camera
 static final String OCRS = "OCR"; // Open Camera Remote Android Camera App
-static final String IMX230S = "IMX230"; // Raspberry PI Arducam Pivariety 21 MP IMX230 Camera
+//static final String IMX230S = "IMX230"; // Raspberry PI Arducam Pivariety 21 MP IMX230 Camera
+static final String RPIS = "RPI"; // Raspberry PI Computer Camera: Tested with Arducam Pivariety 21 MP IMX230 Camera
 
 static final int TelnetPort = 23; // telnet port
-static final int SSH_Port = 22; // SSH port
+static final int SSHport = 22; // SSH port
 static final int UDPport = 8000;  // UDP port for Open Camera Remote app
+static final String HTTPport = "8080";
 
 // Camera modes
 int MANUAL_MODE = 9;
@@ -109,7 +113,7 @@ abstract class RCamera implements NXCommand {
   String systemrw;
   String screenShot;
   float focusOffset;
-  int type; // NX2000, NX500, NX300. OCR, IMX230
+  int type; // NX2000, NX500, NX300. OCR, RPI
   int screenWidth;
   int screenHeight;
   int shutterId;

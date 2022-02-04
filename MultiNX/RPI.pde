@@ -1,5 +1,6 @@
-// Raspberry Pi controlled Arducam Pivariety IMX230 21 MP Camera
-// Requires libCamera library on Raspberry PI OS - Buster legacy tested with library from Arducam
+// Raspberry Pi Computer Camera
+// Tested with Arducam Pivariety IMX230 21 MP Camera
+// Requires libCamera library framework on Raspberry PI OS - Buster legacy required tested with library from Arducam
 // Does not invoke raspistill commands.
 
 import netP5.*;
@@ -11,7 +12,7 @@ import java.util.Locale;
 
 import java.net.DatagramSocket;
 
-class IMX230Camera extends RCamera {
+class RPICamera extends RCamera {
 
   // LCD screen dimensions
   static final int SCREEN_WIDTH = 720;
@@ -62,10 +63,10 @@ class IMX230Camera extends RCamera {
   int mode = PHOTO_MODE;
   SshClient sshClient; // SSH Client
 
-  IMX230Camera(PApplet app, String ipAddr, String user, String password) {
+  RPICamera(PApplet app, String ipAddr, String user, String password) {
     this.ipAddr = ipAddr;
     sshClient = null;
-    port = 22;  // use SSH port with Raspberry Pi controlled cameras
+    port = SSHport;  // use SSH port with Raspberry Pi controlled cameras
 
     try {
       if (!testGui) {
@@ -91,7 +92,7 @@ class IMX230Camera extends RCamera {
     systemrw = "sysrw";
     screenShot = "/mnt/mmc/screenshot";
     focusOffset = screenWidth*(offsetPercent/100);
-    type = IMX230;
+    type = RPI;
     shutterId = 1;
     fnId = 10;
     evName = EV_NAME;
@@ -414,7 +415,7 @@ class IMX230Camera extends RCamera {
 
   void getFilename() {
     String aFilename = getFilename(SAME, PHOTO_MODE)+ "_"+name+".jpg";
-    String afilenameUrl = "http://"+ipAddr+":8080/"+"IMG_"+ aFilename;
+    String afilenameUrl = "http://"+ipAddr + ":" + HTTPport + "/" + "IMG_"+ aFilename;
     afilenameUrl.trim();
     afilenameUrl = afilenameUrl.replaceAll("(\\r|\\n)", "");
     String afilename = filename.replaceAll("(\\r|\\n)", "");

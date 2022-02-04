@@ -36,7 +36,7 @@ The NX cameras use the open-source Linux based (Tizen) operating system and Sams
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 
-## How to setup and configure the cameras and application
+## How to setup and configure Samsung NX cameras and application
 
 Copy the contents of the sdcard-NXnnnn folder to the base folder of the SD card. Here are instructions for the NX2000 as a setup guide example.
 
@@ -89,7 +89,7 @@ Copy the contents of the sdcard-NXnnnn folder to the base folder of the SD card.
 8. Start the application and select a new configuration. Find the folder with the configuration text file and select it.
 	The app will attempt to connect to each camera in the configuration list with telnet.
 
-## Building MultiNX for Android
+## Building MultiNX for Windows or Android
 
 When you build MultiNX for Windows or Android you must add the SelectFile and oscP5 library to the Processing SDK. See [Processing Library](https://processing.org/reference/libraries/) information under Contributions.
 
@@ -157,23 +157,23 @@ Many thanks to Samsung camera enthusiasts for information on how to modify, acce
 
 [Github hunkreborn/Samsung-NX2000-Moding-Hack](https://github.com/hunkreborn/Samsung-NX2000-Moding-Hack)
 
-[Hacking the Samsung NX300 Smart Camera](https://op-co.de/blog/posts/hacking_the_nx300/)
+[Github ge0rg/samsung-nx-hacks](https://github.com/ge0rg/samsung-nx-hacks)
+
+[Github ge0rg Samsung NX Smart Camera Hacks Wiki](https://github.com/ge0rg/samsung-nx-hacks/wiki/WebBrowser)
 
 [Github HausnerR nx300-hacks](https://github.com/HausnerR/nx300-hacks)
-
-[BusyBox Usage](https://busybox.net/downloads/BusyBox.html)
-
-[BusyBox HTTP daemon](https://oldwiki.archive.openwrt.org/doc/howto/http.httpd)
 
 [Github Wiki NX-remote-controller-mod](https://mewlips.github.io/nx-remote-controller-mod/)
 
 [Github Code NX-remote-controller-mod](https://github.com/mewlips/nx-remote-controller-mod)
 
+[Blog: Hacking the Samsung NX300 Smart Camera](https://op-co.de/blog/posts/hacking_the_nx300/)
+
 [Bash shell Busybox HTTP](https://www.geekyhacker.com/2018/06/03/bash-shell-cgi-http-server-using-busybox/)
 
-[Github Samsung NX Smart Camera Hacks](https://github.com/ge0rg/samsung-nx-hacks)
+[BusyBox Usage](https://busybox.net/downloads/BusyBox.html)
 
-[Github Samsung NX Smart Camera Hacks Wiki](https://github.com/ge0rg/samsung-nx-hacks/wiki/WebBrowser)
+[BusyBox HTTP daemon](https://oldwiki.archive.openwrt.org/doc/howto/http.httpd)
 
 [Compare NX1000 with NX2000](https://cameradecision.com/compare/Samsung-NX1000-vs-Samsung-NX2000)
 
