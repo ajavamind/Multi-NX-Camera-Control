@@ -175,9 +175,9 @@ class RPICamera extends RCamera {
           filenameUrl = afilenameUrl;
           lastPhoto = loadImage(filenameUrl, "jpg");
           if (DEBUG) println("loadImage "+filenameUrl);
-          if (lastPhoto == null || lastPhoto.width == -1 || lastPhoto.height == -1) {
+          if (lastPhoto == null || lastPhoto.width <= 0 || lastPhoto.height <= 0) {
             showPhoto = false;
-            gui.displayMessage("Photo Missing "+ filenameUrl, 60);
+            gui.displayMessage("Photo Missing or Read Error "+ filenameUrl, 60);
           } else {
             showPhoto = true;
           }
@@ -192,42 +192,16 @@ class RPICamera extends RCamera {
       lastKeyCode = KEYCODE_LOAD_SCREENSHOT;
     }
     if (inString.endsWith(prompt)) {
-      String strFind = "memory:";
+      String strFind = "Still capture image received";
       int count = 0, fromIndex = 0;
       while ((fromIndex = inString.indexOf(strFind, fromIndex)) != -1 ) {
         count++;
         fromIndex++;
       }
       result = new int[count];
-      if (count == 4 && decodeLongSequence(inString, result)) {
-        for (int i=0; i<result.length; i++) {
-          if (DEBUG) println("result="+result[i]);
-        }
-        fn = result[0];
-        gui.fnTable.setFn(fn);
-
-        shutterSpeed = result[1];
-        gui.fnTable.setShutter(shutterSpeed);
-
-        iso = result[2];
-        gui.fnTable.setIso(iso);
-
-        ev = result[3];
-        lastKeyCode = KEYCODE_FN_ZONE_UPDATE;
-      } else if (count == 1) {
-        if (decodeLong(inString, result)) {
-          if (DEBUG) println("result="+result[0]);
-          if (inString.indexOf(systemrw)>0) {
-            shutterCount = result[0];
-          }
-        }
-      } else if (count == 3) {
-        lastKeyCode = KEYCODE_FN_ZONE_REFRESH;
-      } else if (count > 4) {
-        if (decodeLongSequence(inString, result)) {
-          for (int j=0; j<count; j++)
-            if (DEBUG) println("result="+result[j]);
-        }
+      if (count == 1) {
+        gui.displayMessage("Photo Saved", 20);
+        lastKeyCode = KEYCODE_SHOW;
       }
     }
     inString = "";
@@ -297,7 +271,7 @@ class RPICamera extends RCamera {
   }
 
   void focusPush() {
-    client.write("libcamera-still -t 0 -n -k -o "+getFilename(UPDATE, PHOTO_MODE) + "\n");
+    client.write("libcamera-still -t 0 -n -k -o "+"Media/IMG_"+getFilename(UPDATE, PHOTO_MODE) + "_"+name+".jpg" + "\n");
     client.write("F\n");
     focus = true;
   }
@@ -325,7 +299,8 @@ class RPICamera extends RCamera {
   }
 
   void takePhoto() {
-    client.write("libcamera-still -t 1 -n --autofocus -o "+"Media/IMG_"+getFilename(UPDATE, PHOTO_MODE) + "_"+name+".jpg" + "\n");
+    client.write("libcamera-still -t 0 -n -k --autofocus -o "+"Media/IMG_"+getFilename(UPDATE, PHOTO_MODE) + "_"+name+".jpg" + "\n");
+      client.write("\n");
     gui.displayMessage(lastFilename, 45);
   }
 
@@ -366,9 +341,9 @@ class RPICamera extends RCamera {
   void home() {
     useTimeStamp = !useTimeStamp;
     if (useTimeStamp) {
-      gui.displayMessage("Date-Time Filename Prefix", 45);
+      gui.displayMessage("Using Date-Time Filename Prefix", 45);
     } else {
-      gui.displayMessage("Counter Number Filename Prefix", 45);
+      gui.displayMessage("Using Counter Number Filename Prefix", 45);
     }
   }
 
@@ -414,20 +389,21 @@ class RPICamera extends RCamera {
   }
 
   void getFilename() {
-    String aFilename = getFilename(SAME, PHOTO_MODE)+ "_"+name+".jpg";
-    String afilenameUrl = "http://"+ipAddr + ":" + HTTPport + "/" + "IMG_"+ aFilename;
+    String aFilename = "IMG_"+ getFilename(SAME, PHOTO_MODE)+ "_"+name+".jpg";
+    filename = aFilename;
+    String afilenameUrl = "http://"+ipAddr + ":" + HTTPport + "/" + aFilename;
     afilenameUrl.trim();
     afilenameUrl = afilenameUrl.replaceAll("(\\r|\\n)", "");
     String afilename = filename.replaceAll("(\\r|\\n)", "");
     if (DEBUG) println("result filename = " + afilename + " filenameURL= "+afilenameUrl);
-    if (!afilenameUrl.equals(filenameUrl)) {
+    if (!afilenameUrl.equals(filenameUrl) || lastPhoto == null || lastPhoto.width <= 0 || lastPhoto.height <=0) {
       filename = afilename.substring(afilename.lastIndexOf('/')+1);
       filenameUrl = afilenameUrl;
       lastPhoto = loadImage(filenameUrl, "jpg");
-      if (DEBUG) println("OCR getFilename loadImage "+filenameUrl);
-      if (lastPhoto == null || lastPhoto.width == -1 || lastPhoto.height == -1) {
+      if (DEBUG) println("RPI getFilename loadImage "+filenameUrl);
+      if (lastPhoto == null || lastPhoto.width <= 0 || lastPhoto.height <= 0) {
         showPhoto = false;
-        gui.displayMessage("Photo Missing \n"+ filenameUrl, 60);
+        gui.displayMessage("Photo Missing or Read Error\n"+ filenameUrl, 60);
       } else {
         showPhoto = true;
       }

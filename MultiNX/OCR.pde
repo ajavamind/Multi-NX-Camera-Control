@@ -264,9 +264,9 @@ class OCRCamera extends RCamera {
   void home() {
     useTimeStamp = !useTimeStamp;
     if (useTimeStamp) {
-      gui.displayMessage("Date-Time Filename Prefix", 45);
+      gui.displayMessage("Using Date-Time Filename Prefix", 45);
     } else {
-      gui.displayMessage("Counter Number Filename Prefix",45);
+      gui.displayMessage("Using Counter Number Filename Prefix",45);
     }
   }
 
@@ -332,14 +332,15 @@ class OCRCamera extends RCamera {
     afilenameUrl = afilenameUrl.replaceAll("(\\r|\\n)", "");
     String afilename = filename.replaceAll("(\\r|\\n)", "");
     if (DEBUG) println("result filename = " + afilename + " filenameURL= "+afilenameUrl);
-    if (!afilenameUrl.equals(filenameUrl)) {
+    //if (!afilenameUrl.equals(filenameUrl)) {
+    if (!afilenameUrl.equals(filenameUrl) || lastPhoto == null || lastPhoto.width <= 0 || lastPhoto.height <=0) {
       filename = afilename.substring(afilename.lastIndexOf('/')+1);
       filenameUrl = afilenameUrl;
       lastPhoto = loadImage(filenameUrl, "jpg");
       if (DEBUG) println("OCR getFilename loadImage "+filenameUrl);
       if (lastPhoto == null || lastPhoto.width == -1 || lastPhoto.height == -1) {
         showPhoto = false;
-        gui.displayMessage("Photo Missing \n"+ filenameUrl, 60);
+        gui.displayMessage("Photo Missing or Read Error\n"+ filenameUrl, 60);
       } else {
         showPhoto = true;
       }
