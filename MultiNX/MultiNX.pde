@@ -39,12 +39,12 @@ static final String SUBTITLE = "Control Multiple NX/OCR/RPI Cameras";
 static final String CREDITS = "Written by Andy Modla";
 
 static final boolean testGui = false;
-static final boolean DEBUG = true;
-//static final boolean DEBUG = false;
+//static final boolean DEBUG = true;
+static final boolean DEBUG = false;
 
 // Configuration file parsed settings for cameras
 String[] ip = null; // List of camera IP addresses to access
-String[] cameraName;  // Camera name, location, or identifier - no spaces, use underscore instead
+String[] cameraName;  // Camera name, location, or identifier - no spaces, use underscore
 String[] cameraSType; // NX2000, NX300, NX500, OCR, RPI
 String[] cameraOrientation;  // default 0 otherwise use 90, 180, or 270 degree rotation of camera
 String[] cameraUserId; // Raspberry PI user id
@@ -53,7 +53,7 @@ String[] cameraPassword; // Raspberry PI password
 // TODO
 String[] photoFnPrefix; // default IMG_
 String[] photoFnSuffix; // default "" empty string
-String[] videoFnPrefix; // default IMG_
+String[] videoFnPrefix; // default VID_
 String[] vodepFnSuffix; // default "" empty string
 
 int NumCameras = 0;
