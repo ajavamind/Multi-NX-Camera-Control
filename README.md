@@ -1,12 +1,12 @@
 # MultiNX Camera Control
 
- __On a local WiFi network, remotely synchronize and control multiple Samsung NX2000, NX300, and NX500 cameras and Android phone cameras running the Open Camera Remote app__
+ __On a local WiFi network, remotely synchronize and control multiple Samsung NX2000, NX300, NX500 cameras, Android phone cameras running the Open Camera Remote App, and Raspberry Pi Computer Cameras.__
  
  ![Android phone screenshot Start screen](screenshots/Android/Screenshot0003.jpg)
 
- MultiNX is a cross platform application for synchronizing and controlling one or more Samsung NX2000, NX300, and NX500 cameras. The application can also control Android phone cameras running the [Open Camera Remote app](https://play.google.com/store/apps/details?id=net.sourceforge.opencameraremote). Possible uses for the MultiNX application are photo and video capture sessions where one or more cameras are not easily accessible or wire focus/shutter control is not possible. I have used MultiNX with twin NX2000, NX300, and NX500 cameras in a stereo camera rig to set camera parameters, while using USB wired focus/shutter control to take photos. 
+ MultiNX is a cross platform application originally designed to work with Tizen based Samsung NX camers. MultiNX synchronizes and controls one or more Samsung NX2000, NX300, and NX500 cameras. The application was expanded to control Android phone cameras running the [Open Camera Remote app](https://play.google.com/store/apps/details?id=net.sourceforge.opencameraremote) and Raspberry PI cameras. Possible uses for the MultiNX application are photo and video capture sessions where one or more cameras are not easily accessible or wire focus/shutter control is not possible. I have used MultiNX with four NX2000 cameras remotely and twin NX2000, NX300, and NX500 cameras in a stereo camera rig to set camera parameters, while using USB wired focus/shutter control to take photos. 
  
-The NX cameras use the open-source Linux based (Tizen) operating system and Samsung provided a way to access it on power-up for diagnostics and testing. This project does not apply to the NX1000 or NX1100 cameras because those cameras use a different underlying operating system VxWorks, not Linux (Tizen).
+The NX cameras use the open-source Linux based (Tizen) operating system and Samsung provided a way to access it on power-up for diagnostics and testing. This project does not apply to the NX1000 or NX1100 cameras because those cameras use a different (closed) operating system VxWorks, not Linux (Tizen).
  
  MultiNX uses Telnet and HTTP protocol commands to communicate with the connected NX cameras. MultiNX runs on Android and Windows PC platforms.
 
@@ -22,7 +22,7 @@ The NX cameras use the open-source Linux based (Tizen) operating system and Sams
  
  With the NX500 camera, Tizen lacks code for Telnet, HTTP and FTP servers execution, so these services were copied from the NX300 and placed on the SD card to start on power up. The NX500 also enters a diagnostic factory mode that disallows touch screen focus unless it is circumvented by installing code in the NX500 file system as described by [ottokiksmaler/nx500_nx1_modding - Running_scripts_without_factory_mode_BT.md](https://github.com/ottokiksmaler/nx500_nx1_modding/blob/master/Running_scripts_without_factory_mode_BT.md) I have not tried this approach yet.
  
- The application synchronizes each camera's exposure settings, does simultaneous focus, and synchronized shutter release at nearly the same time. It does not provide Live-View with the cameras. The application features are limited by what can be done with telnet commands to control the camera and read its status.
+ The application synchronizes each camera's exposure settings, does simultaneous focus, and synchronized shutter release at nearly the same time. Shutter release is not simultaneous because individual messages are sent to each camera in sequence. The code does not provide Live-View with the cameras. The application features are limited by what can be done with telnet commands to control the camera and read its status.
 
  The NX cameras do not show their local network IP address. Only the camera's MAC address is available in the Menu - Settings - Device Information. The MAC address helps to find the camera's IP address with an app like "Network Scanner" in the Google play store. [https://play.google.com/store/apps/details?id=com.myprog.netscan&hl=en_US&gl=US](https://play.google.com/store/apps/details?id=com.myprog.netscan&hl=en_US&gl=US) The IP address is needed to configure the software for the cameras to be connected. A text file informs the application what cameras to connect, camera name, and other (unimplemented) options.
  
