@@ -48,6 +48,10 @@ int KEYCODE_NEW_CONFIG = 504;
 int KEYCODE_CURRENT_CONFIG = 505;
 int KEYCODE_MODE_TABLE = 1000;
 int KEYCODE_FN_UPDATE = 2000;
+int KEYCODE_FN_UPDATE_SYNC = 2012;
+int KEYCODE_FN_UPDATE_PREV = 2013;
+int KEYCODE_FN_UPDATE_OK = 2014;
+int KEYCODE_FN_UPDATE_NEXT = 2015;
 int KEYCODE_SHOW = 3000;
 int KEYCODE_SAVE = 3001;
 
@@ -150,8 +154,9 @@ boolean keyUpdate() {
     } else {
       camera[mainCamera].takePhoto();
     }
-  } else if (lastKeyCode == KEYCODE_0) {
+  } else if (lastKeyCode == KEYCODE_0 ) {  //|| lastKeyCode == KEYCODE_FN_UPDATE_SYNC) {
     mainCamera = 0;
+    currentCamera = 0;
     allCameras = true;
     lastKeyCode = KEYCODE_FN_ZONE_UPDATE;
     return true;
@@ -355,8 +360,8 @@ boolean keyUpdate() {
       +"    "+camera[mainCamera].getFnName(camera[mainCamera].getFn())+"    EV "+
       camera[mainCamera].getEvName()+"    ISO "+isoName[camera[mainCamera].getISO()];
     if (DEBUG) println("Camera state "+gui.fnZone.zoneKey.cap);
-  } else if (lastKeyCode >= KEYCODE_FN_UPDATE && lastKeyCode <= 2012) {
-    if (lastKeyCode == 2012) {
+  } else if (lastKeyCode >= KEYCODE_FN_UPDATE && lastKeyCode <= KEYCODE_FN_UPDATE_NEXT) {
+    if (lastKeyCode == KEYCODE_FN_UPDATE_OK) {
       fnSelection = false;
       for (int i=0; i<NumCameras; i++) {
         if (camera[i].isConnected()) {
@@ -370,6 +375,24 @@ boolean keyUpdate() {
           if (count != 0) camera[i].updateIso();
         }
       }
+    } else if (lastKeyCode == KEYCODE_FN_UPDATE_SYNC) {
+      // handled by 0 key above
+    } else if (lastKeyCode == KEYCODE_FN_UPDATE_PREV) {
+      if (DEBUG) println("mainCamera="+mainCamera + " currentCamera="+currentCamera);
+      currentCamera--;
+      if (currentCamera < 1) {
+        currentCamera = NumCameras;
+      }
+      lastKeyCode = KEYCODE_0 + currentCamera;
+      return true;
+    } else if (lastKeyCode == KEYCODE_FN_UPDATE_NEXT) {
+      if (DEBUG) println("mainCamera="+mainCamera + " currentCamera="+currentCamera);
+      currentCamera++;
+      if (currentCamera > NumCameras) {
+        currentCamera = 1;
+      }
+      lastKeyCode = KEYCODE_0 + currentCamera;
+      return true;
     } else {
       int id = camera[mainCamera].getFnId();
       if (lastKeyCode == 2005) {// left Fn
@@ -455,7 +478,7 @@ boolean keyUpdate() {
       camera[mainCamera].getPrefMem(NX300Camera.APPID, NX300Camera.APPPREF_FNO_INDEX, "l");
     } else if (camera[mainCamera].type == NX30) {
       camera[mainCamera].getPrefMem(NX30Camera.APPID, NX300Camera.APPPREF_FNO_INDEX, "l");
-    } 
+    }
   }
   lastKey = 0;
   lastKeyCode = 0;

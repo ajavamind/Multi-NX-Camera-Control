@@ -58,6 +58,8 @@ String[] vodepFnSuffix; // default "" empty string
 
 int NumCameras = 0;
 int mainCamera = 0;  // current display camera 
+int currentCamera = 0;  // all synced
+
 // The graphic interface intializes based on first camera type specified in configuration
 int cameraType = NX2000;  // default
 boolean allCameras = true;  // synchronize all cameras to same settings as mainCamera
@@ -105,6 +107,8 @@ boolean forceExit = false;
 
 void settings() {
   size(1920, 1080);
+  //size(1280, 720);  // for testing on a smaller display TODO needs GUI refactor
+  //size(960, 540);  // for testing on a smaller display TODO needs GUI refactor
   smooth();
   gui = new Gui();
   gui.createConfigZone();

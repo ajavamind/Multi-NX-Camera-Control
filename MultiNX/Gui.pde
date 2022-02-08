@@ -517,6 +517,7 @@ class Gui {
 
   /**
    * FnTable appears in center of the screen.
+   * Launched by Settings soft key
    */
   class FnTable {
     // initialize function Keys
@@ -532,9 +533,13 @@ class Gui {
     MenuKey isoLeftKey;
     MenuKey isoKey;
     MenuKey isoRightKey;
+    MenuKey unusedKey;
     MenuKey okKey;
+    MenuKey syncCamerasKey;
+    MenuKey nextCameraKey;
+    MenuKey prevCameraKey;
     MenuKey[] table;
-    int numKeys = 13;
+    int numKeys = 16;
     float insetY;
     float insetX;
 
@@ -559,8 +564,16 @@ class Gui {
       isoLeftKey = new MenuKey(2009, LEFT_TRIANGLE, MEDIUM_FONT_SIZE, arrowKeyColor);
       isoKey = new MenuKey(2010, isoName[isoId], FONT_SIZE, keyColor);
       isoRightKey = new MenuKey(2011, RIGHT_TRIANGLE, MEDIUM_FONT_SIZE, arrowKeyColor);
-      okKey = new MenuKey(2012, CHECK_MARK, FONT_SIZE, keyColor);
-
+      
+      //syncCamerasKey = new MenuKey(KEYCODE_FN_UPDATE_SYNC, "Sync" , FONT_SIZE, keyColor);
+      //prevCameraKey = new MenuKey(KEYCODE_FN_UPDATE_PREV, "Prev" , FONT_SIZE, keyColor);
+      //okKey = new MenuKey(KEYCODE_FN_UPDATE_OK, CHECK_MARK, FONT_SIZE, keyColor);
+      //nextCameraKey = new MenuKey(KEYCODE_FN_UPDATE_NEXT, "Next" , FONT_SIZE, keyColor);
+      syncCamerasKey = new MenuKey(KEYCODE_0, "Sync" , FONT_SIZE, keyColor);
+      prevCameraKey = new MenuKey(KEYCODE_FN_UPDATE_PREV, "Prev" , FONT_SIZE, keyColor);
+      okKey = new MenuKey(KEYCODE_FN_UPDATE_OK, CHECK_MARK, FONT_SIZE, keyColor);
+      nextCameraKey = new MenuKey(KEYCODE_FN_UPDATE_NEXT, "Next" , FONT_SIZE, keyColor);
+      
       table = new MenuKey[numKeys];
       table[0] = shutterNameKey;
       table[1] = shutterLeftKey;
@@ -574,30 +587,42 @@ class Gui {
       table[9] = isoLeftKey;
       table[10] = isoKey;
       table[11] = isoRightKey;
-      table[12] = okKey;
+      table[12] = syncCamerasKey;
+      table[13] = prevCameraKey;
+      table[14] = okKey;
+      table[15] = nextCameraKey;
+      
       int[] valueTable = {0, 1, 2, 3, 
         4, 5, 6, 7, 
         8, 9, 10, 11, 
-        12
+        12, 13, 14, 15
       };
       insetY = iY/8;
       insetX = iX/8;
       float x = (mX)-insetX-iX-2*insetX- iX -iX/2; // table start from left
       float y = 3*iY;  // table start from middle
-      int ROWS = 3;
+      int ROWS = 4;
       int COLS = 4;
-      int ok = 12;
-      for (int i = 0; i < ROWS; i++) {
+      float inset = WIDTH / 64f;
+      float[] insetTab = { 0, inset, 0, inset, 0, inset, 0, inset, 0, inset, 0, inset};
+      for (int i = 0; i < ROWS-1; i++) {
         for (int j = 0; j < COLS; j++) {
-          table[COLS*i+j].setPosition(x + ((float)j) * (iX + 2 * insetX), y + ((float)i) * (iY + 2 * insetY), iX, iY, 0);
+          table[COLS*i+j].setPosition(x + ((float)j) * (iX + 2 * insetX), y + ((float)i) * (iY + 2 * insetY), iX, iY, insetTab[ROWS*i+ j]);
+          table[COLS*i+j].setVisible(true);
+          table[COLS*i+j].setValue(valueTable[COLS*i+j]);
+        }
+      }
+      for (int i = ROWS-1; i < ROWS; i++) {
+        for (int j = 0; j < COLS; j++) {
+          table[COLS*i+j].setPosition(x + ((float)j) * (iX + 2 * insetX), y + ((float)i) * (iY + 2 * insetY), iX, iY, WIDTH / 64f);
           table[COLS*i+j].setVisible(true);
           table[COLS*i+j].setValue(valueTable[COLS*i+j]);
         }
       }
       //table[ok].setPosition(mX-iX, y + ((float)ROWS) * (iY + 2 * insetY), iX, iY, WIDTH / 64f);
-      table[ok].setPosition(x + 2* (iX + 2 * insetX), y + ((float)ROWS) * (iY + 2 * insetY), iX, iY, WIDTH / 64f);
-      table[ok].setVisible(true);
-      table[ok].setValue(1012);
+      //table[ok].setPosition(x + 2* (iX + 2 * insetX), y + ((float)ROWS) * (iY + 2 * insetY), iX, iY, WIDTH / 64f);
+      //table[ok].setVisible(true);
+      //table[ok].setValue(1012);
     }
 
     void setIso(int value) {
@@ -695,7 +720,7 @@ class Gui {
       jogccwKey = new MenuKey(KEYCODE_L, RIGHT_TRIANGLE, FONT_SIZE, keyColor);
       recordKey = new MenuKey(KEYCODE_R, "Record", FONT_SIZE, red);
       if (cameraType == OCR || cameraType == RPI) {
-        homeKey = new MenuKey(KEYCODE_H, "Home", FONT_SIZE, keyColor);
+        homeKey = new MenuKey(KEYCODE_H, "Fname", FONT_SIZE, keyColor);
       } else {
         homeKey = new MenuKey(KEYCODE_H, "Home", FONT_SIZE, keyColor);
       }
@@ -717,7 +742,7 @@ class Gui {
       menuBase = menuy;
 
       for (int i = 0; i < numKeys; i++) {
-        menuKey[i].setPosition(menux, ((float) i) * h, w, h- inset, 0);
+        menuKey[i].setPosition(menux, ((float) i) * h, w, h- inset, inset);
       }
     }
 
@@ -879,9 +904,9 @@ class Gui {
       float x = 294;
       float y = 2*camera[mainCamera].screenHeight -h;
       menuBase = 2*camera[mainCamera].screenHeight -h;
+      float inset = WIDTH / 64f;
 
-
-      menuKey[0].setPosition( x, y, w, h, 0);
+      menuKey[0].setPosition( x, y, w, h, inset);
       menuKey[0].setVisible(true);
       menuKey[0].setActive(true);
     }
@@ -908,13 +933,13 @@ class Gui {
     void display() {
       if (menuKey[0].visible) {
         fill(255);
-        rect(menuKey[0].x, menuKey[0].y, menuKey[0].w, menuKey[0].h);
+        //rect(menuKey[0].x, menuKey[0].y, menuKey[0].w, menuKey[0].h);
 
         for (int i = 0; i < menuKey.length; i++) {
           menuKey[i].draw();
         }
-        noFill();
-        rect(menuKey[0].x, menuKey[0].y, menuKey[0].w, menuKey[0].h);
+        //noFill();
+        //rect(menuKey[0].x, menuKey[0].y, menuKey[0].w, menuKey[0].h);
       }
     }
 

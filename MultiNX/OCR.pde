@@ -15,7 +15,7 @@ class OCRCamera extends RCamera {
   // LCD screen dimensions
   static final int SCREEN_WIDTH = 720;
   static final int SCREEN_HEIGHT = 480;
-  static final float offsetPercent = 3.0; //6.5;
+  static final float offsetPercent = 3.0;
 
   final String[] SHUTTER_NAME = { "Bulb", "30\"", "25\"", "20\"", "15\"", "13\"", "10\"", "8\"", "6\"", "5\"", 
     "4\"", "3\"", "2.5\"", "2\"", "1.6\"", "1.3\"", "1\"", "0.8\"", "0.6\"", "0.5\"", 
