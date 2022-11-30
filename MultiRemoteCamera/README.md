@@ -5,7 +5,7 @@ that run the Multi Remote Camera app. This open source camera app is available o
  [https://sourceforge.net/projects/multi-remote-camera/](https://sourceforge.net/projects/multi-remote-camera/)
 The phone should have WiFi enabled and be connected to the same network as computer or phone running the MultiNX app. 
 
-## Multi Remote Cammera Settings
+## Multi Remote Camera Settings
 
 To view photos taken with MultiRemoteCamera, MultiNX needs the app's WiFi Remote Control and HTTP Server turned on. 
 In the Multi Remote Camera App: 
