@@ -1,10 +1,10 @@
 # MultiNX Camera Control
 
- __On a local WiFi network, remotely synchronize and control multiple Samsung NX2000, NX300, NX500 cameras, Android phone cameras running the Open Camera Remote App, and Raspberry Pi Computer Cameras.__
+ __On a local WiFi network, remotely synchronize and control multiple Samsung NX2000, NX300, NX500 cameras, Android phone cameras running the Multi Remote Camera App, and Raspberry Pi Computer Cameras.__
  
  ![Android phone screenshot Start screen](screenshots/Android/Screenshot0003.jpg)
 
- MultiNX is a cross platform application originally designed to work with Tizen based Samsung NX camers. MultiNX synchronizes and controls one or more Samsung NX2000, NX300, and NX500 cameras. The application was expanded to control Android phone cameras running the [Open Camera Remote app](https://play.google.com/store/apps/details?id=net.sourceforge.opencameraremote) and Raspberry PI cameras. Possible uses for the MultiNX application are photo and video capture sessions where one or more cameras are not easily accessible or wire focus/shutter control is not possible. I have used MultiNX with four NX2000 cameras remotely and twin NX2000, NX300, and NX500 cameras in a stereo camera rig to set camera parameters, while using USB wired focus/shutter control to take photos. 
+ MultiNX is a cross platform application originally designed to work with Tizen based Samsung NX camers. MultiNX synchronizes and controls one or more Samsung NX2000, NX300, and NX500 cameras. The application was expanded to control Android phone cameras running the [Multi Remote Camera app](https://sourceforge.net/projects/multi-remote-camera/) and Raspberry PI cameras. Possible uses for the MultiNX application are photo and video capture sessions where one or more cameras are not easily accessible or wire focus/shutter control is not possible. I have used MultiNX with four NX2000 cameras remotely and twin NX2000, NX300, and NX500 cameras in a stereo camera rig to set camera parameters, while using USB wired focus/shutter control to take photos. 
  
 The NX cameras use the open-source Linux based (Tizen) operating system and Samsung provided a way to access it on power-up for diagnostics and testing. This project does not apply to the NX1000 or NX1100 cameras because those cameras use a different (closed) operating system VxWorks, not Linux (Tizen).
  
