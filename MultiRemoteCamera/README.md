@@ -2,8 +2,10 @@
 
 MultiNX can control focus and shutter on multiple Android phone cameras almost simultaneously, 
 that run the Multi Remote Camera app. This open source camera app is available on SourceForge.net at
+
  [https://sourceforge.net/projects/multi-remote-camera/](https://sourceforge.net/projects/multi-remote-camera/)
-The phone should have WiFi enabled and be connected to the same network as computer or phone running the MultiNX app. 
+ 
+The camera phone running Multi Remote Camera app should have WiFi enabled and be connected to the same network as the computer or phone running the MultiNX app. 
 
 ## Multi Remote Camera Settings
 
