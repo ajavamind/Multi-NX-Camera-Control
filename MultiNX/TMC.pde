@@ -89,7 +89,7 @@ class TMCCamera extends RCamera {
     systemrw = "sysrw";
     screenShot = "/mnt/mmc/screenshot";
     focusOffset = screenWidth*(offsetPercent/100);
-    type = OCR;
+    type = TMC;
     shutterId = 1;
     fnId = 10;
     evName = EV_NAME;

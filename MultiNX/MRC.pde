@@ -1,5 +1,5 @@
-// Open Camera Remote 
-// Android camera app
+// Multi Remote Camera
+// Android Camera app interface
 
 import netP5.*;
 //import oscP5.*; // does not use this part of oscP5 library
@@ -10,7 +10,7 @@ import java.util.Locale;
 
 import java.net.DatagramSocket;
 
-class OCRCamera extends RCamera {
+class MRCCamera extends RCamera {
 
   // LCD screen dimensions
   static final int SCREEN_WIDTH = 720;
@@ -62,14 +62,16 @@ class OCRCamera extends RCamera {
   static final int VIDEO_MODE = 1;
   int mode = PHOTO_MODE;
 
-  OCRCamera(PApplet app, String ipAddr) {
+  MRCCamera(PApplet app, String ipAddr) {
     this.ipAddr = ipAddr;
     udpClient = null;
     port = UDPport;
+    // convert IP address into broadcast IP address
+    String broadcastIpAddress = ipAddr.substring(0, ipAddr.lastIndexOf("."))+".255";
     try {
       if (!testGui) {
-        udpClient = new UdpClient( ipAddr, port);  // from netP5.* library
-        if (DEBUG) println("UdpClient "+ ipAddr);
+        udpClient = new UdpClient( broadcastIpAddress, port);  // from netP5.* library
+        if (DEBUG) println("UdpClient "+ broadcastIpAddress);
       }
     }
     catch (Exception e) {
@@ -88,7 +90,7 @@ class OCRCamera extends RCamera {
     systemrw = "sysrw";
     screenShot = "/mnt/mmc/screenshot";
     focusOffset = screenWidth*(offsetPercent/100);
-    type = OCR;
+    type = MRC;
     shutterId = 1;
     fnId = 10;
     evName = EV_NAME;
@@ -337,7 +339,7 @@ class OCRCamera extends RCamera {
       filename = afilename.substring(afilename.lastIndexOf('/')+1);
       filenameUrl = afilenameUrl;
       lastPhoto = loadImage(filenameUrl, "jpg");
-      if (DEBUG) println("OCR getFilename loadImage "+filenameUrl);
+      if (DEBUG) println("MRC getFilename loadImage "+filenameUrl);
       if (lastPhoto == null || lastPhoto.width == -1 || lastPhoto.height == -1) {
         showPhoto = false;
         gui.displayMessage("Photo Missing or Read Error\n"+ filenameUrl, 60);

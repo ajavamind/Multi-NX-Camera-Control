@@ -71,8 +71,8 @@ class Gui {
   color bague;
   final boolean[] vfull = {true, true, true, true, true, true, true, true, true, true};
   final boolean[] hfull = {true, true, true, true, true, true, true, true};
-  final boolean[] ocrVfull = {true, true, false, false, false, true, true, false, false, false};
-  final boolean[] ocrHfull = {false, true, true, false, false, false, true, true};
+  final boolean[] MRCVfull = {true, true, false, false, false, true, true, false, false, false};
+  final boolean[] MRCHfull = {false, true, true, false, false, false, true, true};
   final boolean[] modefull = {true, true, true, true, true, true, true, true, true, true, true, true, true};
 
   Gui() {
@@ -109,9 +109,9 @@ class Gui {
   void createGui(int cameraType) {
     horzMenuBar = new HorzMenuBar();
     horzMenuBar.create(cameraType);
-    if (cameraType == OCR || cameraType == RPI) {
-      horzMenuBar.setVisible(ocrHfull);
-      horzMenuBar.setActive(ocrHfull);
+    if (cameraType == MRC || cameraType == RPI) {
+      horzMenuBar.setVisible(MRCHfull);
+      horzMenuBar.setActive(MRCHfull);
     } else {
       horzMenuBar.setVisible(hfull);
       horzMenuBar.setActive(hfull);
@@ -119,9 +119,9 @@ class Gui {
 
     vertMenuBar = new VertMenuBar();
     vertMenuBar.create(cameraType);
-    if (cameraType == OCR || cameraType == RPI) {
-      vertMenuBar.setVisible(ocrVfull);
-      vertMenuBar.setActive(ocrVfull);
+    if (cameraType == MRC || cameraType == RPI) {
+      vertMenuBar.setVisible(MRCVfull);
+      vertMenuBar.setActive(MRCVfull);
     } else {
       vertMenuBar.setVisible(vfull);
       vertMenuBar.setActive(vfull);
@@ -198,8 +198,8 @@ class Gui {
   }
 
   void displayFocusArea() {
-    if (showPhoto || camera[mainCamera].type == OCR || camera[mainCamera].type == RPI) {
-      // TODO not implemented for OCR nor IMX230
+    if (showPhoto || camera[mainCamera].type == MRC || camera[mainCamera].type == RPI) {
+      // TODO not implemented for MRC nor IMX230
       return;
     }
     stroke(white);
@@ -281,8 +281,8 @@ class Gui {
 
       lensKey = new MenuKey(KEYCODE_MODE_TABLE, cameraKeyModes[0], FONT_SIZE, keyColor);
       magicKey = new MenuKey(KEYCODE_MODE_TABLE+1, cameraKeyModes[1], FONT_SIZE, keyColor);
-      photoKey = new MenuKey(KEYCODE_MODE_TABLE, cameraKeyOCRModes[0], FONT_SIZE, keyColor);
-      videoKey = new MenuKey(KEYCODE_MODE_TABLE+1, cameraKeyOCRModes[1], FONT_SIZE, keyColor);
+      photoKey = new MenuKey(KEYCODE_MODE_TABLE, cameraKeyMRCModes[0], FONT_SIZE, keyColor);
+      videoKey = new MenuKey(KEYCODE_MODE_TABLE+1, cameraKeyMRCModes[1], FONT_SIZE, keyColor);
 
       wifiKey = new MenuKey(1002, cameraKeyModes[2], FONT_SIZE, keyColor);
       sceneKey = new MenuKey(1003, cameraKeyModes[3], FONT_SIZE, keyColor);
@@ -382,7 +382,7 @@ class Gui {
   /**
    * ModeTable appears in center of the screen.
    */
-  class ModeTableOCR {
+  class ModeTableMRC {
     // initialize Mode Keys
     MenuKey photoKey;
     MenuKey videoKey;
@@ -418,8 +418,8 @@ class Gui {
       //PImage imgxsbs = base.loadImage("icons/xsbs.png");
       //"lens", "magic", "wi-fi", "scene", "movie", "smart", "p", "a", "s", "m"
 
-      photoKey = new MenuKey(KEYCODE_MODE_TABLE, cameraKeyOCRModes[0], FONT_SIZE, keyColor);
-      videoKey = new MenuKey(KEYCODE_MODE_TABLE+1, cameraKeyOCRModes[1], FONT_SIZE, keyColor);
+      photoKey = new MenuKey(KEYCODE_MODE_TABLE, cameraKeyMRCModes[0], FONT_SIZE, keyColor);
+      videoKey = new MenuKey(KEYCODE_MODE_TABLE+1, cameraKeyMRCModes[1], FONT_SIZE, keyColor);
       wifiKey = new MenuKey(1002, cameraKeyModes[2], FONT_SIZE, keyColor);
       sceneKey = new MenuKey(1003, cameraKeyModes[3], FONT_SIZE, keyColor);
       movieKey = new MenuKey(1004, cameraKeyModes[4], FONT_SIZE, keyColor);
@@ -719,7 +719,7 @@ class Gui {
       jogcwKey = new MenuKey(KEYCODE_J, LEFT_TRIANGLE, FONT_SIZE, keyColor);
       jogccwKey = new MenuKey(KEYCODE_L, RIGHT_TRIANGLE, FONT_SIZE, keyColor);
       recordKey = new MenuKey(KEYCODE_R, "Record", FONT_SIZE, red);
-      if (cameraType == OCR || cameraType == RPI) {
+      if (cameraType == MRC || cameraType == RPI) {
         homeKey = new MenuKey(KEYCODE_H, "Fname", FONT_SIZE, keyColor);
       } else {
         homeKey = new MenuKey(KEYCODE_H, "Home", FONT_SIZE, keyColor);

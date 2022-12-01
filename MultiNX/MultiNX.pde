@@ -1,7 +1,7 @@
 // Andy Modla
 // Copyright 2021-2022 Andrew Modla All Rights Reserved
 // Java sketch for simultaneous telnet/ssh control of compatible multiple Samsung NX cameras, or
-// multiple phones running the Android Open Camera Remote (OCR) Apps, or Raspberry PI cameras.
+// multiple phones running the Android Open Camera Remote (MRC) Apps, or Raspberry PI cameras.
 
 // The SD memory card root folder in each Samsung camera requires the following files present
 // depending on the camera for starting telnet, http and ftp servers:
@@ -25,7 +25,7 @@
  
  */
 
-//  port 22  ssh not used with Samsung NX cameras or OCR, needed for Raspberry Pi based cameras
+//  port 22  ssh not used with Samsung NX cameras or MRC, needed for Raspberry Pi based cameras
 
 // ftpd is optional you can add comment character # to prevent the FTP server from starting
 // make sure autoexec.sh has UNIX line ending x0a only, no x0dx0a line ending characters (windows)
@@ -35,7 +35,7 @@
 static final String VERSION = "Version 1.2";
 static final String VERSION_DEBUG = "Version 1.2 DEBUG";
 static final String TITLE = "MultiNX";
-static final String SUBTITLE = "Control Multiple NX/OCR/RPI Cameras";
+static final String SUBTITLE = "Control Multiple NX/MRC/RPI Cameras";
 static final String CREDITS = "Written by Andy Modla";
 
 static final boolean testGui = false;
@@ -45,7 +45,7 @@ static final boolean DEBUG = true;
 // Configuration file parsed settings for cameras
 String[] ip = null; // List of camera IP addresses to access
 String[] cameraName;  // Camera name, location, or identifier - no spaces, use underscore
-String[] cameraSType; // NX2000, NX300, NX500, OCR, RPI
+String[] cameraSType; // NX2000, NX300, NX500, MRC, RPI
 String[] cameraOrientation;  // default 0 otherwise use 90, 180, or 270 degree rotation of camera
 String[] cameraUserId; // Raspberry PI user id
 String[] cameraPassword; // Raspberry PI password
@@ -271,8 +271,8 @@ void draw() {
       } else if (cameraSType[i].equals(NX30S)) {
         camera[i] = new NX30Camera(this, ip[i]);
         camera[i].setName(cameraName[i]);
-      } else if (cameraSType[i].equals(OCRS)) {
-        camera[i] = new OCRCamera(this, ip[i]);
+      } else if (cameraSType[i].equals(MRCS)) {
+        camera[i] = new MRCCamera(this, ip[i]);
         camera[i].setName(cameraName[i]);
       } else if (cameraSType[i].equals(RPIS)) {
         camera[i] = new RPICamera(this, ip[i], cameraUserId[i], cameraPassword[i]);

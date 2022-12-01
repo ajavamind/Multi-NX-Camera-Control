@@ -6,7 +6,7 @@ static final int NX2000 = 0; // Samsung NX2000 Camera
 static final int NX300 = 1; // Samsung NX300 Camera
 static final int NX30 = 2; // Samsung NX30 Camera
 static final int NX500 = 3; // Samsung NX500 Camera
-static final int OCR = 4; // Open Camera Remote Android Camera App
+static final int MRC = 4; // Open Camera Remote Android Camera App
 //static final int IMX230 = 5; // Raspberry PI Arducam Pivariety 21 MP IMX230 Camera
 static final int RPI = 5; // Raspberry PI Computer Camera: Tested with Arducam Pivariety 21 MP IMX230 Camera
 static final int TMC = 6; // M5Stack Timer Camera
@@ -16,7 +16,7 @@ static final String NX2000S = "NX2000"; // Samsung NX2000 Camera
 static final String NX300S = "NX300"; // Samsung NX300 Camera
 static final String NX30S = "NX30"; // Samsung NX30 Camera
 static final String NX500S = "NX500"; // Samsung NX500 Camera
-static final String OCRS = "OCR"; // Open Camera Remote Android Camera App
+static final String MRCS = "MRC"; // Open Camera Remote Android Camera App
 //static final String IMX230S = "IMX230"; // Raspberry PI Arducam Pivariety 21 MP IMX230 Camera
 static final String RPIS = "RPI"; // Raspberry PI Computer Camera: Tested with Arducam Pivariety 21 MP IMX230 Camera
 static final String TMCS = "TMC"; // M5Stack Timer Camera
@@ -33,7 +33,7 @@ int cameraMode = MANUAL_MODE;
 int selectedCameraMode = MANUAL_MODE;
 String[] cameraModes ={"lens", "magic", "wi-fi", "scene", "movie", "smart", "p", "a", "s", "m", "", ""};
 String[] cameraKeyModes ={"Lens", "Magic", "WiFi", "Scene", "Movie", "Auto", "P", "A", "S", "M", "", ""};
-String[] cameraKeyOCRModes ={"Photo", "Video", "", "", "", "", "", "", "", "", "", ""};
+String[] cameraKeyMRCModes ={"Photo", "Video", "", "", "", "", "", "", "", "", "", ""};
 // setting "movie" mode does not function in NX2000 with shell command "st key mode"
 
 // ISO common to NX2000, NX300, NX500
@@ -115,7 +115,7 @@ abstract class RCamera implements NXCommand {
   String systemrw;
   String screenShot;
   float focusOffset;
-  int type; // NX2000, NX500, NX300. OCR, RPI
+  int type; // NX2000, NX500, NX300. MRC, RPI
   int screenWidth;
   int screenHeight;
   int shutterId;
@@ -189,7 +189,7 @@ abstract class RCamera implements NXCommand {
           inString = "";
           return null;
         }
-      } else {  // TODO retest for NX cameras and OCR
+      } else {  // TODO retest for NX cameras and MRC
         return null;
       }
     }
