@@ -39,8 +39,8 @@ static final String SUBTITLE = "Control Multiple NX/OCR/RPI Cameras";
 static final String CREDITS = "Written by Andy Modla";
 
 static final boolean testGui = false;
-//static final boolean DEBUG = true;
-static final boolean DEBUG = false;
+static final boolean DEBUG = true;
+//static final boolean DEBUG = false;
 
 // Configuration file parsed settings for cameras
 String[] ip = null; // List of camera IP addresses to access
@@ -277,10 +277,13 @@ void draw() {
       } else if (cameraSType[i].equals(RPIS)) {
         camera[i] = new RPICamera(this, ip[i], cameraUserId[i], cameraPassword[i]);
         camera[i].setName(cameraName[i]);
+      } else if (cameraSType[i].equals(TMCS)) {
+        camera[i] = new TMCCamera(this, ip[i]);
+        camera[i].setName(cameraName[i]);
       } else {
         if (DEBUG) println(ip[i] + " Configuration Error!");
         NumCameras = 0;
-        message = ip[i] + " Configuration Error!";
+        message = ip[i] + " Configuration Error! "+cameraSType[i];
         forceExit = true;
       }
     }

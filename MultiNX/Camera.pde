@@ -9,6 +9,7 @@ static final int NX500 = 3; // Samsung NX500 Camera
 static final int OCR = 4; // Open Camera Remote Android Camera App
 //static final int IMX230 = 5; // Raspberry PI Arducam Pivariety 21 MP IMX230 Camera
 static final int RPI = 5; // Raspberry PI Computer Camera: Tested with Arducam Pivariety 21 MP IMX230 Camera
+static final int TMC = 6; // M5Stack Timer Camera
 // Raspberry PI requires libcamera stack and web server at port 8080
 
 static final String NX2000S = "NX2000"; // Samsung NX2000 Camera
@@ -18,6 +19,7 @@ static final String NX500S = "NX500"; // Samsung NX500 Camera
 static final String OCRS = "OCR"; // Open Camera Remote Android Camera App
 //static final String IMX230S = "IMX230"; // Raspberry PI Arducam Pivariety 21 MP IMX230 Camera
 static final String RPIS = "RPI"; // Raspberry PI Computer Camera: Tested with Arducam Pivariety 21 MP IMX230 Camera
+static final String TMCS = "TMC"; // M5Stack Timer Camera
 
 static final int TelnetPort = 23; // telnet port
 static final int SSHport = 22; // SSH port
