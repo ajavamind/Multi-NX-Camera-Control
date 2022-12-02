@@ -454,6 +454,11 @@ boolean keyUpdate() {
   } else if (lastKeyCode == KEYCODE_CURRENT_CONFIG) {
     gui.configZone.remove();
     state = PRE_CONNECT_STATE;
+  } else if (lastKeyCode == KEYCODE_U) {
+      //case KEYCODE_U:  // save screenshot file
+    screenshotRequest = true;
+   // break;
+
   } else if (lastKeyCode == KEYCODE_V) {
     camera[mainCamera].getCameraEv();
   } else if (lastKeyCode == KEYCODE_Y) {

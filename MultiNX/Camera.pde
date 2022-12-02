@@ -6,7 +6,7 @@ static final int NX2000 = 0; // Samsung NX2000 Camera
 static final int NX300 = 1; // Samsung NX300 Camera
 static final int NX30 = 2; // Samsung NX30 Camera
 static final int NX500 = 3; // Samsung NX500 Camera
-static final int MRC = 4; // Open Camera Remote Android Camera App
+static final int MRC = 4; // Multi Remmote Camera (Android Camera App)
 //static final int IMX230 = 5; // Raspberry PI Arducam Pivariety 21 MP IMX230 Camera
 static final int RPI = 5; // Raspberry PI Computer Camera: Tested with Arducam Pivariety 21 MP IMX230 Camera
 static final int TMC = 6; // M5Stack Timer Camera
@@ -16,14 +16,14 @@ static final String NX2000S = "NX2000"; // Samsung NX2000 Camera
 static final String NX300S = "NX300"; // Samsung NX300 Camera
 static final String NX30S = "NX30"; // Samsung NX30 Camera
 static final String NX500S = "NX500"; // Samsung NX500 Camera
-static final String MRCS = "MRC"; // Open Camera Remote Android Camera App
+static final String MRCS = "MRC"; // Multi Remmote Camera (Android Camera App)
 //static final String IMX230S = "IMX230"; // Raspberry PI Arducam Pivariety 21 MP IMX230 Camera
 static final String RPIS = "RPI"; // Raspberry PI Computer Camera: Tested with Arducam Pivariety 21 MP IMX230 Camera
 static final String TMCS = "TMC"; // M5Stack Timer Camera
 
 static final int TelnetPort = 23; // telnet port
 static final int SSHport = 22; // SSH port
-static final int UDPport = 8000;  // UDP port for Open Camera Remote app
+static final int UDPport = 8000;  // UDP port for Multi Remmote Camera (Android Camera App)
 static final String HTTPport = "8080";
 
 // Camera modes

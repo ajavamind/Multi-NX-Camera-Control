@@ -130,7 +130,7 @@ class MRCCamera extends RCamera {
   }
 
   /**
-   * get filename for Open Camera Remote
+   * get filename for Multi Remmote Camera (Android Camera App)
    *  param 0 update: SAME, UPDATE, NEXT
    *  param 1 mode
    */

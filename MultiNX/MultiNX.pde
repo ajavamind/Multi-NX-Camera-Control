@@ -1,7 +1,7 @@
 // Andy Modla
 // Copyright 2021-2022 Andrew Modla All Rights Reserved
 // Java sketch for simultaneous telnet/ssh control of compatible multiple Samsung NX cameras, or
-// multiple phones running the Android Open Camera Remote (MRC) Apps, or Raspberry PI cameras.
+// multiple phones running the Android Multi Remote Camera (MRC) Apps, or Raspberry PI cameras.
 
 // The SD memory card root folder in each Samsung camera requires the following files present
 // depending on the camera for starting telnet, http and ftp servers:
@@ -57,7 +57,7 @@ String[] videoFnPrefix; // default VID_
 String[] vodepFnSuffix; // default "" empty string
 
 int NumCameras = 0;
-int mainCamera = 0;  // current display camera 
+int mainCamera = 0;  // current display camera
 int currentCamera = 0;  // all synced
 
 // The graphic interface intializes based on first camera type specified in configuration
@@ -84,25 +84,27 @@ int SAVE_STATE = 7;
 int EXIT_STATE = 9;
 int state = INTRODUCTION_STATE;
 String[] stateName = {
-  "INTRODUCTION_STATE", 
-  "CONFIGURATION_STATE", 
-  "CONFIGURATION_DIALOG_STATE", 
-  "PRE_CONNECT_STATE", 
-  "CONNECT_STATE", 
-  "RUN_STATE", 
-  "PRE_SAVE_STATE", 
-  "SAVE_STATE", 
-  "UNDEFINED STATE", 
-  "UNDEFINED STATE", 
-  "EXIT_STATE" 
+  "INTRODUCTION_STATE",
+  "CONFIGURATION_STATE",
+  "CONFIGURATION_DIALOG_STATE",
+  "PRE_CONNECT_STATE",
+  "CONNECT_STATE",
+  "RUN_STATE",
+  "PRE_SAVE_STATE",
+  "SAVE_STATE",
+  "UNDEFINED STATE",
+  "UNDEFINED STATE",
+  "EXIT_STATE"
 };
 
 String message=null;
-int frameCounter = 60; 
+int frameCounter = 60;
 boolean showPhoto = false;
 //boolean showScreenshot = false;
 int screenshotCounter = 1;
 String screenshotFilename = "screenshot";
+boolean screenshotRequest = false;
+
 boolean forceExit = false;
 
 void settings() {
@@ -115,9 +117,9 @@ void settings() {
   gui.create(this);
 }
 
-void setup() { 
+void setup() {
   // set Landscape orientation
-  orientation(LANDSCAPE); 
+  orientation(LANDSCAPE);
 
   textSize(FONT_SIZE);
 
@@ -126,13 +128,13 @@ void setup() {
   if (DEBUG) println("width="+width + " height="+height);
 
   loadPhotoNumber();
-} 
+}
 
-void draw() { 
+void draw() {
   int[] result = null; // keep
 
   // update message display visible counter
-  // 
+  //
   if (frameCounter > 0) {
     frameCounter--;
   } else {
@@ -145,7 +147,7 @@ void draw() {
   if (state == PRE_SAVE_STATE) {
     state = SAVE_STATE;
     return;
-  }  
+  }
   if (state == SAVE_STATE) {
     if (DEBUG) println(stateName[state]);
     savePhoto();
@@ -321,9 +323,9 @@ void draw() {
       if (camera[i].client != null && camera[i].client.active()) {
         if (DEBUG) println("wait for prompt");
         while (!inString.endsWith(camera[i].prompt)) {
-          if (camera[i].client.available() > 0) { 
-            inString += camera[i].client.readString(); 
-            if (DEBUG) println(inString); 
+          if (camera[i].client.available() > 0) {
+            inString += camera[i].client.readString();
+            if (DEBUG) println(inString);
             // NX500 and NX30 needs login: root response
             if (inString.endsWith("login: ")) {
               camera[i].sendMsg("root\n");
@@ -359,22 +361,30 @@ void draw() {
         float w = camera[i].lastPhoto.width;
         float h = camera[i].lastPhoto.height;
         float ar = w/h;
-        float div = 8.0; 
+        float div = 8.0;
         if (w <= 1728) {
           div = 3.0;
         }
 
         if (w > 0 && h > 0) {
-          float offset = (2*camera[i].screenWidth-((2*camera[i].screenHeight)*ar))/2;
           if (NumCameras == 1) {
+            float offset = (2*camera[i].screenWidth-((2*camera[i].screenHeight)*ar))/2;
             image(camera[i].lastPhoto, offset, 0, (2*camera[i].screenHeight)*ar, 2*camera[i].screenHeight);
             text(camera[i].name + " "+camera[i].ipAddr+" "+camera[i].filename, 10, 30);
           } else if (NumCameras == 2) {
-            image(camera[i].lastPhoto, i*camera[i].screenWidth, 0, (camera[i].screenWidth), camera[i].screenWidth/ar);
+            if (cameraOrientation[i].equals("180")) {
+              pushMatrix();
+              imageMode(CENTER);
+              translate(i*camera[i].screenWidth+camera[i].screenWidth/2, (camera[i].screenWidth/ar)/2);
+              rotate(radians(180));
+              image(camera[i].lastPhoto, 0, 0, (camera[i].screenWidth), camera[i].screenWidth/ar);
+              imageMode(CORNER);
+              popMatrix();
+            } else {
+              image(camera[i].lastPhoto, i*camera[i].screenWidth, 0, (camera[i].screenWidth), camera[i].screenWidth/ar);
+            }
             text(camera[i].name + " "+camera[i].ipAddr+" "+camera[i].filename, i*camera[i].screenWidth+10, 30);
           } else {
-            //image(camera[i].lastPhoto, 180+(i%2)*(w/div), 0+(i/2)*(h/div), w/div, h/div);
-            //image(camera[i].lastPhoto, (i%2)*NX2000Camera.screenWidth, (i/2)*(NX2000Camera.screenWidth/ar), (NX2000Camera.screenWidth), NX2000Camera.screenWidth/ar);
             image(camera[i].lastPhoto, (i%2)*camera[i].screenWidth, (i/2)*(camera[i].screenHeight), (camera[i].screenHeight)*ar, camera[i].screenHeight);
             text(camera[i].name + " "+camera[i].ipAddr+" "+camera[i].filename, (i%2)*camera[i].screenWidth+10, 30+ (i/2)*(camera[i].screenHeight));
           }
@@ -407,4 +417,47 @@ void draw() {
   //    break;
   //  }
   //}
-} 
+
+  // Drawing finished, check for screenshot request
+  saveScreenshot();
+}
+
+void imageDraw(int i, int offset, float ar) {
+  if (cameraOrientation[i].equals("180")) {
+    pushMatrix();
+    imageMode(CENTER);
+    translate(camera[i].screenWidth/2, (camera[i].screenWidth/ar)/2);
+    rotate(radians(180));
+    image(camera[i].lastPhoto, 0, 0, (camera[i].screenWidth), camera[i].screenWidth/ar);
+    imageMode(CORNER);
+    popMatrix();
+  }
+}
+
+// Save image of the composite screen
+void saveScreen(String outputFolderPath, String outputFilename, String suffix, String filetype) {
+  save(outputFolderPath + File.separator + outputFilename + suffix + "." + filetype);
+}
+
+void saveScreenshot() {
+  if (screenshotRequest) {
+    screenshotRequest = false;
+    saveScreen(sketchPath()+File.separator+"screenshot", "screenshot_", number(screenshotCounter), "png");
+    if (DEBUG) println("save "+ "screenshot_" + number(screenshotCounter));
+    screenshotCounter++;
+  }
+}
+
+// Add leading zeroes to number
+String number(int index) {
+  // fix size of index number at 4 characters long
+  if (index == 0)
+    return "";
+  else if (index < 10)
+    return ("000" + String.valueOf(index));
+  else if (index < 100)
+    return ("00" + String.valueOf(index));
+  else if (index < 1000)
+    return ("0" + String.valueOf(index));
+  return String.valueOf(index);
+}
