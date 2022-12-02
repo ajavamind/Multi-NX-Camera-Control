@@ -435,7 +435,8 @@ boolean keyUpdate() {
       }
     }
   } else if (lastKeyCode == KEYCODE_SHOW) {
-    showPhoto = !showPhoto;
+    //showPhoto = !showPhoto;
+    showPhoto = true;
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].getFilename();

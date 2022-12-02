@@ -105,7 +105,7 @@ abstract class RCamera implements NXCommand {
   String ipAddr;
   int shutterCount;
   int[] result;
-  String name;
+  String name; // camera name
   String filename = "";
   String filenameUrl = "";
   PImage lastPhoto;
@@ -133,6 +133,7 @@ abstract class RCamera implements NXCommand {
   String[] fnName;
   int[] fnValue;
   Client client;
+  int index;  // camera array index entry
   
   boolean isConnected() {
     //println("Camera Client isConnected()="+connected);
@@ -156,8 +157,9 @@ abstract class RCamera implements NXCommand {
     connected = value;
   }
 
-  void setName(String name) {
+  void setName(String name, int index) {
     this.name = name;
+    this.index = index;
   }
   
   void jogccw() {

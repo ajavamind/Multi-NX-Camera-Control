@@ -32,8 +32,8 @@
 // Use email WiFi cofiguration on NX2000 to connect to a local network.
 // Exit email screen on NX camera to shoot photos and videos after connection to your local WiFi network.
 
-static final String VERSION = "Version 1.2";
-static final String VERSION_DEBUG = "Version 1.2 DEBUG";
+static final String VERSION = "Version 1.3";
+static final String VERSION_DEBUG = "Version 1.3 DEBUG";
 static final String TITLE = "MultiNX";
 static final String SUBTITLE = "Control Multiple NX/MRC/RPI Cameras";
 static final String CREDITS = "Written by Andy Modla";
@@ -150,7 +150,7 @@ void draw() {
   }
   if (state == SAVE_STATE) {
     if (DEBUG) println(stateName[state]);
-    savePhoto();
+    savePhoto(camera[mainCamera].filename.substring(0, camera[mainCamera].filename.lastIndexOf("_")) );
     message = null;
     state = RUN_STATE;
   }
@@ -263,25 +263,25 @@ void draw() {
       if (DEBUG) println("configuration: "+ i + " " + ip[i] + " " + cameraName[i] + " " + cameraSType[i] + " " + cameraOrientation[i]);
       if (cameraSType[i].equals(NX2000S)) {
         camera[i] = new NX2000Camera(this, ip[i]);
-        camera[i].setName(cameraName[i]);
+        camera[i].setName(cameraName[i], i);
       } else if (cameraSType[i].equals(NX500S)) {
         camera[i] = new NX500Camera(this, ip[i]);
-        camera[i].setName(cameraName[i]);
+        camera[i].setName(cameraName[i], i);
       } else if (cameraSType[i].equals(NX300S)) {
         camera[i] = new NX300Camera(this, ip[i]);
-        camera[i].setName(cameraName[i]);
+        camera[i].setName(cameraName[i], i);
       } else if (cameraSType[i].equals(NX30S)) {
         camera[i] = new NX30Camera(this, ip[i]);
-        camera[i].setName(cameraName[i]);
+        camera[i].setName(cameraName[i], i);
       } else if (cameraSType[i].equals(MRCS)) {
         camera[i] = new MRCCamera(this, ip[i]);
-        camera[i].setName(cameraName[i]);
+        camera[i].setName(cameraName[i], i);
       } else if (cameraSType[i].equals(RPIS)) {
         camera[i] = new RPICamera(this, ip[i], cameraUserId[i], cameraPassword[i]);
-        camera[i].setName(cameraName[i]);
+        camera[i].setName(cameraName[i], i);
       } else if (cameraSType[i].equals(TMCS)) {
         camera[i] = new TMCCamera(this, ip[i]);
-        camera[i].setName(cameraName[i]);
+        camera[i].setName(cameraName[i], i);
       } else {
         if (DEBUG) println(ip[i] + " Configuration Error!");
         NumCameras = 0;
@@ -372,17 +372,7 @@ void draw() {
             image(camera[i].lastPhoto, offset, 0, (2*camera[i].screenHeight)*ar, 2*camera[i].screenHeight);
             text(camera[i].name + " "+camera[i].ipAddr+" "+camera[i].filename, 10, 30);
           } else if (NumCameras == 2) {
-            if (cameraOrientation[i].equals("180")) {
-              pushMatrix();
-              imageMode(CENTER);
-              translate(i*camera[i].screenWidth+camera[i].screenWidth/2, (camera[i].screenWidth/ar)/2);
-              rotate(radians(180));
-              image(camera[i].lastPhoto, 0, 0, (camera[i].screenWidth), camera[i].screenWidth/ar);
-              imageMode(CORNER);
-              popMatrix();
-            } else {
-              image(camera[i].lastPhoto, i*camera[i].screenWidth, 0, (camera[i].screenWidth), camera[i].screenWidth/ar);
-            }
+            image(camera[i].lastPhoto, i*camera[i].screenWidth, 0, (camera[i].screenWidth), camera[i].screenWidth/ar);
             text(camera[i].name + " "+camera[i].ipAddr+" "+camera[i].filename, i*camera[i].screenWidth+10, 30);
           } else {
             image(camera[i].lastPhoto, (i%2)*camera[i].screenWidth, (i/2)*(camera[i].screenHeight), (camera[i].screenHeight)*ar, camera[i].screenHeight);

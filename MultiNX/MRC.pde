@@ -17,44 +17,44 @@ class MRCCamera extends RCamera {
   static final int SCREEN_HEIGHT = 480;
   static final float offsetPercent = 3.0;
 
-  final String[] SHUTTER_NAME = { "Bulb", "30\"", "25\"", "20\"", "15\"", "13\"", "10\"", "8\"", "6\"", "5\"", 
-    "4\"", "3\"", "2.5\"", "2\"", "1.6\"", "1.3\"", "1\"", "0.8\"", "0.6\"", "0.5\"", 
-    "0.4\"", "0.3\"", "1/4", "1/5", "1/6", "1/8", "1/10", "1/13", "1/15", "1/20", 
-    "1/25", "1/30", "1/40", "1/50", "1/60", "1/80", "1/100", "1/125", "1/160", "1/200", 
-    "1/250", "1/320", "1/400", "1/500", "1/640", "1/800", "1/1000", "1/1250", "1/1600", "1/2000", 
+  final String[] SHUTTER_NAME = { "Bulb", "30\"", "25\"", "20\"", "15\"", "13\"", "10\"", "8\"", "6\"", "5\"",
+    "4\"", "3\"", "2.5\"", "2\"", "1.6\"", "1.3\"", "1\"", "0.8\"", "0.6\"", "0.5\"",
+    "0.4\"", "0.3\"", "1/4", "1/5", "1/6", "1/8", "1/10", "1/13", "1/15", "1/20",
+    "1/25", "1/30", "1/40", "1/50", "1/60", "1/80", "1/100", "1/125", "1/160", "1/200",
+    "1/250", "1/320", "1/400", "1/500", "1/640", "1/800", "1/1000", "1/1250", "1/1600", "1/2000",
     "1/2500", "1/3200", "1/4000", "1/5000", "1/6000"
   };
 
-  final int[] SHUTTER_VALUE = { -80, -80, -75, -69, -64, -59, -53, -48, -43, -37, 
-    -32, -27, -21, -16, -11, -5, 0, 5, 11, 16, 
-    21, 27, 32, 37, 43, 48, 53, 59, 64, 69, 
-    75, 80, 85, 91, 96, 101, 107, 112, 117, 123, 
-    128, 133, 139, 144, 149, 155, 160, 165, 171, 176, 
+  final int[] SHUTTER_VALUE = { -80, -80, -75, -69, -64, -59, -53, -48, -43, -37,
+    -32, -27, -21, -16, -11, -5, 0, 5, 11, 16,
+    21, 27, 32, 37, 43, 48, 53, 59, 64, 69,
+    75, 80, 85, 91, 96, 101, 107, 112, 117, 123,
+    128, 133, 139, 144, 149, 155, 160, 165, 171, 176,
     181, 187, 192, 197, 202};
 
-  final String[] FN_NAME = { "F2.4", "F2.8", "F3.2", "F3.5", "F4.0", "F4.5", "F5.0", 
-    "F5.6", "F6.3", "F7.1", "F8.0", 
-    "F9.0", "F10", "F11", "F13", 
+  final String[] FN_NAME = { "F2.4", "F2.8", "F3.2", "F3.5", "F4.0", "F4.5", "F5.0",
+    "F5.6", "F6.3", "F7.1", "F8.0",
+    "F9.0", "F10", "F11", "F13",
     "F14", "F16", "F18", "F20", "F22" };
 
-  final int[] FN_VALUE = {41, 48, 53, 59, 64, 69, 75, 
-    80, 85, 91, 96, 
-    101, 107, 112, 117, 
+  final int[] FN_VALUE = {41, 48, 53, 59, 64, 69, 75,
+    80, 85, 91, 96,
+    101, 107, 112, 117,
     123, 128, 133, 139, 144 };
 
-  final String[] EV_NAME = { "-5.0", "-4.6", "-4.3", "-4.0", "-3.6", "-3.3", "-3.0", "-2.6", "-2.3", "-2.0", "-1.6", "-1.3", "-1.0", "-0.6", "-0.3", 
+  final String[] EV_NAME = { "-5.0", "-4.6", "-4.3", "-4.0", "-3.6", "-3.3", "-3.0", "-2.6", "-2.3", "-2.0", "-1.6", "-1.3", "-1.0", "-0.6", "-0.3",
     "0.0", "+0.3", "+0.6", "+1.0", "+1.3", "+1.6", "+2.0", "+2.3", "+2.6", "+3.0", "+3.3", "+3.6", "+4.0", "+4.3", "+4.6", "+5.0" };
   //int evId = 9;
 
   UdpClient udpClient;
-  
+
   int photoIndex = 0;  // next photo index for filename
   int videoIndex = 0;  // next video index for filename
   boolean useTimeStamp = true;
   String numberFilename = ""; // last used number filename
   String datetimeFilename = ""; // last used date_time filename
   String lastFilename = ""; // last used filename
-  
+
   static final int SAME = 0;
   static final int UPDATE = 1;
   static final int NEXT = 2;
@@ -183,7 +183,7 @@ class MRCCamera extends RCamera {
   void stop() {
     if (udpClient != null) {
       DatagramSocket ds = udpClient.socket();
-      if (ds != null) {     
+      if (ds != null) {
         ds.close();
         ds.disconnect();
       }
@@ -268,7 +268,7 @@ class MRCCamera extends RCamera {
     if (useTimeStamp) {
       gui.displayMessage("Using Date-Time Filename Prefix", 45);
     } else {
-      gui.displayMessage("Using Counter Number Filename Prefix",45);
+      gui.displayMessage("Using Counter Number Filename Prefix", 45);
     }
   }
 
@@ -337,6 +337,7 @@ class MRCCamera extends RCamera {
     //if (!afilenameUrl.equals(filenameUrl)) {
     if (!afilenameUrl.equals(filenameUrl) || lastPhoto == null || lastPhoto.width <= 0 || lastPhoto.height <=0) {
       filename = afilename.substring(afilename.lastIndexOf('/')+1);
+      if (DEBUG) println("filename="+filename);
       filenameUrl = afilenameUrl;
       lastPhoto = loadImage(filenameUrl, "jpg");
       if (DEBUG) println("MRC getFilename loadImage "+filenameUrl);
@@ -344,6 +345,9 @@ class MRCCamera extends RCamera {
         showPhoto = false;
         gui.displayMessage("Photo Missing or Read Error\n"+ filenameUrl, 60);
       } else {
+        if (!cameraOrientation[index].equals("0")) {
+          lastPhoto = rotatePhoto(lastPhoto, int(cameraOrientation[index]));
+        }
         showPhoto = true;
       }
     } else {
