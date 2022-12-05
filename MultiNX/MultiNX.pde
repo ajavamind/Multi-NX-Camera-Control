@@ -1,7 +1,7 @@
 // Andy Modla
 // Copyright 2021-2022 Andrew Modla All Rights Reserved
 // Java sketch for simultaneous telnet/ssh control of compatible multiple Samsung NX cameras, or
-// multiple phones running the Android Multi Remote Camera (MRC) Apps, or Raspberry PI cameras.
+// multiple phones running the Android Multi Remote Camera (MRC) App, or Raspberry PI cameras.
 
 // The SD memory card root folder in each Samsung camera requires the following files present
 // depending on the camera for starting telnet, http and ftp servers:
@@ -34,9 +34,10 @@
 
 static final String VERSION = "Version 1.3";
 static final String VERSION_DEBUG = "Version 1.3 DEBUG";
-static final String TITLE = "MultiNX";
+static final String TITLE = "MultiNX - Multi Camera Controller";
 static final String SUBTITLE = "Control Multiple NX/MRC/RPI Cameras";
 static final String CREDITS = "Written by Andy Modla";
+static final String COPYRIGHT = "Copyright 2022 Andrew Modla";
 
 static final boolean testGui = false;
 static final boolean DEBUG = true;
@@ -66,6 +67,8 @@ boolean allCameras = true;  // synchronize all cameras to same settings as mainC
 String saveFolderPath;
 String defaultFilename = "default.txt";
 String configFilename;
+String titleText = TITLE;
+String NOT_IMPLEMENTED = "Not Implemented";
 
 RCamera[] camera;
 PImage lcdScreen;  // camera LCD screen image
@@ -98,6 +101,7 @@ String[] stateName = {
 };
 
 String message=null;
+int messagePosition = 0;
 int frameCounter = 60;
 boolean showPhoto = false;
 //boolean showScreenshot = false;
@@ -120,9 +124,10 @@ void settings() {
 void setup() {
   // set Landscape orientation
   orientation(LANDSCAPE);
-
+  surface.setTitle(titleText);
   textSize(FONT_SIZE);
 
+  // get data folder images for the app
   lcdScreen = loadImage("screenshot/nx2000/blankscreen.png");
   cameraImage = loadImage("images/nx2000_topview_270x270.jpg");
   if (DEBUG) println("width="+width + " height="+height);
@@ -140,7 +145,7 @@ void draw() {
   } else {
     message = null;
     if (forceExit) {
-      lastKeyCode = KEYCODE_ESCAPE;
+      lastKeyCode = KEYCODE_ESC;
     }
   }
 
@@ -154,8 +159,8 @@ void draw() {
     message = null;
     state = RUN_STATE;
   }
-  //background(128);
-  background(0);
+  background(128);
+  //background(0);
   if (screenshot != null) {
     if (camera[mainCamera].type == NX2000 || camera[mainCamera].type == NX300 || camera[mainCamera].type == NX30) {
       imageMode(CENTER);
@@ -360,6 +365,13 @@ void draw() {
         //if (DEBUG) println("show "+camera[i].filename + " " + camera[i].lastPhoto.width + " "+camera[i].lastPhoto.height);
         float w = camera[i].lastPhoto.width;
         float h = camera[i].lastPhoto.height;
+        if (w > 0 && h > 0 && camera[i].needsRotation) {
+          if (!cameraOrientation[camera[i].index].equals("0")) {
+            camera[i].lastPhoto = rotatePhoto(camera[i].lastPhoto, int(cameraOrientation[camera[i].index]));
+          }
+          camera[i].needsRotation = false;
+          showPhoto = true;
+        }
         float ar = w/h;
         float div = 8.0;
         if (w <= 1728) {
@@ -432,7 +444,8 @@ void saveScreen(String outputFolderPath, String outputFilename, String suffix, S
 void saveScreenshot() {
   if (screenshotRequest) {
     screenshotRequest = false;
-    saveScreen(sketchPath()+File.separator+"screenshot", "screenshot_", number(screenshotCounter), "png");
+    //if (ANDROID_MODE)
+    saveScreen(sketchPath("screenshot")+File.separator, "screenshot_", number(screenshotCounter), "png");
     if (DEBUG) println("save "+ "screenshot_" + number(screenshotCounter));
     screenshotCounter++;
   }

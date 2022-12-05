@@ -82,7 +82,7 @@ interface NXCommand {
   int getFnId();
   int getFnLength();
   void save();
-  void getFilename();
+  void getPhotoFile();
   int getISO();
   int getEv();
   String getEvName();
@@ -109,6 +109,7 @@ abstract class RCamera implements NXCommand {
   String filename = "";
   String filenameUrl = "";
   PImage lastPhoto;
+  boolean needsRotation = false;
   String inString;
   String prompt;
   String prefix;
@@ -326,7 +327,7 @@ abstract class RCamera implements NXCommand {
     return fn;
   }
 
-  void getFilename() {
+  void getPhotoFile() {
     if (client.active()) {
       client.write("FILENAME=`ls -t /mnt/mmc/DCIM/100PHOTO | head -1`;echo \"FILENAME=/DCIM/100PHOTO/$FILENAME\"\n");
     }
@@ -352,6 +353,7 @@ abstract class RCamera implements NXCommand {
   }
 
   void record() {
+    if (DEBUG) println("record()");
     client.write("st key click rec\n");
   }
 

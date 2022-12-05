@@ -1,5 +1,5 @@
 # Multi Remote Camera broadcast address triggers all MRC on the network
 # IP address | camera name | camera type | orientation code
 # portrait mode Samsung S8
-192.168.0.101 L MRC 90
-192.168.0.100 R MRC 90
+192.168.0.101 L MRC 0
+192.168.0.100 R MRC 00

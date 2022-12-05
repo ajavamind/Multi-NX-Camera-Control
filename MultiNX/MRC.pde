@@ -226,6 +226,7 @@ class MRCCamera extends RCamera {
 
   void record() {
     udpClient.send("V"+getFilename(UPDATE, VIDEO_MODE));
+    if(DEBUG) println("MRC video record");
     gui.displayMessage(lastFilename, 45);
   }
 
@@ -273,11 +274,14 @@ class MRCCamera extends RCamera {
   }
 
   void playback() {
+    gui.displayMessage(NOT_IMPLEMENTED, 20);
     //udpClient.write("st key click pb\n");
+    //udpClient.send();  //TODO
   }
 
   boolean toggleEv = false;
   void ev() {
+    gui.displayMessage(NOT_IMPLEMENTED, 20);
     toggleEv = !toggleEv;
     if (toggleEv) {
       //udpClient.write("st key push ev\n");
@@ -303,10 +307,12 @@ class MRCCamera extends RCamera {
   }
 
   void jogcw() {
+    gui.displayMessage(NOT_IMPLEMENTED, 20);
     //udpClient.write("st key jog jog1_cw\n");
   }
 
   void jogccw() {
+    gui.displayMessage(NOT_IMPLEMENTED, 20);
     //udpClient.write("st key jog jog1_ccw\n");
   }
 
@@ -326,8 +332,9 @@ class MRCCamera extends RCamera {
     return true;
   }
 
-  void getFilename() {
-    String aFilename = "IMG_"+ getFilename(SAME, PHOTO_MODE)+ "_"+name+".jpg";
+  void getPhotoFile() {
+    String aName = getFilename(SAME, PHOTO_MODE);
+    String aFilename = "IMG_"+ aName+ "_"+name+".jpg";
     filename = aFilename;
     String afilenameUrl = "http://"+ipAddr + ":" + HTTPport + "/" + aFilename;
     afilenameUrl.trim();
@@ -339,19 +346,19 @@ class MRCCamera extends RCamera {
       filename = afilename.substring(afilename.lastIndexOf('/')+1);
       if (DEBUG) println("filename="+filename);
       filenameUrl = afilenameUrl;
-      lastPhoto = loadImage(filenameUrl, "jpg");
-      if (DEBUG) println("MRC getFilename loadImage "+filenameUrl);
+      lastPhoto = requestImage(filenameUrl, "jpg");
+      if (DEBUG) println("MRC getPhotoFile loadImage "+filenameUrl);
+      gui.displayMessage("Get Photo... \n"+ aName, 90);
+      if (!cameraOrientation[index].equals("0")) {
+        needsRotation = true;
+      }
+      //showPhoto = true;
       if (lastPhoto == null || lastPhoto.width == -1 || lastPhoto.height == -1) {
         showPhoto = false;
         gui.displayMessage("Photo Missing or Read Error\n"+ filenameUrl, 60);
-      } else {
-        if (!cameraOrientation[index].equals("0")) {
-          lastPhoto = rotatePhoto(lastPhoto, int(cameraOrientation[index]));
-        }
-        showPhoto = true;
       }
     } else {
-      //gui.displayMessage("Duplicate Photo \n"+ filenameUrl, 60);
+      gui.displayMessage("Photo \n"+ filenameUrl, 20);
       if (DEBUG) println("same filename "+ afilenameUrl + " "+ filenameUrl);
     }
   }

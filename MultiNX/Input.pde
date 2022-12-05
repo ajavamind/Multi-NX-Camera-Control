@@ -1,62 +1,121 @@
-// Keyboard and mouse input handling
+// Keyboard and Mouse input handling
+// These codes (ASCII) are for Java applications
+// Android codes (not implemented) differ with some keys
 
-int KEYCODE_0 = 48;
-int KEYCODE_1 = 49;
-int KEYCODE_9 = 57;
-int KEYCODE_DEL = 127;
-int KEYCODE_A = 65;
-int KEYCODE_B = 66;
-int KEYCODE_C = 67;
-int KEYCODE_D = 68;
-int KEYCODE_E = 69;
-int KEYCODE_F = 70;
-int KEYCODE_G = 71;
-int KEYCODE_H = 72;
-int KEYCODE_I = 73;
-int KEYCODE_J = 74;
-int KEYCODE_K = 75;
-int KEYCODE_L = 76;
-int KEYCODE_M = 77;
-int KEYCODE_N = 78;
-int KEYCODE_O = 79;
-int KEYCODE_P = 80;
-int KEYCODE_Q = 81;
-int KEYCODE_R = 82;
-int KEYCODE_S = 83;
-int KEYCODE_T = 84;
-int KEYCODE_U = 85;
-int KEYCODE_V = 86;
-int KEYCODE_W = 87;
-int KEYCODE_X = 88;
-int KEYCODE_Y = 89;
-int KEYCODE_Z = 90;
-int KEYCODE_MEDIA_NEXT;
-int KEYCODE_MEDIA_PLAY_PAUSE = 80;
-int KEYCODE_MEDIA_PREVIOUS;
-int KEYCODE_PAGE_DOWN;
-int KEYCODE_PAGE_UP;
-int KEYCODE_MEDIA_STOP;
-int KEYCODE_ESCAPE = 27;
-int KEYCODE_BACKSPACE = 8;
-int KEYCODE_MOVE_HOME       = 122;
-int KEYCODE_MOVE_END       = 123;
-int KEYCODE_FN_ZONE = 500;
-int KEYCODE_FN_ZONE_UPDATE = 501;
-int KEYCODE_FN_ZONE_REFRESH = 502;
-int KEYCODE_LOAD_SCREENSHOT = 503;
-int KEYCODE_NEW_CONFIG = 504;
-int KEYCODE_CURRENT_CONFIG = 505;
-int KEYCODE_MODE_TABLE = 1000;
-int KEYCODE_FN_UPDATE = 2000;
-int KEYCODE_FN_UPDATE_SYNC = 2012;
-int KEYCODE_FN_UPDATE_PREV = 2013;
-int KEYCODE_FN_UPDATE_OK = 2014;
-int KEYCODE_FN_UPDATE_NEXT = 2015;
-int KEYCODE_SHOW = 3000;
-int KEYCODE_SAVE = 3001;
+static final int KEYCODE_BACKSPACE = 8;
+static final int KEYCODE_TAB = 9;
+static final int KEYCODE_ENTER = 10;
+static final int KEYCODE_ESC = 27;
+static final int KEYCODE_SPACE = 32;
+static final int KEYCODE_COMMA = 44;
+static final int KEYCODE_MINUS = 45;
+static final int KEYCODE_PERIOD = 46;
+static final int KEYCODE_SLASH = 47;
+static final int KEYCODE_QUESTION_MARK = 47;
+static final int KEYCODE_0 = 48;
+static final int KEYCODE_1 = 49;
+static final int KEYCODE_2 = 50;
+static final int KEYCODE_3 = 51;
+static final int KEYCODE_4 = 52;
+static final int KEYCODE_5 = 53;
+static final int KEYCODE_6 = 54;
+static final int KEYCODE_7 = 55;
+static final int KEYCODE_8 = 56;
+static final int KEYCODE_9 = 57;
+static final int KEYCODE_SEMICOLON = 59;
+static final int KEYCODE_PLUS = 61;
+static final int KEYCODE_EQUAL = 61;
+static final int KEYCODE_A = 65;
+static final int KEYCODE_B = 66;
+static final int KEYCODE_C = 67;
+static final int KEYCODE_D = 68;
+static final int KEYCODE_E = 69;
+static final int KEYCODE_F = 70;
+static final int KEYCODE_G = 71;
+static final int KEYCODE_H = 72;
+static final int KEYCODE_I = 73;
+static final int KEYCODE_J = 74;
+static final int KEYCODE_K = 75;
+static final int KEYCODE_L = 76;
+static final int KEYCODE_M = 77;
+static final int KEYCODE_N = 78;
+static final int KEYCODE_O = 79;
+static final int KEYCODE_P = 80;
+static final int KEYCODE_Q = 81;
+static final int KEYCODE_R = 82;
+static final int KEYCODE_S = 83;
+static final int KEYCODE_T = 84;
+static final int KEYCODE_U = 85;
+static final int KEYCODE_V = 86;
+static final int KEYCODE_W = 87;
+static final int KEYCODE_X = 88;
+static final int KEYCODE_Y = 89;
+static final int KEYCODE_Z = 90;
+static final int KEYCODE_LEFT_BRACKET = 91;
+static final int KEYCODE_BACK_SLASH = 92;
+static final int KEYCODE_RIGHT_BRACKET = 93;
+static final int KEYCODE_DEL = 127;
+//static final int KEYCODE_MEDIA_NEXT = 87;
+//static final int KEYCODE_MEDIA_PLAY_PAUSE = 85;
+//static final int KEYCODE_MEDIA_PREVIOUS = 88;
+static final int KEYCODE_PAGE_DOWN = 93;
+static final int KEYCODE_PAGE_UP = 92;
+static final int KEYCODE_PLAY = 126;
+static final int KEYCODE_MEDIA_STOP = 86;
+static final int KEYCODE_MEDIA_REWIND = 89;
+static final int KEYCODE_MEDIA_RECORD = 130;
+static final int KEYCODE_MEDIA_PAUSE = 127;
+static final int KEYCODE_VOLUME_UP = 0;  // TODO
+static final int KEYCODE_VOLUME_DOWN = 0; // TODO
+static final int KEYCODE_MOVE_HOME = 122;
+static final int KEYCODE_MOVE_END  = 123;
+static final int KEYCODE_TILDE_QUOTE = 192;
+static final int KEYCODE_SINGLE_QUOTE = 222;
 
-int lastKey;
-int lastKeyCode;
+static final int KEYCODE_FN_ZONE = 500;
+static final int KEYCODE_FN_ZONE_UPDATE = 501;
+static final int KEYCODE_FN_ZONE_REFRESH = 502;
+static final int KEYCODE_LOAD_SCREENSHOT = 503;
+static final int KEYCODE_NEW_CONFIG = 504;
+static final int KEYCODE_CURRENT_CONFIG = 505;
+static final int KEYCODE_MODE_TABLE = 1000;
+static final int KEYCODE_MODE_TABLE1 = 1001;
+static final int KEYCODE_MODE_TABLE2 = 1002;
+static final int KEYCODE_MODE_TABLE3 = 1003;
+static final int KEYCODE_MODE_TABLE4 = 1004;
+static final int KEYCODE_MODE_TABLE5 = 1005;
+static final int KEYCODE_MODE_TABLE6 = 1006;
+static final int KEYCODE_MODE_TABLE7 = 1007;
+static final int KEYCODE_MODE_TABLE8 = 1008;
+static final int KEYCODE_MODE_TABLE9 = 1009;
+static final int KEYCODE_MODE_TABLE10 = 1010;
+static final int KEYCODE_MODE_TABLE11 = 1011;
+static final int KEYCODE_MODE_TABLE12 = 1012;
+static final int KEYCODE_FN_UPDATE = 2000;
+static final int KEYCODE_FN_UPDATE1 = 2001;
+static final int KEYCODE_FN_UPDATE2 = 2002;
+static final int KEYCODE_FN_UPDATE3 = 2003;
+static final int KEYCODE_FN_UPDATE4 = 2004;
+static final int KEYCODE_FN_UPDATE5 = 2005;
+static final int KEYCODE_FN_UPDATE6 = 2006;
+static final int KEYCODE_FN_UPDATE7 = 2007;
+static final int KEYCODE_FN_UPDATE8 = 2008;
+static final int KEYCODE_FN_UPDATE9 = 2009;
+static final int KEYCODE_FN_UPDATE10 = 2010;
+static final int KEYCODE_FN_UPDATE11 = 2011;
+static final int KEYCODE_FN_UPDATE_SYNC = 2012;
+static final int KEYCODE_FN_UPDATE_PREV = 2013;
+static final int KEYCODE_FN_UPDATE_OK = 2014;
+static final int KEYCODE_FN_UPDATE_NEXT = 2015;
+static final int KEYCODE_SHOW = 3000;
+static final int KEYCODE_SAVE = 3001;
+
+private static final int NOP = 0;
+private static final int EXIT = 1;
+
+// lastKey and lastKeyCode are handled in the draw loop
+private int lastKey;
+private int lastKeyCode;
 
 boolean focus = false;
 boolean ftp = false;
@@ -85,7 +144,7 @@ void mousePressed() {
                   // multiple cameras have focus shift to the right
                   //camera[i].touchFocus((2*NX2000Camera.screenHeight-mouseY)/2, int(mouseX+i*camera[i].focusOffset)/2);
                   camera[i].touchFocus((camera[i].screenHeight-(mouseY)/2), int(mouseX+i*camera[i].focusOffset)/2);
-                  if (mouseX > 2*Gui.xoffset && mouseX < 2*camera[i].screenWidth && 
+                  if (mouseX > 2*Gui.xoffset && mouseX < 2*camera[i].screenWidth &&
                     mouseY>0 && mouseY < 2*camera[i].screenHeight-120) {
                     gui.xFocusArea = mouseX;
                     gui.yFocusArea = mouseY;
@@ -109,8 +168,16 @@ void keyReleased() {
 }
 
 void keyPressed() {
-  if (DEBUG) println("key="+key + " keyCode="+keyCode);        
-  //if (DEBUG) Log.d(TAG, "key=" + key + " keyCode=" + keyCode);
+  if (DEBUG) println("key="+key + " keydecimal=" + int(key) + " keyCode="+keyCode);
+  //if (DEBUG) Log.d(TAG, "key=" + key + " keyCode=" + keyCode);  // Android
+  if (key==ESC) {
+    key = 0;
+    keyCode = KEYCODE_ESC;
+  } else if (key == 65535 && keyCode == 0) { // special case all other keys
+    // ignore key
+    key = 0;
+    keyCode = 0;
+  }
   lastKey = key;
   lastKeyCode = keyCode;
 }
@@ -118,13 +185,14 @@ void keyPressed() {
 // Process key from main loop not in keyPressed()
 // returns false no key processed
 // returns true when a key is processed
-boolean keyUpdate() {
+int keyUpdate() {
+  int cmd = NOP;  // return code
   if (lastKey == 0 && lastKeyCode == 0) {
-    return false;
+    return cmd;
   }
-  if (DEBUG) println("keyUpdate lastKey="+lastKey + " lastKeyCode="+lastKeyCode);
 
-  if (lastKeyCode == KEYCODE_LOAD_SCREENSHOT) {
+  switch(lastKeyCode) {
+  case KEYCODE_LOAD_SCREENSHOT:
     if (DEBUG) println("KEYCODE_LOAD_SCREENSHOT");
     if (screenshot != null) {
       //screenshot.dispose();  //reclaim space TODO
@@ -144,7 +212,8 @@ boolean keyUpdate() {
     //    } else {
     //      gui.fnZone.show(true, true);
     //    }
-  } else if (lastKey==' ') {
+    break;
+  case KEYCODE_SPACE:
     if (allCameras) {
       for (int i=0; i<NumCameras; i++) {
         if (camera[i].isConnected()) {
@@ -154,21 +223,32 @@ boolean keyUpdate() {
     } else {
       camera[mainCamera].takePhoto();
     }
-  } else if (lastKeyCode == KEYCODE_0 ) {  //|| lastKeyCode == KEYCODE_FN_UPDATE_SYNC) {
+    break;
+  case KEYCODE_0:
     mainCamera = 0;
     currentCamera = 0;
     allCameras = true;
     lastKeyCode = KEYCODE_FN_ZONE_UPDATE;
-    return true;
-  } else if (lastKeyCode >= KEYCODE_1 && lastKeyCode <= KEYCODE_9) {
+    break;
+  case KEYCODE_1:
+  case KEYCODE_2:
+  case KEYCODE_3:
+  case KEYCODE_4:
+  case KEYCODE_5:
+  case KEYCODE_6:
+  case KEYCODE_7:
+  case KEYCODE_8:
+  case KEYCODE_9:
     int ic = lastKeyCode-KEYCODE_0-1;
     if (ic < NumCameras) {
       mainCamera = ic;
     }
     allCameras = false;
     lastKeyCode = KEYCODE_FN_ZONE_UPDATE;
-    return true;
-  } else if (lastKeyCode == 111 || lastKeyCode == KEYCODE_ESCAPE || lastKey == 'q' || lastKey == 'Q') {  // quit/ESC key
+    break;
+  case 111:
+  case KEYCODE_ESC:
+  case KEYCODE_Q:  // quit/ESC key
     if (DEBUG) println("QUIT");
     if (NumCameras > 0) {
       gui.horzMenuBar.backKey.setHighlight(true);
@@ -180,7 +260,8 @@ boolean keyUpdate() {
     }
     delay(40); // delay draw();
     state = EXIT_STATE;
-  } else if (lastKeyCode == KEYCODE_F) { // Focus
+    break;
+  case KEYCODE_F: // Focus
     // focus
     if (!focus) {
       if (DEBUG) println("FOCUS");
@@ -200,7 +281,8 @@ boolean keyUpdate() {
       }
       focus = false;
     }
-  } else if (lastKeyCode == KEYCODE_G) { // Focus release
+    break;
+  case KEYCODE_G: // Focus release
     // focus
     if (DEBUG) println("FOCUS RELEASE");
     for (int i=0; i<NumCameras; i++) {
@@ -208,7 +290,8 @@ boolean keyUpdate() {
         camera[i].focusRelease();
       }
     }
-  } else if (lastKeyCode == KEYCODE_S) { // Shutter
+    break;
+  case KEYCODE_S: // Shutter
     // shutter
     if (DEBUG) println("SHUTTER");
     for (int i=0; i<NumCameras; i++) {
@@ -221,7 +304,8 @@ boolean keyUpdate() {
       }
     }
     focus = false;
-  } else if (lastKeyCode == KEYCODE_T) { // Take picture
+    break;
+  case KEYCODE_T: // Take picture
     // take picture
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
@@ -229,30 +313,41 @@ boolean keyUpdate() {
       }
     }
     // back
-  } else if (lastKeyCode == KEYCODE_BACKSPACE) {
+    break;
+  case KEYCODE_BACKSPACE:
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].touchBack();
       }
     }
+    break;
     // video start and pause if already recording
-  } else if (lastKeyCode == KEYCODE_R ) {
+  case KEYCODE_R:
     if (DEBUG) println("RECORD");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
-        camera[i].record();
+        if (i == 0 && camera[i].type == MRC) {
+          camera[i].record();
+        } else if (camera[i].type == MRC) {
+          // do nothing for rest of MRC cameras
+        } else {
+          camera[i].record();  // not MRC
+        }
       }
     }
-  } else if (lastKeyCode == KEYCODE_D) {
+    break;
+  case KEYCODE_D:
     if (DEBUG) println("State="+stateName[state]);
-  } else if (lastKeyCode == KEYCODE_H) {
+    break;
+  case KEYCODE_H:
     if (DEBUG) println("HOME");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].home();
       }
     }
-  } else if (lastKeyCode == KEYCODE_M) {
+    break;
+  case KEYCODE_M:
     if (DEBUG) println("MENU");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
@@ -266,11 +361,13 @@ boolean keyUpdate() {
     //      camera[i].getCameraFnShutter();
     //    }
     //  }
-  } else if (lastKeyCode == KEYCODE_W) {
+    break;
+  case KEYCODE_W:
     if (DEBUG) println("Camera MODE");
     modeSelection =! modeSelection;
     selectedCameraMode = cameraMode;
-  } else if (lastKeyCode == KEYCODE_I) {
+    break;
+  case KEYCODE_I:
     if (DEBUG) println("Camera INFO");
     camera[mainCamera].screenshot();
     for (int i=0; i<NumCameras; i++) {
@@ -279,57 +376,75 @@ boolean keyUpdate() {
         camera[i].getShutterCount();
       }
     }
-  } else if (lastKeyCode == KEYCODE_K) {
+  case KEYCODE_K:
     if (DEBUG) println("Camera OK");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].cameraOk();
       }
     }
-  } else if (lastKeyCode == KEYCODE_B) {
+    break;
+  case KEYCODE_B:
     if (DEBUG) println("Camera Screenshot");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].screenshot(screenshotFilename);
       }
     }
-  } else if (lastKeyCode == KEYCODE_N) {
+    break;
+  case KEYCODE_N:
     if (DEBUG) println("FN");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].function();
       }
     }
-  } else if (lastKeyCode == KEYCODE_P) {
+    break;
+  case KEYCODE_P:
     if (DEBUG) println("PLAYBACK");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].playback();
       }
     }
-  } else if (lastKeyCode == KEYCODE_E) {
+    break;
+  case KEYCODE_E:
     if (DEBUG) println("EV");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].ev();
       }
     }
-  } else if (lastKeyCode == KEYCODE_J) {
+  case KEYCODE_J:
     if (DEBUG) println("JOG CW");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].jogcw();
       }
     }
-  } else if (lastKeyCode == KEYCODE_L) {
+    break;
+  case KEYCODE_L:
     if (DEBUG) println("JOG CCW");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].jogccw();
       }
     }
-  } else if (lastKeyCode >= KEYCODE_MODE_TABLE && lastKeyCode <= 1012) {
-    if (lastKeyCode == 1012) {
+    break;
+  case KEYCODE_MODE_TABLE:
+  case KEYCODE_MODE_TABLE1:
+  case KEYCODE_MODE_TABLE2:
+  case KEYCODE_MODE_TABLE3:
+  case KEYCODE_MODE_TABLE4:
+  case KEYCODE_MODE_TABLE5:
+  case KEYCODE_MODE_TABLE6:
+  case KEYCODE_MODE_TABLE7:
+  case KEYCODE_MODE_TABLE8:
+  case KEYCODE_MODE_TABLE9:
+  case KEYCODE_MODE_TABLE10:
+  case KEYCODE_MODE_TABLE11:
+  case KEYCODE_MODE_TABLE12:
+    if (lastKeyCode == KEYCODE_MODE_TABLE12) {
       modeSelection = false;
       cameraMode = selectedCameraMode;
       if (DEBUG) println("Set Mode "+ cameraModes[cameraMode]);
@@ -342,16 +457,19 @@ boolean keyUpdate() {
       selectedCameraMode = lastKeyCode-KEYCODE_MODE_TABLE;
       if (DEBUG) println("Set Mode "+ cameraModes[selectedCameraMode]);
     }
-  } else if (lastKeyCode == KEYCODE_FN_ZONE) {
+    break;
+  case KEYCODE_FN_ZONE:
     if (DEBUG) println("Camera Fn parameters");
     fnSelection =! fnSelection;
     if (fnSelection) {
       camera[mainCamera].getCameraFnShutterEvISO();
     }
-  } else if (lastKeyCode == KEYCODE_FN_ZONE_REFRESH) {
+    break;
+  case KEYCODE_FN_ZONE_REFRESH:
     if (DEBUG) println("Camera Fn refresh parameters");
     camera[mainCamera].getCameraFnShutterEvISO();
-  } else if (lastKeyCode == KEYCODE_FN_ZONE_UPDATE) {
+    break;
+  case KEYCODE_FN_ZONE_UPDATE:
     String who = "Sync";
     if (!allCameras) {
       who = camera[mainCamera].name;
@@ -360,7 +478,23 @@ boolean keyUpdate() {
       +"    "+camera[mainCamera].getFnName(camera[mainCamera].getFn())+"    EV "+
       camera[mainCamera].getEvName()+"    ISO "+isoName[camera[mainCamera].getISO()];
     if (DEBUG) println("Camera state "+gui.fnZone.zoneKey.cap);
-  } else if (lastKeyCode >= KEYCODE_FN_UPDATE && lastKeyCode <= KEYCODE_FN_UPDATE_NEXT) {
+    break;
+  case KEYCODE_FN_UPDATE:
+  case KEYCODE_FN_UPDATE1:
+  case KEYCODE_FN_UPDATE2:
+  case KEYCODE_FN_UPDATE3:
+  case KEYCODE_FN_UPDATE4 :
+  case KEYCODE_FN_UPDATE5:
+  case KEYCODE_FN_UPDATE6:
+  case KEYCODE_FN_UPDATE7:
+  case KEYCODE_FN_UPDATE8:
+  case KEYCODE_FN_UPDATE9:
+  case KEYCODE_FN_UPDATE10:
+  case KEYCODE_FN_UPDATE11:
+  case KEYCODE_FN_UPDATE_SYNC:
+  case KEYCODE_FN_UPDATE_PREV :
+  case KEYCODE_FN_UPDATE_OK:
+  case KEYCODE_FN_UPDATE_NEXT:
     if (lastKeyCode == KEYCODE_FN_UPDATE_OK) {
       fnSelection = false;
       for (int i=0; i<NumCameras; i++) {
@@ -384,7 +518,7 @@ boolean keyUpdate() {
         currentCamera = NumCameras;
       }
       lastKeyCode = KEYCODE_0 + currentCamera;
-      return true;
+      break;
     } else if (lastKeyCode == KEYCODE_FN_UPDATE_NEXT) {
       if (DEBUG) println("mainCamera="+mainCamera + " currentCamera="+currentCamera);
       currentCamera++;
@@ -392,7 +526,7 @@ boolean keyUpdate() {
         currentCamera = 1;
       }
       lastKeyCode = KEYCODE_0 + currentCamera;
-      return true;
+      break;
     } else {
       int id = camera[mainCamera].getFnId();
       if (lastKeyCode == 2005) {// left Fn
@@ -434,12 +568,12 @@ boolean keyUpdate() {
         }
       }
     }
-  } else if (lastKeyCode == KEYCODE_SHOW) {
-    //showPhoto = !showPhoto;
-    showPhoto = true;
+    break;
+  case KEYCODE_SHOW:
+    showPhoto = !showPhoto;
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
-        camera[i].getFilename();
+        camera[i].getPhotoFile();
       }
     }
     if (showPhoto) {
@@ -447,24 +581,29 @@ boolean keyUpdate() {
     } else {
       gui.fnZone.show(true, true);
     }
-  } else if (lastKeyCode == KEYCODE_SAVE) {
+    break;
+  case KEYCODE_SAVE:
     selectPhotoFolder();
-  } else if (lastKeyCode == KEYCODE_NEW_CONFIG) {
+    break;
+  case KEYCODE_NEW_CONFIG:
     state = CONFIGURATION_STATE;
     gui.configZone.remove();
-  } else if (lastKeyCode == KEYCODE_CURRENT_CONFIG) {
+    break;
+  case KEYCODE_CURRENT_CONFIG:
     gui.configZone.remove();
     state = PRE_CONNECT_STATE;
-  } else if (lastKeyCode == KEYCODE_U) {
-      //case KEYCODE_U:  // save screenshot file
+    break;
+  case KEYCODE_U:
+  // save screenshot file
     screenshotRequest = true;
-   // break;
-
-  } else if (lastKeyCode == KEYCODE_V) {
+    break;
+  case KEYCODE_V:
     camera[mainCamera].getCameraEv();
-  } else if (lastKeyCode == KEYCODE_Y) {
+    break;
+  case KEYCODE_Y:
     camera[mainCamera].getShutterCount();
-  } else if (lastKeyCode == KEYCODE_Z) {
+    break;
+  case KEYCODE_Z:
     if (camera[mainCamera].type == NX2000) {
       camera[mainCamera].getPrefMem(NX2000Camera.APPID, NX2000Camera.APPPREF_ISO_PAS, "l");
     } else if (camera[mainCamera].type == NX500) {
@@ -473,9 +612,10 @@ boolean keyUpdate() {
       camera[mainCamera].getPrefMem(NX300Camera.APPID, NX300Camera.APPPREF_ISO_PAS, "l");
     } else if (camera[mainCamera].type == NX30) {
       camera[mainCamera].getPrefMem(NX30Camera.APPID, NX300Camera.APPPREF_ISO_PAS, "l");
-    } 
+    }
+    break;
     ///prefman get 1 8 v=96
-  } else if (lastKeyCode == KEYCODE_X) {
+  case KEYCODE_X:
     if (camera[mainCamera].type == NX2000) {
       camera[mainCamera].getPrefMemBlock(NX2000Camera.APPID, NX2000Camera.APPPREF_FNO_INDEX, 96);
     } else if (camera[mainCamera].type == NX500) {
@@ -485,8 +625,12 @@ boolean keyUpdate() {
     } else if (camera[mainCamera].type == NX30) {
       camera[mainCamera].getPrefMem(NX30Camera.APPID, NX300Camera.APPPREF_FNO_INDEX, "l");
     }
-  }
+    break;
+  default:
+    break;
+  } // switch
+  
   lastKey = 0;
   lastKeyCode = 0;
-  return true;
+  return cmd;
 }

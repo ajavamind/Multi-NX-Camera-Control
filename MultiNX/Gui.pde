@@ -42,8 +42,10 @@ class Gui {
   final static String CIRCLE_MINUS = "\u2296";
   final static String CIRCLE_LT = "\u29c0";
   final static String CIRCLE_GT = "\u29c1";
-  final static String LEFT_TRIANGLE = "\u22B2";
-  final static String RIGHT_TRIANGLE = "\u22B3";
+  //final static String LEFT_TRIANGLE = "\u22B2";
+  //final static String RIGHT_TRIANGLE = "\u22B3";
+  final static String LEFT_TRIANGLE = "<";
+  final static String RIGHT_TRIANGLE = ">";
   final static String BIG_TRIANGLE_UP = "\u25B3";
   final static String PLAY = "\u25BA";
   final static String STOP = "\u25AA";
@@ -71,7 +73,7 @@ class Gui {
   color bague;
   final boolean[] vfull = {true, true, true, true, true, true, true, true, true, true};
   final boolean[] hfull = {true, true, true, true, true, true, true, true};
-  final boolean[] MRCVfull = {true, true, false, false, false, true, true, false, false, false};
+  final boolean[] MRCVfull = {true, true, true, true, true, true, true, true, false, false};
   final boolean[] MRCHfull = {false, true, true, false, false, false, true, true};
   final boolean[] modefull = {true, true, true, true, true, true, true, true, true, true, true, true, true};
 
@@ -211,7 +213,13 @@ class Gui {
     rect(xFocusArea-focusSize/2, yFocusArea-focusSize/2, focusSize, focusSize);
   }
 
-  void displayMessage(String msg, int counter) {
+  void displayMessage(String msg, int position, int counter) {
+    frameCounter = counter;
+    messagePosition = position;
+    message = msg;
+  }
+
+   void displayMessage(String msg, int counter) {
     frameCounter = counter;
     message = msg;
   }
@@ -232,7 +240,8 @@ class Gui {
     textSize(FONT_SIZE);
     textAlign(CENTER, CENTER);
     //text(message, (width / 2), base.height / 2);
-    text(message, xFocusArea, base.height / 2);
+    int where =  2*(NX2000Camera.SCREEN_WIDTH+xoffset)/2;
+    text(message, where, base.height / 2);
     textAlign(LEFT);
   }
 
@@ -816,7 +825,7 @@ class Gui {
       cameraFnKey = new MenuKey(KEYCODE_N, "Fn", FONT_SIZE, keyColor);
       cameraModeKey = new MenuKey(KEYCODE_W, "Mode", FONT_SIZE, keyColor);
       cameraOkKey = new MenuKey(KEYCODE_K, "OK", FONT_SIZE, keyColor);
-      backKey = new MenuKey(KEYCODE_ESCAPE, "EXIT", FONT_SIZE, keyColor);
+      backKey = new MenuKey(KEYCODE_ESC, "EXIT", FONT_SIZE, keyColor);
       menuKey = new MenuKey[numKeys];
       menuKey[0] = cameraInfoKey;
       menuKey[1] = cameraShowKey;
@@ -895,7 +904,7 @@ class Gui {
     void create(int cameraType) {
       color keyColor = black;
 
-      zoneKey = new MenuKey(KEYCODE_FN_ZONE, "Manual Settings", FONT_SIZE, keyColor);
+      zoneKey = new MenuKey(KEYCODE_FN_ZONE, "Camera Settings", FONT_SIZE, keyColor);
       menuKey = new MenuKey[numKeys];
       menuKey[0] = zoneKey;
 
