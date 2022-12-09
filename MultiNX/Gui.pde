@@ -42,8 +42,8 @@ class Gui {
   final static String CIRCLE_MINUS = "\u2296";
   final static String CIRCLE_LT = "\u29c0";
   final static String CIRCLE_GT = "\u29c1";
-  //final static String LEFT_TRIANGLE = "\u22B2";
-  //final static String RIGHT_TRIANGLE = "\u22B3";
+  //final static String LEFT_TRIANGLE = "\u22B2";  // Android
+  //final static String RIGHT_TRIANGLE = "\u22B3"; // Android
   final static String LEFT_TRIANGLE = "<";
   final static String RIGHT_TRIANGLE = ">";
   final static String BIG_TRIANGLE_UP = "\u25B3";
@@ -74,7 +74,7 @@ class Gui {
   final boolean[] vfull = {true, true, true, true, true, true, true, true, true, true};
   final boolean[] hfull = {true, true, true, true, true, true, true, true};
   final boolean[] MRCVfull = {true, true, true, true, true, true, true, true, false, false};
-  final boolean[] MRCHfull = {false, true, true, false, false, false, true, true};
+  final boolean[] MRCHfull = {false, true, true, true, false, false, true, true};
   final boolean[] modefull = {true, true, true, true, true, true, true, true, true, true, true, true, true};
 
   Gui() {

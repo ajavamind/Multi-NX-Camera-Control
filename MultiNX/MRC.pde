@@ -346,7 +346,7 @@ class MRCCamera extends RCamera {
       filename = afilename.substring(afilename.lastIndexOf('/')+1);
       if (DEBUG) println("filename="+filename);
       filenameUrl = afilenameUrl;
-      lastPhoto = requestImage(filenameUrl, "jpg");
+      lastPhoto = requestImage(filenameUrl);
       if (DEBUG) println("MRC getPhotoFile loadImage "+filenameUrl);
       gui.displayMessage("Get Photo... \n"+ aName, 90);
       if (!cameraOrientation[index].equals("0")) {

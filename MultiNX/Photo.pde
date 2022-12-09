@@ -224,20 +224,3 @@ PImage rotatePhoto(PImage src, int degrees) {
   img = pg;
   return img;
 }
-
-// snippet
-// check if camera orientation requires an image rotate
-//if (!cameraOrientation[index].equals("0")) {
-//  float w = lastPhoto.width;
-//  float h = lastPhoto.height;
-//  float ar = w/h;
-
-//  float rangle = radians(float(cameraOrientation[index]));
-//  pushMatrix();
-//  imageMode(CENTER);
-//  translate(screenWidth+screenWidth/2, (screenWidth/ar)/2);
-//  rotate(rangle);
-//  image(lastPhoto, 0, 0, (screenWidth), screenWidth/ar);
-//  imageMode(CORNER);
-//  popMatrix();
-//}

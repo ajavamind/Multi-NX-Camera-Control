@@ -32,16 +32,16 @@
 // Use email WiFi cofiguration on NX2000 to connect to a local network.
 // Exit email screen on NX camera to shoot photos and videos after connection to your local WiFi network.
 
-static final String VERSION = "Version 1.3";
-static final String VERSION_DEBUG = "Version 1.3 DEBUG";
+static final String VERSION = "Version 1.4";
+static final String VERSION_DEBUG = "Version 1.4 DEBUG";
 static final String TITLE = "MultiNX - Multi Camera Controller";
 static final String SUBTITLE = "Control Multiple NX/MRC/RPI Cameras";
 static final String CREDITS = "Written by Andy Modla";
 static final String COPYRIGHT = "Copyright 2022 Andrew Modla";
 
 static final boolean testGui = false;
-static final boolean DEBUG = true;
-//static final boolean DEBUG = false;
+//static final boolean DEBUG = true;
+static final boolean DEBUG = false;
 
 // Configuration file parsed settings for cameras
 String[] ip = null; // List of camera IP addresses to access
@@ -124,7 +124,8 @@ void settings() {
 void setup() {
   // set Landscape orientation
   orientation(LANDSCAPE);
-  surface.setTitle(titleText);
+  setTitle(titleText);
+
   textSize(FONT_SIZE);
 
   // get data folder images for the app
