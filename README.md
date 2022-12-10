@@ -112,7 +112,7 @@ The "Platform.pde" file needs to be modified for either Java or Android by comme
 
 ## Using MultiNX app
 
-The latest Android apk can be found in the [buildPackage folder](https://github.com/ajavamind/Multi-NX-Camera-Control/MultiNx/buildPackage).
+The latest Android apk can be found in the [buildPackage folder](../../MultiNx/buildPackage).
 
 -------------------------------------
 
