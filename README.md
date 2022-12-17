@@ -24,15 +24,22 @@ The NX cameras use the open-source Linux based (Tizen) operating system and Sams
  
  The application synchronizes each camera's exposure settings, does simultaneous focus, and synchronized shutter release at nearly the same time. Shutter release is not simultaneous because individual messages are sent to each camera in sequence. The code does not provide Live-View with the cameras. The application features are limited by what can be done with telnet commands to control the camera and read its status.
 
- The NX cameras do not show their local network IP address. Only the camera's MAC address is available in the Menu - Settings - Device Information. The MAC address helps to find the camera's IP address with an app like "Network Scanner" in the Google play store. [https://play.google.com/store/apps/details?id=com.myprog.netscan&hl=en_US&gl=US](https://play.google.com/store/apps/details?id=com.myprog.netscan&hl=en_US&gl=US) The IP address is needed to configure the software for the cameras to be connected. A text file informs the application what cameras to connect, camera name, and other (unimplemented) options.
+ The app needs each camera's IP address to configure the connection. The NX cameras do not show their local network IP address. Only the camera's MAC address is available in the Menu - Settings - Device Information. The MAC address helps to find the camera's IP address with an app like "Network Scanner" in the Google play store. [https://play.google.com/store/apps/details?id=com.myprog.netscan&hl=en_US&gl=US](https://play.google.com/store/apps/details?id=com.myprog.netscan&hl=en_US&gl=US) 
  
- Using telnet commands incorrectly can lock up the camera, so there is some risk using this application. After removing and reinserting the battery, a power-on restores the camera functions. The author is not responsible for uses of this software and its effect on your camera. __USE AT YOUR OWN RISK__.
+ A text configuration file informs the application what cameras to connect with its IP address, camera name, camera type, and camera orientation (0 degrees for landscape and 90 for portrait mode, -180 for upside down).
  
- This MultiNX application code is a work in progress. There are many improvements possible.
- 
+ This MultiNX application code is a work in progress.
+ Possible future improvements:
+ 1. Convert configuration to use a JSON file.
+ 2. Improve User interface, error messaging, documentation
+ 3. Refactor for simplification, camera design, and more comments 
+ 4. Add more controls for NX300 and NX500.
+ 5. For Multi Remote Cameras, add discovery, GUI controls for camera mode and settings.
 
-## Notice
+## Warning Notice
 
+ Using telnet commands incorrectly can lock up the camera, so there is some risk using this application. If the camera hangs, a power-on restores the camera functions after removing and reinserting the battery. The author is not responsible for uses of this software and its possible effect on your camera. __USE AT YOUR OWN RISK__.
+ 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 
@@ -91,6 +98,8 @@ Copy the contents of the sdcard-NXnnnn folder to the base folder of the SD card.
 
 ## Building MultiNX for Windows or Android
 
+Processing SDK version 4.01 builds MultiNX for Windows exe (Java Mode) or Android apk (Android Mode).  
+
 When you build MultiNX for Windows or Android you must add the SelectFile and oscP5 library to the Processing SDK. See [Processing Library](https://processing.org/reference/libraries/) information under Contributions.
 
 [SelectFile Library Documentation](https://andrusiv.com/android-select-file/)
@@ -99,9 +108,13 @@ When you build MultiNX for Windows or Android you must add the SelectFile and os
 
 The SelectFile library only supports internal memory file access on Android devices.
 
-Comment out Windows code and uncomment Android code, or vice-versa in the file "Platform.pde".
+The "Platform.pde" file needs to be modified for either Java or Android by commenting out code sections as specified in the file.
 
 ## Using MultiNX app
+
+The latest Android apk can be found in the buildPackage folder in MultiNx.
+
+-------------------------------------
 
  ![Android phone screenshot](screenshots/Android/Screenshot0002.jpg)
  ![Android phone screenshot](screenshots/Android/Screenshot0001.jpg)
