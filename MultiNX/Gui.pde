@@ -74,7 +74,7 @@ class Gui {
   final boolean[] vfull = {true, true, true, true, true, true, true, true, true, true};
   final boolean[] hfull = {true, true, true, true, true, true, true, true};
   final boolean[] MRCVfull = {true, true, true, true, true, true, true, true, false, false};
-  final boolean[] MRCHfull = {false, true, true, true, false, false, true, true};
+  final boolean[] MRCHfull = {true, true, true, true, false, false, true, true};
   final boolean[] modefull = {true, true, true, true, true, true, true, true, true, true, true, true, true};
 
   Gui() {

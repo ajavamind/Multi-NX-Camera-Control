@@ -14,7 +14,7 @@ boolean grantedWrite = false;
 SelectLibrary files;
 
 void openFileSystem() {
-  requestPermissions();
+  requestPermissions(); 
   files = new SelectLibrary(this);
 }
 
@@ -60,7 +60,7 @@ void selectConfigurationFile() {
   //if (!grantedRead || !grantedWrite) {
   //  requestPermissions();
   //}
-  files.selectInput("Select XML Configuration File:", "fileSelected");
+  files.selectInput("Select Configuration File:", "fileSelected");
 }
 
 void selectPhotoFolder() {

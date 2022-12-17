@@ -32,22 +32,22 @@
 // Use email WiFi cofiguration on NX2000 to connect to a local network.
 // Exit email screen on NX camera to shoot photos and videos after connection to your local WiFi network.
 
-static final String VERSION = "Version 1.4";
-static final String VERSION_DEBUG = "Version 1.4 DEBUG";
+static final String VERSION = "Version 1.5";
+static final String VERSION_DEBUG = VERSION + " DEBUG";
 static final String TITLE = "MultiNX - Multi Camera Controller";
 static final String SUBTITLE = "Control Multiple NX/MRC/RPI Cameras";
 static final String CREDITS = "Written by Andy Modla";
 static final String COPYRIGHT = "Copyright 2022 Andrew Modla";
 
 static final boolean testGui = false;
-//static final boolean DEBUG = true;
-static final boolean DEBUG = false;
+static final boolean DEBUG = true;
+//static final boolean DEBUG = false;
 
 // Configuration file parsed settings for cameras
 String[] ip = null; // List of camera IP addresses to access
 String[] cameraName;  // Camera name, location, or identifier - no spaces, use underscore
 String[] cameraSType; // NX2000, NX300, NX500, MRC, RPI
-String[] cameraOrientation;  // default 0 otherwise use 90, 180, or 270 degree rotation of camera
+int[] cameraOrientation;  // default 0 otherwise use 90, 180, or 270 degree rotation of camera
 String[] cameraUserId; // Raspberry PI user id
 String[] cameraPassword; // Raspberry PI password
 
@@ -108,7 +108,7 @@ boolean showPhoto = false;
 int screenshotCounter = 1;
 String screenshotFilename = "screenshot";
 boolean screenshotRequest = false;
-
+boolean displayAnaglyph = false;
 boolean forceExit = false;
 
 void settings() {
@@ -134,6 +134,7 @@ void setup() {
   if (DEBUG) println("width="+width + " height="+height);
 
   loadPhotoNumber();
+  if (DEBUG) println("setup() completed");
 }
 
 void draw() {
@@ -244,7 +245,7 @@ void draw() {
     ip = new String[NumCameras];
     cameraName = new String[NumCameras];
     cameraSType = new String[NumCameras];
-    cameraOrientation = new String[NumCameras];
+    cameraOrientation = new int[NumCameras];
     cameraUserId = new String[NumCameras];
     cameraPassword = new String[NumCameras];
 
@@ -256,7 +257,7 @@ void draw() {
       ip[i] = group[0];
       cameraName[i] = group[1];
       cameraSType[i] = group[2];
-      cameraOrientation[i] = group[3];
+      cameraOrientation[i] = int(group[3]);
       if (group.length > 4 ) {
         cameraUserId[i] = group[4];
         cameraPassword[i] = group[5];
@@ -314,103 +315,110 @@ void draw() {
     exit();
   }
 
-  if (NumCameras > 0) {
-    //if (DEBUG) println("displayGrid");
-    //gui.displayGrid(4);
-  }
-
-  for (int i=0; i<NumCameras; i++) {
-    String inString = "";
-    //println("MultiNX camera connected="+camera[i].isConnected());
-    //if (camera[i].client != null) {
-    //  println(" client active="+camera[i].client.active());
-    //}
-    if (!camera[i].isConnected()) {
-      if (camera[i].client != null && camera[i].client.active()) {
-        if (DEBUG) println("wait for prompt");
-        while (!inString.endsWith(camera[i].prompt)) {
-          if (camera[i].client.available() > 0) {
-            inString += camera[i].client.readString();
-            if (DEBUG) println(inString);
-            // NX500 and NX30 needs login: root response
-            if (inString.endsWith("login: ")) {
-              camera[i].sendMsg("root\n");
-              break;
-            }
-
-            if (inString.endsWith(camera[i].prompt)) {
-              camera[i].setConnected(true);
-              if (DEBUG) println("Camera "+camera[i].name+" "+ip[i]+" connected");
-              camera[i].getCameraFnShutterEvISO();
-              break;
-            }
-          }
-        }
-      }
+  if (displayAnaglyph) {
+    if (DEBUG) println("Anaglyph display");
+    if (lastAnaglyph == null) {
+      displayAnaglyph = false;
     } else {
-      result = camera[i].getCameraResult();
+      float ar = (float)lastAnaglyph.width/(float)lastAnaglyph.height;
+      float offset = (2*camera[0].screenWidth-((2*camera[0].screenHeight)*ar))/2;
+      image(lastAnaglyph, offset, 0, (2*camera[0].screenHeight)*ar, 2*camera[0].screenHeight);
     }
+  } else {
+    for (int i=0; i<NumCameras; i++) {
+      String inString = "";
+      //println("MultiNX camera connected="+camera[i].isConnected());
+      //if (camera[i].client != null) {
+      //  println(" client active="+camera[i].client.active());
+      //}
+      if (!camera[i].isConnected()) {
+        if (camera[i].client != null && camera[i].client.active()) {
+          if (DEBUG) println("wait for prompt");
+          while (!inString.endsWith(camera[i].prompt)) {
+            if (camera[i].client.available() > 0) {
+              inString += camera[i].client.readString();
+              if (DEBUG) println(inString);
+              // NX500 and NX30 needs login: root response
+              if (inString.endsWith("login: ")) {
+                camera[i].sendMsg("root\n");
+                break;
+              }
 
-    textSize(FONT_SIZE);
-    fill(255);
-    textAlign(LEFT);
-    if (!camera[i].isActive() ) {
-      camera[i].setConnected(false);
-    }
-
-    // ---------------------------------------------------------------------
-    // displayPhoto
-    if (camera[i].isConnected()) {
-      if (camera[i].lastPhoto != null && showPhoto) {
-        textSize(SMALL_FONT_SIZE);
-        //if (DEBUG) println("show "+camera[i].filename + " " + camera[i].lastPhoto.width + " "+camera[i].lastPhoto.height);
-        float w = camera[i].lastPhoto.width;
-        float h = camera[i].lastPhoto.height;
-        if (w > 0 && h > 0 && camera[i].needsRotation) {
-          if (!cameraOrientation[camera[i].index].equals("0")) {
-            camera[i].lastPhoto = rotatePhoto(camera[i].lastPhoto, int(cameraOrientation[camera[i].index]));
-          }
-          camera[i].needsRotation = false;
-          showPhoto = true;
-        }
-        float ar = w/h;
-        float div = 8.0;
-        if (w <= 1728) {
-          div = 3.0;
-        }
-
-        if (w > 0 && h > 0) {
-          if (NumCameras == 1) {
-            float offset = (2*camera[i].screenWidth-((2*camera[i].screenHeight)*ar))/2;
-            image(camera[i].lastPhoto, offset, 0, (2*camera[i].screenHeight)*ar, 2*camera[i].screenHeight);
-            text(camera[i].name + " "+camera[i].ipAddr+" "+camera[i].filename, 10, 30);
-          } else if (NumCameras == 2) {
-            image(camera[i].lastPhoto, i*camera[i].screenWidth, 0, (camera[i].screenWidth), camera[i].screenWidth/ar);
-            text(camera[i].name + " "+camera[i].ipAddr+" "+camera[i].filename, i*camera[i].screenWidth+10, 30);
-          } else {
-            image(camera[i].lastPhoto, (i%2)*camera[i].screenWidth, (i/2)*(camera[i].screenHeight), (camera[i].screenHeight)*ar, camera[i].screenHeight);
-            text(camera[i].name + " "+camera[i].ipAddr+" "+camera[i].filename, (i%2)*camera[i].screenWidth+10, 30+ (i/2)*(camera[i].screenHeight));
+              if (inString.endsWith(camera[i].prompt)) {
+                camera[i].setConnected(true);
+                if (DEBUG) println("Camera "+camera[i].name+" "+ip[i]+" connected");
+                camera[i].getCameraFnShutterEvISO();
+                break;
+              }
+            }
           }
         }
       } else {
-        textSize(FONT_SIZE);
-        if (camera[i].shutterCount == 0) {
-          text(camera[i].name+" "+ip[i]+ " Connected.", 200, 110+i*50);
-        } else {
-          text(camera[i].name+" "+ip[i]+ " Shutter Count "+camera[i].shutterCount, 200, 110+i*50);
-        }
+        result = camera[i].getCameraResult();
       }
-    } else {
-      text (camera[i].name+" "+ip[i]+ " Not Connected.", 200, 110+i*50);
+
+      textSize(FONT_SIZE);
+      fill(255);
+      textAlign(LEFT);
+      if (!camera[i].isActive() ) {
+        camera[i].setConnected(false);
+      }
+
+      // ---------------------------------------------------------------------
+      // displayPhoto
+      if (camera[i].isConnected()) {
+        if (camera[i].lastPhoto != null && showPhoto) {
+          textSize(SMALL_FONT_SIZE);
+          //if (DEBUG) println("show "+camera[i].filename + " " + camera[i].lastPhoto.width + " "+camera[i].lastPhoto.height);
+          float w = camera[i].lastPhoto.width;
+          float h = camera[i].lastPhoto.height;
+          if (w > 0 && h > 0 && camera[i].needsRotation) {
+            if (cameraOrientation[camera[i].index] != 0) {
+              camera[i].lastPhoto = rotatePhoto(camera[i].lastPhoto, cameraOrientation[camera[i].index]);
+            }
+            camera[i].needsRotation = false;
+            showPhoto = true;
+          }
+          float ar = w/h;
+          float div = 8.0;
+          if (w <= 1728) {
+            div = 3.0;
+          }
+
+          if (w > 0 && h > 0) {
+            if (NumCameras == 1) {
+              float offset = (2*camera[i].screenWidth-((2*camera[i].screenHeight)*ar))/2;
+              image(camera[i].lastPhoto, offset, 0, (2*camera[i].screenHeight)*ar, 2*camera[i].screenHeight);
+              text(camera[i].name + " "+camera[i].ipAddr+" "+camera[i].filename, 10, 30);
+            } else if (NumCameras == 2) {
+              image(camera[i].lastPhoto, i*camera[i].screenWidth, 0, (camera[i].screenWidth), camera[i].screenWidth/ar);
+              text(camera[i].name + " "+camera[i].ipAddr+" "+camera[i].filename, i*camera[i].screenWidth+10, 30);
+            } else {
+              image(camera[i].lastPhoto, (i%2)*camera[i].screenWidth, (i/2)*(camera[i].screenHeight), (camera[i].screenHeight)*ar, camera[i].screenHeight);
+              text(camera[i].name + " "+camera[i].ipAddr+" "+camera[i].filename, (i%2)*camera[i].screenWidth+10, 30+ (i/2)*(camera[i].screenHeight));
+            }
+          }
+        } else {
+          textSize(FONT_SIZE);
+          if (camera[i].shutterCount == 0) {
+            text(camera[i].name + " " + cameraOrientation[i] + " " + ip[i] + " Connected.", 200, 110+i*50);
+          } else {
+            text(camera[i].name + " " + cameraOrientation[i] + " " + ip[i] + " Shutter Count " + camera[i].shutterCount, 200, 110+i*50);
+          }
+        }
+      } else {
+        text (camera[i].name+" "+ip[i]+ " Not Connected.", 200, 110+i*50);
+      }
     }
   }
-
+  // Display camera control buttons
   if (NumCameras > 0) {
     gui.displayFocusArea();
     gui.displayMenuBar();
     gui.modeTable.display();
     gui.fnTable.display();
   }
+  // Display information or error message
   gui.displayMessage(message);
 
   // set main camera index as first connected camera
@@ -425,12 +433,13 @@ void draw() {
   saveScreenshot();
 }
 
+// to be used
 void imageDraw(int i, int offset, float ar) {
-  if (cameraOrientation[i].equals("180")) {
+  if (cameraOrientation[i] != 0) {
     pushMatrix();
     imageMode(CENTER);
     translate(camera[i].screenWidth/2, (camera[i].screenWidth/ar)/2);
-    rotate(radians(180));
+    rotate(radians(cameraOrientation[i]));
     image(camera[i].lastPhoto, 0, 0, (camera[i].screenWidth), camera[i].screenWidth/ar);
     imageMode(CORNER);
     popMatrix();
@@ -450,18 +459,4 @@ void saveScreenshot() {
     if (DEBUG) println("save "+ "screenshot_" + number(screenshotCounter));
     screenshotCounter++;
   }
-}
-
-// Add leading zeroes to number
-String number(int index) {
-  // fix size of index number at 4 characters long
-  if (index == 0)
-    return "";
-  else if (index < 10)
-    return ("000" + String.valueOf(index));
-  else if (index < 100)
-    return ("00" + String.valueOf(index));
-  else if (index < 1000)
-    return ("0" + String.valueOf(index));
-  return String.valueOf(index);
 }

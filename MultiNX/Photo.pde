@@ -1,6 +1,7 @@
 
 PGraphics pg;
 int photoNumber=0;
+PImage lastAnaglyph;
 
 void savePhoto(String filename) {
   if (DEBUG) println("savePhoto");
@@ -38,7 +39,7 @@ void saveCameraPhotos() {
           } else {
             cname = camera[i].name;
           }
-          String out = saveFolderPath+File.separator+name+convertCounter(photoNumber)+"_"+cname+".JPG";
+          String out = saveFolderPath+File.separator+name+number(photoNumber)+"_"+cname+".JPG";
           //String out = saveFolderPath+File.separator+"MNX"+convertCounter(photoNumber)+"_"+cname+".JPG";
           if (DEBUG) println("save="+out);
           camera[i].lastPhoto.save(out);
@@ -129,13 +130,16 @@ void saveAnaglyphPhoto(String filename) {
     } else {
       return;
     }
-    
-    PImage ana =createAnaglyph(camera[0].lastPhoto, camera[1].lastPhoto, 0);
+    if (lastAnaglyph != null) {
+      lastAnaglyph.parent = null; // dispose
+      lastAnaglyph = null;
+    }
+    lastAnaglyph =createAnaglyph(camera[0].lastPhoto, camera[1].lastPhoto, 0);
 
     if (saveFolderPath != null) {
       String out = saveFolderPath+File.separator+filename+suffix+".jpg";
       if (DEBUG) println("save="+out);
-      ana.save(out);
+      lastAnaglyph.save(out);
     }
   }
 }
@@ -193,6 +197,8 @@ private PImage colorAnaglyph(PImage bufL, PImage bufR, int offset) {
   bufA.updatePixels();
   PImage temp = createImage(w-offset, h, RGB);
   temp.copy(bufA, 0, 0, temp.width, temp.height, 0, 0, temp.width, temp.height);
+  bufA.parent = null; // dispose
+  bufA = null;
   return temp;
 }
 

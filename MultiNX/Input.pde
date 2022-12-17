@@ -369,6 +369,7 @@ int keyUpdate() {
     break;
   case KEYCODE_I:
     if (DEBUG) println("Camera INFO");
+    displayAnaglyph = !displayAnaglyph;
     camera[mainCamera].screenshot();
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
@@ -401,7 +402,7 @@ int keyUpdate() {
     }
     break;
   case KEYCODE_P:
-    if (DEBUG) println("PLAYBACK");
+    if (DEBUG) println("PLAYBACK press on each camera");
     for (int i=0; i<NumCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].playback();

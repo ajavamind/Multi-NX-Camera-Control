@@ -2,4 +2,4 @@
 # IP address | camera name | camera type | orientation code
 # portrait mode Samsung S8
 192.168.0.101 L MRC 0
-192.168.0.100 R MRC 00
+192.168.0.100 R MRC 0

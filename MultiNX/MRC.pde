@@ -273,8 +273,9 @@ class MRCCamera extends RCamera {
     }
   }
 
+  // request playback in each Multi Remote Camera app
   void playback() {
-    gui.displayMessage(NOT_IMPLEMENTED, 20);
+    gui.displayMessage(NOT_IMPLEMENTED, 40);
     //udpClient.write("st key click pb\n");
     //udpClient.send();  //TODO
   }
@@ -325,10 +326,7 @@ class MRCCamera extends RCamera {
 
   boolean screenshot() {
     if (DEBUG) println("screenshot()");
-    //if (!udpClient.active()) {
-    //  return false;
-    //}
-    //udpClient.write("/mnt/mmc/screenshot.sh\n");
+    if (displayAnaglyph) gui.displayMessage("anaglyph display", 40);
     return true;
   }
 
@@ -336,7 +334,7 @@ class MRCCamera extends RCamera {
     String aName = getFilename(SAME, PHOTO_MODE);
     String aFilename = "IMG_"+ aName+ "_"+name+".jpg";
     filename = aFilename;
-    String afilenameUrl = "http://"+ipAddr + ":" + HTTPport + "/" + aFilename;
+    String afilenameUrl = "http://"+ipAddr + ":" + HTTPport + File.separator + aFilename;
     afilenameUrl.trim();
     afilenameUrl = afilenameUrl.replaceAll("(\\r|\\n)", "");
     String afilename = filename.replaceAll("(\\r|\\n)", "");
@@ -349,7 +347,7 @@ class MRCCamera extends RCamera {
       lastPhoto = requestImage(filenameUrl);
       if (DEBUG) println("MRC getPhotoFile loadImage "+filenameUrl);
       gui.displayMessage("Get Photo... \n"+ aName, 90);
-      if (!cameraOrientation[index].equals("0")) {
+      if (cameraOrientation[index] != 0) {
         needsRotation = true;
       }
       //showPhoto = true;
@@ -380,16 +378,4 @@ class MRCCamera extends RCamera {
   void updateIso() {
   }
 
-  String number(int index) {
-    // fix size of index number at 4 characters long
-    if (index == 0)
-      return "";
-    else if (index < 10)
-      return ("000" + String.valueOf(index));
-    else if (index < 100)
-      return ("00" + String.valueOf(index));
-    else if (index < 1000)
-      return ("0" + String.valueOf(index));
-    return String.valueOf(index);
-  }
 }
