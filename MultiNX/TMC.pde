@@ -82,7 +82,6 @@ class TMCCamera extends RCamera {
     //  connected = true;
     //}
 
-    name = "";
     inString = "";
     prompt = "]# ";
     prefix = "[root";
@@ -332,7 +331,7 @@ class TMCCamera extends RCamera {
   }
 
   void getFilename() {
-    String aFilename = "IMG_"+ getFilename(SAME, PHOTO_MODE)+ "_"+name+".jpg";
+    String aFilename = "IMG_"+ getFilename(SAME, PHOTO_MODE)+ "_"+suffix+".jpg";
     filename = aFilename;
     String afilenameUrl = "http://"+ipAddr + "/capture";
     afilenameUrl.trim();

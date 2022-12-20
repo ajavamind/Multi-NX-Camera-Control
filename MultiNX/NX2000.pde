@@ -65,7 +65,6 @@ class NX2000Camera extends RCamera {
     }
 
     connected = false;
-    name = "";
     inString = "";
     prompt = "nx2000:/# ";
     prefix = "nx2000";
@@ -106,7 +105,7 @@ class NX2000Camera extends RCamera {
   void screenshot(String filename) {
     if (DEBUG) println("screenshot("+filename+")");
     if (client.active()) {
-      client.write("screenshot bmp /mnt/mmc/"+filename+number(screenshotCounter)+"_"+name+".bmp\n");
+      client.write("screenshot bmp /mnt/mmc/"+filename+number(screenshotCounter)+"_"+suffix+".bmp\n");
     }
   }
 

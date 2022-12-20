@@ -1,4 +1,0 @@
-# Multi Remote Camera broadcast address triggers all MRC on the network
-# IP address | camera name | camera type | orientation rotation angle degrees
-192.168.0.107 L MRC 180
-192.168.0.106 R MRC 0

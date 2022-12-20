@@ -37,9 +37,9 @@ String[] cameraKeyMRCModes ={"Photo", "Video", "", "", "", "", "", "", "", "", "
 // setting "movie" mode does not function in NX2000 with shell command "st key mode"
 
 // ISO common to NX2000, NX300, NX500
-// iso index 
+// iso index
 String[] isoName = { "AUTO", "100", "200", "400", "800", "1600", "3200", "6400", "12800", "25600" };
-String[] isoName3 = { "AUTO", "100", "125", "160", "200", "250", "320", "400", "500", "640", "800", "1000", 
+String[] isoName3 = { "AUTO", "100", "125", "160", "200", "250", "320", "400", "500", "640", "800", "1000",
   "1250", "1600", "2000", "2500", "3200", "4000", "5000", "6400", "8000", "10000", "12800", "16000", "20000", "25600" };
 int isoId = 1; // ISO 100
 
@@ -55,7 +55,7 @@ interface NXCommand {
   void shutterPushRelease();
   void touchBack();
   void record();
-  void function(); 
+  void function();
   void home();
   void menu();
   void end();
@@ -106,10 +106,14 @@ abstract class RCamera implements NXCommand {
   int shutterCount;
   int[] result;
   String name; // camera name
+  String suffix; // camera name
   String filename = "";
   String filenameUrl = "";
   PImage lastPhoto;
   boolean needsRotation = false;
+  int orientation;
+  int horizontalOffset;
+  int verticalOffset;
   String inString;
   String prompt;
   String prefix;
@@ -134,13 +138,12 @@ abstract class RCamera implements NXCommand {
   String[] fnName;
   int[] fnValue;
   Client client;
-  int index;  // camera array index entry
-  
+
   boolean isConnected() {
     //println("Camera Client isConnected()="+connected);
     return connected;
   }
-  
+
   boolean isActive() {
     if (client != null && client.active()) {
       return true;
@@ -158,11 +161,26 @@ abstract class RCamera implements NXCommand {
     connected = value;
   }
 
-  void setName(String name, int index) {
+  void setName(String name) {
     this.name = name;
-    this.index = index;
   }
-  
+
+  void setSuffix(String suffix) {
+    this.suffix = suffix;
+  }
+
+  void setOrientation(int orientation) {
+    this.orientation = orientation;
+  }
+
+  void setHorizontalOffset(int offset) {
+    this.horizontalOffset = offset;
+  }
+
+  void setVerticalOffset(int offset) {
+    this.verticalOffset = offset;
+  }
+
   void jogccw() {
   }
 
@@ -185,8 +203,8 @@ abstract class RCamera implements NXCommand {
     }
 
     while (!inString.endsWith(prompt)) {
-      if (client.available() > 0) { 
-        inString += client.readString(); 
+      if (client.available() > 0) {
+        inString += client.readString();
         if (DEBUG) println("inString="+inString);
         if (inString.startsWith("exit")) {
           inString = "";
@@ -197,7 +215,7 @@ abstract class RCamera implements NXCommand {
       }
     }
     if (inString.startsWith("FILENAME=")) {
-      if (DEBUG) println("FILENAME found");                       
+      if (DEBUG) println("FILENAME found");
       int fin = inString.lastIndexOf("FILENAME=");
       int lin = inString.lastIndexOf(prefix);
       if (fin > 0 && lin > 0) {
@@ -427,8 +445,8 @@ abstract class RCamera implements NXCommand {
   void getCameraFnShutterEvISO() {
     // common for NX2000, NX300, NX500
     if (client.active()) {
-      client.write(  
-        "prefman get " + appId + " " +appFnoIndex + " l" + 
+      client.write(
+        "prefman get " + appId + " " +appFnoIndex + " l" +
         ";prefman get " + appId + " " +appShutterSpeedIndex + " l" +
         ";prefman get "+ appId + " " + appIsoPas + " l" +
         ";prefman get "+ appId + " " + appEvc + " l" +
@@ -437,14 +455,14 @@ abstract class RCamera implements NXCommand {
   }
 
   //void getCameraFnShutter() {
-  //  client.write(  
-  //    "prefman get " + appId + " "  +appFnoIndex + " l" + 
+  //  client.write(
+  //    "prefman get " + appId + " "  +appFnoIndex + " l" +
   //    ";prefman get "+ appId + " "  +appShutterSpeedIndex + " l" +
   //    "\n");
   //}
 
   void getCameraEv() {
-    client.write(  
+    client.write(
       "prefman get "+ appId + " "  + appEvc + " l" +
       "\n");
   }

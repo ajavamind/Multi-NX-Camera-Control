@@ -1,2 +1,0 @@
-# IP address | camera name | camera type | orientation code
-192.168.0.108 Main NX2000 0

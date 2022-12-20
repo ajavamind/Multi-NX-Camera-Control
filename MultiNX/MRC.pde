@@ -83,7 +83,6 @@ class MRCCamera extends RCamera {
       connected = true;
     }
 
-    name = "";
     inString = "";
     prompt = "]# ";
     prefix = "[root";
@@ -332,9 +331,9 @@ class MRCCamera extends RCamera {
 
   void getPhotoFile() {
     String aName = getFilename(SAME, PHOTO_MODE);
-    String aFilename = "IMG_"+ aName+ "_"+name+".jpg";
+    String aFilename = "IMG_"+ aName+ "_"+suffix+".jpg";
     filename = aFilename;
-    String afilenameUrl = "http://"+ipAddr + ":" + HTTPport + File.separator + aFilename;
+    String afilenameUrl = "http:"+ File.separator+ File.separator+ipAddr + ":" + HTTPport + File.separator + aFilename;
     afilenameUrl.trim();
     afilenameUrl = afilenameUrl.replaceAll("(\\r|\\n)", "");
     String afilename = filename.replaceAll("(\\r|\\n)", "");
@@ -346,8 +345,8 @@ class MRCCamera extends RCamera {
       filenameUrl = afilenameUrl;
       lastPhoto = requestImage(filenameUrl);
       if (DEBUG) println("MRC getPhotoFile loadImage "+filenameUrl);
-      gui.displayMessage("Get Photo... \n"+ aName, 90);
-      if (cameraOrientation[index] != 0) {
+      gui.displayMessage("Get Photo... \n"+ filenameUrl, 90);
+      if (orientation != 0) {
         needsRotation = true;
       }
       //showPhoto = true;

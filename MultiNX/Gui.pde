@@ -148,6 +148,7 @@ class Gui {
   }
 
   void removeConfigZone() {
+    if (DEBUG) println("removeConfigZone()");
     configZone.remove();
   }
 
@@ -642,13 +643,13 @@ class Gui {
     void setShutter(int value) {
       int id = camera[mainCamera].getSsId(value);
       shutterKey.setCap(camera[mainCamera].getShutterName(id));
-      for (int i=0; i<NumCameras; i++) {
+      for (int i=0; i<numCameras; i++) {
         camera[i].shutterId = id;
       }
     }
 
     void setShutterId(int id) {
-      for (int i=0; i<NumCameras; i++) {
+      for (int i=0; i<numCameras; i++) {
         camera[i].shutterId = id;
       }
       shutterKey.setCap(camera[mainCamera].getShutterName(id));
@@ -657,13 +658,13 @@ class Gui {
     void setFn(int value) {
       int id = camera[mainCamera].getFnId(value);
       fnKey.setCap(camera[mainCamera].getFn(id));
-      for (int i=0; i<NumCameras; i++) {
+      for (int i=0; i<numCameras; i++) {
         camera[i].fnId = id;
       }
     }
 
     void setFnId(int id) {
-      for (int i=0; i<NumCameras; i++) {
+      for (int i=0; i<numCameras; i++) {
         camera[i].fnId = id;
       }
       fnKey.setCap(camera[mainCamera].getFn(id));
@@ -1006,6 +1007,7 @@ class Gui {
     }
 
     void setActive() {
+      if (DEBUG) println("gui.ConfigZone.setActive()");
       for (int i = 0; i < menuKey.length; i++) {
         menuKey[i].setVisible(true);
         menuKey[i].setActive(true);
@@ -1013,6 +1015,7 @@ class Gui {
     }
 
     void remove() {
+      if (DEBUG) println("gui.ConfigZone.remove()");
       for (int i = 0; i < menuKey.length; i++) {
         menuKey[i].setVisible(false);
         menuKey[i].setActive(false);

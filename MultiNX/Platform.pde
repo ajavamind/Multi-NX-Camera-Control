@@ -1,8 +1,11 @@
 // Java or Android platform build
-// Important Comment out the platform not used in the build
+private final static int JAVA_MODE = 0;
+private final static int ANDROID_MODE = 1;
+int buildMode = ANDROID_MODE;  // change manually for the build
+
+// Important Comment Out the unused platform code below 
 
 // Android Platform Build Mode
-final static boolean ANDROID_MODE = true;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.content.Context;
@@ -27,7 +30,6 @@ public void onRequestPermissionsResult(int requestCode, String permissions[], in
     println(permissions[i]);
   }
 }  
-
 
 void requestPermissions() {
   if (!hasPermission("android.permission.READ_EXTERNAL_STORAGE")) {
@@ -61,6 +63,7 @@ void selectConfigurationFile() {
   //  requestPermissions();
   //}
   files.selectInput("Select Configuration File:", "fileSelected");
+  //gui.configZone.setActive();
 }
 
 void selectPhotoFolder() {
@@ -163,3 +166,33 @@ int loadPhotoNumber() {
 //  if (DEBUG) println("loadPhotoNumber "+result);
 //  return result;
 //}
+
+//..........................................................................
+// Code common to Android and Java platforms
+// do not comment out
+
+void folderSelected(File selection) {
+  if (selection == null) {
+    if (DEBUG) println("Window closed or canceled.");
+    gui.displayMessage("Canceled", 30);
+  } else {
+    if (DEBUG) println("User selected " + selection.getAbsolutePath());
+    saveFolderPath = selection.getAbsolutePath();
+    state = PRE_SAVE_STATE;
+    gui.displayMessage("Save Photos", 40);
+  }
+}
+
+void fileSelected(File selection) {
+  if (selection == null) {
+    if (DEBUG) println("Selection window was closed or the user hit cancel.");
+    //showMsg("Selection window was closed or canceled.");
+    configFilename = null;
+    state = CONFIGURATION_DIALOG_STATE;
+  } else {
+    if (DEBUG) println("User selected " + selection.getAbsolutePath());
+    configFilename = selection.getAbsolutePath();
+    gui.configZone.remove();
+    state = CONNECT_STATE;
+  }
+}

@@ -60,7 +60,6 @@ class NX30Camera extends RCamera {
     }
     
     connected = false;
-    name = "";
     inString = "";
     prompt = "nx30:/# ";
     prefix = "nx30";
@@ -111,7 +110,7 @@ class NX30Camera extends RCamera {
   void screenshot(String filename) {
     if (DEBUG) println("screenshot("+filename+")");
     if (client.active()) {
-      client.write("screenshot bmp /mnt/mmc/"+filename+number(screenshotCounter)+"_"+name+".bmp\n");
+      client.write("screenshot bmp /mnt/mmc/"+filename+number(screenshotCounter)+"_"+suffix+".bmp\n");
     }
   }
 

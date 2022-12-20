@@ -85,7 +85,6 @@ class RPICamera extends RCamera {
     }
 
     client = sshClient;
-    name = "";
     inString = "";
     prompt = "~$ "; // pi@raspberrypi:~$
     prefix = "pi@raspberrypi:";
@@ -271,7 +270,7 @@ class RPICamera extends RCamera {
   }
 
   void focusPush() {
-    client.write("libcamera-still -t 0 -n -k -o "+"Media/IMG_"+getFilename(UPDATE, PHOTO_MODE) + "_"+name+".jpg" + "\n");
+    client.write("libcamera-still -t 0 -n -k -o "+"Media/IMG_"+getFilename(UPDATE, PHOTO_MODE) + "_"+suffix+".jpg" + "\n");
     client.write("F\n");
     focus = true;
   }
@@ -299,13 +298,13 @@ class RPICamera extends RCamera {
   }
 
   void takePhoto() {
-    client.write("libcamera-still -t 0 -n -k --autofocus -o "+"Media/IMG_"+getFilename(UPDATE, PHOTO_MODE) + "_"+name+".jpg" + "\n");
+    client.write("libcamera-still -t 0 -n -k --autofocus -o "+"Media/IMG_"+getFilename(UPDATE, PHOTO_MODE) + "_"+suffix+".jpg" + "\n");
       client.write("\n");
     gui.displayMessage(lastFilename, 45);
   }
 
   void record() {
-    client.write("libcamera-vid -t 10000 -n --autofocus --width 1920 --height 1080 -o "+"Media/IMG_"+getFilename(UPDATE, PHOTO_MODE) + "_"+name+".h264" + "\n");
+    client.write("libcamera-vid -t 10000 -n --autofocus --width 1920 --height 1080 -o "+"Media/IMG_"+getFilename(UPDATE, PHOTO_MODE) + "_"+suffix+".h264" + "\n");
     gui.displayMessage(lastFilename, 45);
   }
 
@@ -389,7 +388,7 @@ class RPICamera extends RCamera {
   }
 
   void getFilename() {
-    String aFilename = "IMG_"+ getFilename(SAME, PHOTO_MODE)+ "_"+name+".jpg";
+    String aFilename = "IMG_"+ getFilename(SAME, PHOTO_MODE)+ "_"+suffix+".jpg";
     filename = aFilename;
     String afilenameUrl = "http://"+ipAddr + ":" + HTTPport + "/" + aFilename;
     afilenameUrl.trim();

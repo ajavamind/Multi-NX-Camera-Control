@@ -1,3 +1,0 @@
-# Multi Remote Camera individual camera IP addresses instead of broadcast
-192.168.1.104 L MRC 180
-192.168.1.224 R MRC 0

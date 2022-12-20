@@ -60,7 +60,6 @@ class NX300Camera extends RCamera {
     }
     
     connected = false;
-    name = "";
     inString = "";
     prompt = "nx300:/# ";
     prefix = "nx300";
@@ -111,7 +110,7 @@ class NX300Camera extends RCamera {
   void screenshot(String filename) {
     if (DEBUG) println("screenshot("+filename+")");
     if (client.active()) {
-      client.write("screenshot bmp /mnt/mmc/"+filename+number(screenshotCounter)+"_"+name+".bmp\n");
+      client.write("screenshot bmp /mnt/mmc/"+filename+number(screenshotCounter)+"_"+suffix+".bmp\n");
     }
   }
 

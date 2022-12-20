@@ -60,7 +60,6 @@ class NX500Camera extends RCamera {
     }
     
     connected = false;
-    name = "";
     inString = "";
     prompt = "]# ";
     prefix = "[root";

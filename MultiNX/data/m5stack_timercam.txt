@@ -1,4 +1,0 @@
-# M5Stack Timer Camera 
-# https://github.com/m5stack/TimerCam-arduino
-# 
-192.168.0.104 TimerCam TMC 0

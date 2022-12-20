@@ -2,6 +2,7 @@
 // These codes (ASCII) are for Java applications
 // Android codes (not implemented) differ with some keys
 
+static final int KEYCODE_BACK = 4;
 static final int KEYCODE_BACKSPACE = 8;
 static final int KEYCODE_TAB = 9;
 static final int KEYCODE_ENTER = 10;
@@ -121,7 +122,7 @@ boolean focus = false;
 boolean ftp = false;
 
 void mousePressed() {
-  if (state == RUN_STATE && NumCameras > 0) {
+  if (state == RUN_STATE && numCameras > 0) {
     lastKeyCode = gui.vertMenuBar.mousePressed(mouseX, mouseY);
     if (lastKeyCode == 0) {
       lastKeyCode = gui.horzMenuBar.mousePressed(mouseX, mouseY);
@@ -136,7 +137,7 @@ void mousePressed() {
         // touch focus
         if (lastKeyCode == 0) {
           if (mouseX >0 && mouseX<= width-320 && mouseY > 0 && mouseY < height-120) {
-            for (int i=0; i<NumCameras; i++) {
+            for (int i=0; i<numCameras; i++) {
               if (camera[i].isConnected()) {
                 if (DEBUG) println("mouse x="+(mouseX) + " y="+mouseY);
                 if (DEBUG) println("screen width="+camera[i].screenWidth + " height="+camera[i].screenHeight);
@@ -169,6 +170,7 @@ void keyReleased() {
 
 void keyPressed() {
   if (DEBUG) println("key="+key + " keydecimal=" + int(key) + " keyCode="+keyCode);
+  if (DEBUG) println("state "+ stateName[state]);
   //if (DEBUG) Log.d(TAG, "key=" + key + " keyCode=" + keyCode);  // Android
   if (key==ESC) {
     key = 0;
@@ -192,6 +194,12 @@ int keyUpdate() {
   }
 
   switch(lastKeyCode) {
+  case KEYCODE_BACK:
+    if (DEBUG) println("KEYCODE_BACK state "+ stateName[state]);
+    if (state == CONFIGURATION_DIALOG_STATE) {
+      gui.configZone.setActive();
+    }
+    break;
   case KEYCODE_LOAD_SCREENSHOT:
     if (DEBUG) println("KEYCODE_LOAD_SCREENSHOT");
     if (screenshot != null) {
@@ -215,7 +223,7 @@ int keyUpdate() {
     break;
   case KEYCODE_SPACE:
     if (allCameras) {
-      for (int i=0; i<NumCameras; i++) {
+      for (int i=0; i<numCameras; i++) {
         if (camera[i].isConnected()) {
           camera[i].takePhoto();
         }
@@ -240,7 +248,7 @@ int keyUpdate() {
   case KEYCODE_8:
   case KEYCODE_9:
     int ic = lastKeyCode-KEYCODE_0-1;
-    if (ic < NumCameras) {
+    if (ic < numCameras) {
       mainCamera = ic;
     }
     allCameras = false;
@@ -250,9 +258,9 @@ int keyUpdate() {
   case KEYCODE_ESC:
   case KEYCODE_Q:  // quit/ESC key
     if (DEBUG) println("QUIT");
-    if (NumCameras > 0) {
+    if (numCameras > 0) {
       gui.horzMenuBar.backKey.setHighlight(true);
-      for (int i=0; i<NumCameras; i++) {
+      for (int i=0; i<numCameras; i++) {
         if (camera[i].isConnected()) {
           camera[i].sendMsg("exit\n");
         }
@@ -265,7 +273,7 @@ int keyUpdate() {
     // focus
     if (!focus) {
       if (DEBUG) println("FOCUS");
-      for (int i=0; i<NumCameras; i++) {
+      for (int i=0; i<numCameras; i++) {
         if (camera[i].isConnected()) {
           camera[i].focusPush();
           camera[i].getCameraFnShutterEvISO();
@@ -274,7 +282,7 @@ int keyUpdate() {
       focus = true;
     } else {
       if (DEBUG) println("FOCUS RELEASE");
-      for (int i=0; i<NumCameras; i++) {
+      for (int i=0; i<numCameras; i++) {
         if (camera[i].isConnected()) {
           camera[i].focusRelease();
         }
@@ -285,7 +293,7 @@ int keyUpdate() {
   case KEYCODE_G: // Focus release
     // focus
     if (DEBUG) println("FOCUS RELEASE");
-    for (int i=0; i<NumCameras; i++) {
+    for (int i=0; i<numCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].focusRelease();
       }
@@ -294,7 +302,7 @@ int keyUpdate() {
   case KEYCODE_S: // Shutter
     // shutter
     if (DEBUG) println("SHUTTER");
-    for (int i=0; i<NumCameras; i++) {
+    for (int i=0; i<numCameras; i++) {
       if (camera[i].isConnected()) {
         if (focus) {
           camera[i].shutterPushRelease();
@@ -307,7 +315,7 @@ int keyUpdate() {
     break;
   case KEYCODE_T: // Take picture
     // take picture
-    for (int i=0; i<NumCameras; i++) {
+    for (int i=0; i<numCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].takePhoto();
       }
@@ -315,7 +323,7 @@ int keyUpdate() {
     // back
     break;
   case KEYCODE_BACKSPACE:
-    for (int i=0; i<NumCameras; i++) {
+    for (int i=0; i<numCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].touchBack();
       }
@@ -324,7 +332,7 @@ int keyUpdate() {
     // video start and pause if already recording
   case KEYCODE_R:
     if (DEBUG) println("RECORD");
-    for (int i=0; i<NumCameras; i++) {
+    for (int i=0; i<numCameras; i++) {
       if (camera[i].isConnected()) {
         if (i == 0 && camera[i].type == MRC) {
           camera[i].record();
@@ -341,7 +349,7 @@ int keyUpdate() {
     break;
   case KEYCODE_H:
     if (DEBUG) println("HOME");
-    for (int i=0; i<NumCameras; i++) {
+    for (int i=0; i<numCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].home();
       }
@@ -349,14 +357,14 @@ int keyUpdate() {
     break;
   case KEYCODE_M:
     if (DEBUG) println("MENU");
-    for (int i=0; i<NumCameras; i++) {
+    for (int i=0; i<numCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].menu();
       }
     }
     //} else if (lastKeyCode == KEYCODE_O ) {
     //  if (DEBUG) println("Application Fn Shutter values");
-    //  for (int i=0; i<NumCameras; i++) {
+    //  for (int i=0; i<numCameras; i++) {
     //    if (camera[i].isConnected()) {
     //      camera[i].getCameraFnShutter();
     //    }
@@ -371,7 +379,7 @@ int keyUpdate() {
     if (DEBUG) println("Camera INFO");
     displayAnaglyph = !displayAnaglyph;
     camera[mainCamera].screenshot();
-    for (int i=0; i<NumCameras; i++) {
+    for (int i=0; i<numCameras; i++) {
       if (camera[i].isConnected()) {
         //camera[i].cameraInfo();
         camera[i].getShutterCount();
@@ -379,7 +387,7 @@ int keyUpdate() {
     }
   case KEYCODE_K:
     if (DEBUG) println("Camera OK");
-    for (int i=0; i<NumCameras; i++) {
+    for (int i=0; i<numCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].cameraOk();
       }
@@ -387,7 +395,7 @@ int keyUpdate() {
     break;
   case KEYCODE_B:
     if (DEBUG) println("Camera Screenshot");
-    for (int i=0; i<NumCameras; i++) {
+    for (int i=0; i<numCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].screenshot(screenshotFilename);
       }
@@ -395,7 +403,7 @@ int keyUpdate() {
     break;
   case KEYCODE_N:
     if (DEBUG) println("FN");
-    for (int i=0; i<NumCameras; i++) {
+    for (int i=0; i<numCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].function();
       }
@@ -403,7 +411,7 @@ int keyUpdate() {
     break;
   case KEYCODE_P:
     if (DEBUG) println("PLAYBACK press on each camera");
-    for (int i=0; i<NumCameras; i++) {
+    for (int i=0; i<numCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].playback();
       }
@@ -411,14 +419,14 @@ int keyUpdate() {
     break;
   case KEYCODE_E:
     if (DEBUG) println("EV");
-    for (int i=0; i<NumCameras; i++) {
+    for (int i=0; i<numCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].ev();
       }
     }
   case KEYCODE_J:
     if (DEBUG) println("JOG CW");
-    for (int i=0; i<NumCameras; i++) {
+    for (int i=0; i<numCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].jogcw();
       }
@@ -426,7 +434,7 @@ int keyUpdate() {
     break;
   case KEYCODE_L:
     if (DEBUG) println("JOG CCW");
-    for (int i=0; i<NumCameras; i++) {
+    for (int i=0; i<numCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].jogccw();
       }
@@ -449,7 +457,7 @@ int keyUpdate() {
       modeSelection = false;
       cameraMode = selectedCameraMode;
       if (DEBUG) println("Set Mode "+ cameraModes[cameraMode]);
-      for (int i=0; i<NumCameras; i++) {
+      for (int i=0; i<numCameras; i++) {
         if (camera[i].isConnected()) {
           camera[i].cameraMode(cameraMode);
         }
@@ -473,7 +481,7 @@ int keyUpdate() {
   case KEYCODE_FN_ZONE_UPDATE:
     String who = "Sync";
     if (!allCameras) {
-      who = camera[mainCamera].name;
+      who = camera[mainCamera].suffix;
     }
     gui.fnZone.zoneKey.cap = who + ": " + camera[mainCamera].getSsName(camera[mainCamera].getShutterSpeed())
       +"    "+camera[mainCamera].getFnName(camera[mainCamera].getFn())+"    EV "+
@@ -498,7 +506,7 @@ int keyUpdate() {
   case KEYCODE_FN_UPDATE_NEXT:
     if (lastKeyCode == KEYCODE_FN_UPDATE_OK) {
       fnSelection = false;
-      for (int i=0; i<NumCameras; i++) {
+      for (int i=0; i<numCameras; i++) {
         if (camera[i].isConnected()) {
           camera[i].focusRelease();
           camera[i].updateFn();
@@ -516,14 +524,14 @@ int keyUpdate() {
       if (DEBUG) println("mainCamera="+mainCamera + " currentCamera="+currentCamera);
       currentCamera--;
       if (currentCamera < 1) {
-        currentCamera = NumCameras;
+        currentCamera = numCameras;
       }
       lastKeyCode = KEYCODE_0 + currentCamera;
       break;
     } else if (lastKeyCode == KEYCODE_FN_UPDATE_NEXT) {
       if (DEBUG) println("mainCamera="+mainCamera + " currentCamera="+currentCamera);
       currentCamera++;
-      if (currentCamera > NumCameras) {
+      if (currentCamera > numCameras) {
         currentCamera = 1;
       }
       lastKeyCode = KEYCODE_0 + currentCamera;
@@ -564,7 +572,7 @@ int keyUpdate() {
         }
       }
 
-      for (int i=0; i<NumCameras; i++) {
+      for (int i=0; i<numCameras; i++) {
         if (camera[i].isConnected()) {
         }
       }
@@ -572,7 +580,7 @@ int keyUpdate() {
     break;
   case KEYCODE_SHOW:
     showPhoto = !showPhoto;
-    for (int i=0; i<NumCameras; i++) {
+    for (int i=0; i<numCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].getPhotoFile();
       }
@@ -588,7 +596,6 @@ int keyUpdate() {
     break;
   case KEYCODE_NEW_CONFIG:
     state = CONFIGURATION_STATE;
-    gui.configZone.remove();
     break;
   case KEYCODE_CURRENT_CONFIG:
     gui.configZone.remove();

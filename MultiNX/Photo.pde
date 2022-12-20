@@ -14,7 +14,7 @@ void savePhoto(String filename) {
 void saveCameraPhotos() {
   photoNumber++;
   savePhotoNumber(photoNumber);
-  for (int i=0; i<NumCameras; i++) {
+  for (int i=0; i<numCameras; i++) {
     if (camera[i].lastPhoto != null) {
       int w = camera[i].lastPhoto.width;
       int h = camera[i].lastPhoto.height;
@@ -33,12 +33,7 @@ void saveCameraPhotos() {
           //if (DEBUG) println(name);
           //name.replace("\\.SRW", "");
           //if (DEBUG) println(name);
-          String cname = camera[i].name;
-          if (cname == null || cname.equals("") || cname.equals(" ")) {
-            cname = "";
-          } else {
-            cname = camera[i].name;
-          }
+          String cname = camera[i].suffix;
           String out = saveFolderPath+File.separator+name+number(photoNumber)+"_"+cname+".JPG";
           //String out = saveFolderPath+File.separator+"MNX"+convertCounter(photoNumber)+"_"+cname+".JPG";
           if (DEBUG) println("save="+out);
@@ -56,7 +51,7 @@ void saveCompositePhoto(String filename) {
   int h = 0;
   String suffix="";
   boolean valid = true;
-  for (int i=0; i<NumCameras; i++) {
+  for (int i=0; i<numCameras; i++) {
     if (camera[i].lastPhoto == null) {
       valid = false;
       break;
@@ -69,11 +64,11 @@ void saveCompositePhoto(String filename) {
     }
   }
   if (valid) {
-    if (NumCameras == 2) {
+    if (numCameras == 2) {
       gw= 2*w;
       gh = h;
       suffix = "_2x1";
-    } else if (NumCameras == 4) {
+    } else if (numCameras == 4) {
       gw= 2*w;
       gh = 2*h;
       suffix = "_2x2";
@@ -85,7 +80,7 @@ void saveCompositePhoto(String filename) {
     pg.background(0);
     pg.image(camera[0].lastPhoto, 0, 0);
     pg.image(camera[1].lastPhoto, w, 0);
-    if (NumCameras == 4) {
+    if (numCameras == 4) {
       pg.image(camera[2].lastPhoto, 0, h);
       pg.image(camera[3].lastPhoto, w, h);
     }
@@ -106,7 +101,7 @@ void saveAnaglyphPhoto(String filename) {
   int h = 0;
   String suffix="";
   boolean valid = true;
-  for (int i=0; i<NumCameras; i++) {
+  for (int i=0; i<numCameras; i++) {
     if (camera[i].lastPhoto == null) {
       valid = false;
       break;
@@ -119,11 +114,11 @@ void saveAnaglyphPhoto(String filename) {
     }
   }
   if (valid) {
-    if (NumCameras == 2) {
+    if (numCameras == 2) {
       gw= 2*w;
       gh = h;
       suffix = "_ana";
-    } else if (NumCameras == 4) {
+    } else if (numCameras == 4) {
       //gw= 2*w;
       //gh = 2*h;
       //suffix = "_2x2";

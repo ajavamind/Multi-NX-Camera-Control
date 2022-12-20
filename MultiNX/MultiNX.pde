@@ -1,7 +1,11 @@
 // Andy Modla
-// Copyright 2021-2022 Andrew Modla All Rights Reserved
-// Java sketch for simultaneous telnet/ssh control of compatible multiple Samsung NX cameras, or
-// multiple phones running the Android Multi Remote Camera (MRC) App, or Raspberry PI cameras.
+// Copyright 2021-2023 Andrew Modla All Rights Reserved
+// Java sketch for simultaneous WiFi telnet/ssh/UDP broadcast control of compatible multiple cameras
+// 1) Samsung NX cameras
+// 2) Android devices and phones running the  Multi Remote Camera (MRC) App
+// 3) Raspberry PI cameras.
+// 4) M5Stack.com Timer camera
+//
 
 // The SD memory card root folder in each Samsung camera requires the following files present
 // depending on the camera for starting telnet, http and ftp servers:
@@ -32,24 +36,20 @@
 // Use email WiFi cofiguration on NX2000 to connect to a local network.
 // Exit email screen on NX camera to shoot photos and videos after connection to your local WiFi network.
 
-static final String VERSION = "Version 1.5";
+static final String VERSION = "Version 1.6";
 static final String VERSION_DEBUG = VERSION + " DEBUG";
 static final String TITLE = "MultiNX - Multi Camera Controller";
 static final String SUBTITLE = "Control Multiple NX/MRC/RPI Cameras";
 static final String CREDITS = "Written by Andy Modla";
-static final String COPYRIGHT = "Copyright 2022 Andrew Modla";
+static final String COPYRIGHT = "Copyright 2021-2022 Andrew Modla";
 
 static final boolean testGui = false;
-static final boolean DEBUG = true;
+static boolean DEBUG = true;
+//static final boolean DEBUG = true;
 //static final boolean DEBUG = false;
 
 // Configuration file parsed settings for cameras
-String[] ip = null; // List of camera IP addresses to access
-String[] cameraName;  // Camera name, location, or identifier - no spaces, use underscore
-String[] cameraSType; // NX2000, NX300, NX500, MRC, RPI
-int[] cameraOrientation;  // default 0 otherwise use 90, 180, or 270 degree rotation of camera
-String[] cameraUserId; // Raspberry PI user id
-String[] cameraPassword; // Raspberry PI password
+String camera_rig = "multiple";
 
 // TODO
 String[] photoFnPrefix; // default IMG_
@@ -57,7 +57,7 @@ String[] photoFnSuffix; // default "" empty string
 String[] videoFnPrefix; // default VID_
 String[] vodepFnSuffix; // default "" empty string
 
-int NumCameras = 0;
+int numCameras = 0;
 int mainCamera = 0;  // current display camera
 int currentCamera = 0;  // all synced
 
@@ -65,7 +65,8 @@ int currentCamera = 0;  // all synced
 int cameraType = NX2000;  // default
 boolean allCameras = true;  // synchronize all cameras to same settings as mainCamera
 String saveFolderPath;
-String defaultFilename = "default.txt";
+String defaultFilename = "config.json";
+String lastFilename = "last.txt";
 String configFilename;
 String titleText = TITLE;
 String NOT_IMPLEMENTED = "Not Implemented";
@@ -96,7 +97,6 @@ String[] stateName = {
   "PRE_SAVE_STATE",
   "SAVE_STATE",
   "UNDEFINED STATE",
-  "UNDEFINED STATE",
   "EXIT_STATE"
 };
 
@@ -104,7 +104,6 @@ String message=null;
 int messagePosition = 0;
 int frameCounter = 60;
 boolean showPhoto = false;
-//boolean showScreenshot = false;
 int screenshotCounter = 1;
 String screenshotFilename = "screenshot";
 boolean screenshotRequest = false;
@@ -112,7 +111,7 @@ boolean displayAnaglyph = false;
 boolean forceExit = false;
 
 void settings() {
-  size(1920, 1080);
+  size(1920, 1080);  // TODO fullscreen and adjust GUI for various sizes and aspect ratio
   //size(1280, 720);  // for testing on a smaller display TODO needs GUI refactor
   //size(960, 540);  // for testing on a smaller display TODO needs GUI refactor
   smooth();
@@ -138,7 +137,7 @@ void setup() {
 }
 
 void draw() {
-  int[] result = null; // keep
+  int[] result = null; // keep this line do not delete
 
   // update message display visible counter
   //
@@ -184,7 +183,6 @@ void draw() {
       gui.displayConfigZone();
     }
     if (state == CONFIGURATION_STATE) {
-
       state = CONFIGURATION_DIALOG_STATE;
       selectConfigurationFile();
     }
@@ -193,6 +191,7 @@ void draw() {
     return;
   } else if (state == CONFIGURATION_DIALOG_STATE) {
     drawIntroductionScreen();
+    gui.displayConfigZone();
     keyUpdate();
     return;
   } else if (state == PRE_CONNECT_STATE) {
@@ -202,103 +201,30 @@ void draw() {
     gui.displayMessage("Using Last Configuration");
     return;
   } else if (state == CONNECT_STATE) {
-    String[] cameraList = null;
-    String[] cameraFile = null;
     if (configFilename == null) {
       if (DEBUG) println("configFilename="+configFilename);
-      if (ANDROID_MODE) {
+      if (buildMode == ANDROID_MODE) {
         configFilename = loadConfig();
       }
       if (configFilename == null) {
         configFilename = defaultFilename;
       }
-      cameraFile = loadStrings(configFilename);
+      initConfig();
     } else {
       if (DEBUG) println("configFilename="+configFilename);
-      cameraFile = loadStrings(configFilename);
-      if (ANDROID_MODE) {
+     if (buildMode == ANDROID_MODE) {
         saveConfig(configFilename);
       } else {
-        saveStrings("data"+File.separator+defaultFilename, cameraFile);
+        String[] content = new String[1];
+        content[0] = configFilename;
+        saveStrings("data"+File.separator+lastFilename, content);
       }
+      initConfig();
     }
 
-    NumCameras =0;
-    for (int i=0; i<cameraFile.length; i++) {
-      if (DEBUG) println(cameraFile[i]);
-      cameraFile[i].trim();
-      if (!(cameraFile[i].startsWith("#") || cameraFile[i].equals(""))) {
-        NumCameras += 1;
-      }
-    }
-
-    if (DEBUG) println("number of cameras "+NumCameras);
-    int j = 0;
-    cameraList = new String[NumCameras];
-    for (int i=0; i<cameraFile.length; i++) {
-
-      if (!(cameraFile[i].startsWith("#") || cameraFile[i].equals(""))) {
-        cameraList[j++] = cameraFile[i];
-      }
-    }
-
-    ip = new String[NumCameras];
-    cameraName = new String[NumCameras];
-    cameraSType = new String[NumCameras];
-    cameraOrientation = new int[NumCameras];
-    cameraUserId = new String[NumCameras];
-    cameraPassword = new String[NumCameras];
-
-    for (int i=0; i<cameraList.length; i++) {
-      if (DEBUG) println(cameraList[i]);
-
-      String[] group = splitTokens(cameraList[i]);
-      if (DEBUG) println("configuration line item group size="+group.length);
-      ip[i] = group[0];
-      cameraName[i] = group[1];
-      cameraSType[i] = group[2];
-      cameraOrientation[i] = int(group[3]);
-      if (group.length > 4 ) {
-        cameraUserId[i] = group[4];
-        cameraPassword[i] = group[5];
-      }
-    }
-
-    // Create camera instances
-    camera = new RCamera[NumCameras];
-    for (int i=0; i<NumCameras; i++) {
-      if (DEBUG) println("configuration: "+ i + " " + ip[i] + " " + cameraName[i] + " " + cameraSType[i] + " " + cameraOrientation[i]);
-      if (cameraSType[i].equals(NX2000S)) {
-        camera[i] = new NX2000Camera(this, ip[i]);
-        camera[i].setName(cameraName[i], i);
-      } else if (cameraSType[i].equals(NX500S)) {
-        camera[i] = new NX500Camera(this, ip[i]);
-        camera[i].setName(cameraName[i], i);
-      } else if (cameraSType[i].equals(NX300S)) {
-        camera[i] = new NX300Camera(this, ip[i]);
-        camera[i].setName(cameraName[i], i);
-      } else if (cameraSType[i].equals(NX30S)) {
-        camera[i] = new NX30Camera(this, ip[i]);
-        camera[i].setName(cameraName[i], i);
-      } else if (cameraSType[i].equals(MRCS)) {
-        camera[i] = new MRCCamera(this, ip[i]);
-        camera[i].setName(cameraName[i], i);
-      } else if (cameraSType[i].equals(RPIS)) {
-        camera[i] = new RPICamera(this, ip[i], cameraUserId[i], cameraPassword[i]);
-        camera[i].setName(cameraName[i], i);
-      } else if (cameraSType[i].equals(TMCS)) {
-        camera[i] = new TMCCamera(this, ip[i]);
-        camera[i].setName(cameraName[i], i);
-      } else {
-        if (DEBUG) println(ip[i] + " Configuration Error!");
-        NumCameras = 0;
-        message = ip[i] + " Configuration Error! "+cameraSType[i];
-        forceExit = true;
-      }
-    }
     // initialze GUI when the configuration is OK
     // Configure GUI based on first camera type - cannot mix camera types.
-    if (NumCameras > 0) {
+    if (numCameras > 0) {
       cameraType = camera[0].type;
       gui.createGui(cameraType);
     }
@@ -309,7 +235,7 @@ void draw() {
   keyUpdate();
 
   if (state == EXIT_STATE) {
-    for (int i=0; i<NumCameras; i++) {
+    for (int i=0; i<numCameras; i++) {
       camera[i].stop();
     }
     exit();
@@ -325,11 +251,11 @@ void draw() {
       image(lastAnaglyph, offset, 0, (2*camera[0].screenHeight)*ar, 2*camera[0].screenHeight);
     }
   } else {
-    for (int i=0; i<NumCameras; i++) {
+    for (int i=0; i<numCameras; i++) {
       String inString = "";
-      //println("MultiNX camera connected="+camera[i].isConnected());
+      //if (DEBUG) println("MultiNX camera connected="+camera[i].isConnected());
       //if (camera[i].client != null) {
-      //  println(" client active="+camera[i].client.active());
+      //  if (DEBUG) println(" client active="+camera[i].client.active());
       //}
       if (!camera[i].isConnected()) {
         if (camera[i].client != null && camera[i].client.active()) {
@@ -346,7 +272,7 @@ void draw() {
 
               if (inString.endsWith(camera[i].prompt)) {
                 camera[i].setConnected(true);
-                if (DEBUG) println("Camera "+camera[i].name+" "+ip[i]+" connected");
+                if (DEBUG) println("Camera "+ camera[i].name+" " + camera[i].ipAddr +" connected");
                 camera[i].getCameraFnShutterEvISO();
                 break;
               }
@@ -373,8 +299,8 @@ void draw() {
           float w = camera[i].lastPhoto.width;
           float h = camera[i].lastPhoto.height;
           if (w > 0 && h > 0 && camera[i].needsRotation) {
-            if (cameraOrientation[camera[i].index] != 0) {
-              camera[i].lastPhoto = rotatePhoto(camera[i].lastPhoto, cameraOrientation[camera[i].index]);
+            if (camera[i].orientation != 0) {
+              camera[i].lastPhoto = rotatePhoto(camera[i].lastPhoto, camera[i].orientation);
             }
             camera[i].needsRotation = false;
             showPhoto = true;
@@ -386,11 +312,11 @@ void draw() {
           }
 
           if (w > 0 && h > 0) {
-            if (NumCameras == 1) {
+            if (numCameras == 1) {
               float offset = (2*camera[i].screenWidth-((2*camera[i].screenHeight)*ar))/2;
               image(camera[i].lastPhoto, offset, 0, (2*camera[i].screenHeight)*ar, 2*camera[i].screenHeight);
               text(camera[i].name + " "+camera[i].ipAddr+" "+camera[i].filename, 10, 30);
-            } else if (NumCameras == 2) {
+            } else if (numCameras == 2) {
               image(camera[i].lastPhoto, i*camera[i].screenWidth, 0, (camera[i].screenWidth), camera[i].screenWidth/ar);
               text(camera[i].name + " "+camera[i].ipAddr+" "+camera[i].filename, i*camera[i].screenWidth+10, 30);
             } else {
@@ -401,18 +327,18 @@ void draw() {
         } else {
           textSize(FONT_SIZE);
           if (camera[i].shutterCount == 0) {
-            text(camera[i].name + " " + cameraOrientation[i] + " " + ip[i] + " Connected.", 200, 110+i*50);
+            text(camera[i].name + " " + camera[i].orientation + " " + camera[i].ipAddr + " Connected.", 200, 110+i*50);
           } else {
-            text(camera[i].name + " " + cameraOrientation[i] + " " + ip[i] + " Shutter Count " + camera[i].shutterCount, 200, 110+i*50);
+            text(camera[i].name + " " + camera[i].orientation + " " + camera[i].ipAddr + " Shutter Count " + camera[i].shutterCount, 200, 110+i*50);
           }
         }
       } else {
-        text (camera[i].name+" "+ip[i]+ " Not Connected.", 200, 110+i*50);
+        text (camera[i].name+" "+ camera[i].ipAddr + " Not Connected.", 200, 110+i*50);
       }
     }
   }
   // Display camera control buttons
-  if (NumCameras > 0) {
+  if (numCameras > 0) {
     gui.displayFocusArea();
     gui.displayMenuBar();
     gui.modeTable.display();
@@ -422,7 +348,7 @@ void draw() {
   gui.displayMessage(message);
 
   // set main camera index as first connected camera
-  //for (int i=0; i<NumCameras; i++) {
+  //for (int i=0; i<numCameras; i++) {
   //  if (camera[i].isConnected()) {
   //    mainCamera = i;
   //    break;
@@ -435,11 +361,11 @@ void draw() {
 
 // to be used
 void imageDraw(int i, int offset, float ar) {
-  if (cameraOrientation[i] != 0) {
+  if (camera[i].orientation != 0) {
     pushMatrix();
     imageMode(CENTER);
     translate(camera[i].screenWidth/2, (camera[i].screenWidth/ar)/2);
-    rotate(radians(cameraOrientation[i]));
+    rotate(radians((camera[i].orientation)));
     image(camera[i].lastPhoto, 0, 0, (camera[i].screenWidth), camera[i].screenWidth/ar);
     imageMode(CORNER);
     popMatrix();
