@@ -4,7 +4,9 @@
  
  ![Android phone screenshot Start screen](screenshots/Android/Screenshot0003.jpg)
 
- MultiNX is a cross platform application originally designed to work with Tizen based Samsung NX camers. MultiNX synchronizes and controls one or more Samsung NX2000, NX300, and NX500 cameras. The application was expanded to control Android phone cameras running the [Multi Remote Camera app](https://sourceforge.net/projects/multi-remote-camera/) and Raspberry PI cameras. Possible uses for the MultiNX application are photo and video capture sessions where one or more cameras are not easily accessible or wire focus/shutter control is not possible. I have used MultiNX with four NX2000 cameras remotely and twin NX2000, NX300, and NX500 cameras in a stereo camera rig to set camera parameters, while using USB wired focus/shutter control to take photos. 
+ MultiNX is a cross platform application originally designed to work with Tizen based Samsung NX cameras. MultiNX synchronizes and controls one or more Samsung NX2000, NX300, and NX500 cameras. The application was expanded to control Android phone cameras running the [Multi Remote Camera app](https://sourceforge.net/projects/multi-remote-camera/) and Raspberry PI cameras. 
+ 
+ Possible uses for the MultiNX application are photo and video capture sessions where one or more cameras are not easily accessible or wire focus/shutter control is not possible. I have used MultiNX with four NX2000 cameras remotely and twin NX2000, NX300, and NX500 cameras in a stereo camera rig to set camera parameters, while using USB wired focus/shutter control to take photos. 
  
 The NX cameras use the open-source Linux based (Tizen) operating system and Samsung provided a way to access it on power-up for diagnostics and testing. This project does not apply to the NX1000 or NX1100 cameras because those cameras use a different (closed) operating system VxWorks, not Linux (Tizen).
  
@@ -26,11 +28,11 @@ The NX cameras use the open-source Linux based (Tizen) operating system and Sams
 
  The app needs each camera's IP address to configure the connection. The NX cameras do not show their local network IP address. Only the camera's MAC address is available in the Menu - Settings - Device Information. The MAC address helps to find the camera's IP address with an app like "Network Scanner" in the Google play store. [https://play.google.com/store/apps/details?id=com.myprog.netscan&hl=en_US&gl=US](https://play.google.com/store/apps/details?id=com.myprog.netscan&hl=en_US&gl=US) 
  
- A text configuration file informs the application what cameras to connect with its IP address, camera name, camera type, and camera orientation (0 degrees for landscape and 90 for portrait mode, -180 for upside down).
+ A text configuration file informs the application what cameras to connect with its IP address, camera name, camera type, and camera orientation (0 degrees for landscape and 90 for portrait mode, 180 for upside down).
  
  This MultiNX application code is a work in progress.
  Possible future improvements:
- 1. Convert configuration to use a JSON file.
+ 1. Convert configuration to use a JSON file. done!
  2. Improve User interface, error messaging, documentation
  3. Refactor for simplification, camera design, and more comments 
  4. Add more controls for NX300 and NX500.
@@ -75,16 +77,42 @@ Copy the contents of the sdcard-NXnnnn folder to the base folder of the SD card.
 	
 6. Use an Android app such as "Network Scanner" on your local WiFi network to scan for Samsung cameras and write down the IP address associated with each MAC address you found in step 5.
 	
-7. Create a text file in a folder for the application to find. The text file contains one line for each camera as follows: IP Address, space, camera name, space, camera type NX2000, space, and camera orientation in degrees 0 (unimplemented feature). The camera name appends to photo file name as a suffix _name.
+7. Copy the config.json file in the config folder to a folder for the application to find. I use MultNX in the internal root storage area. The json file defines each camera. The camera suffix name appends to photo file name for storage.
 
-	Here is an twin camera configuration for 3D photography. File named: twincameras_tplink_101_102.txt
+	Here is an twin camera side by side configuration for 3D photography. File named: twincameras_tplink_101_102.json
 	
 	```
-	192.168.0.101 L NX2000 0 
-	192.168.0.102 R NX2000 0 
+    "cameras": [
+	    { "name" : "NX2000 Left",
+		  "suffix": "L",
+		  "type_description": "MRC, NX2000, NX300, NX30, NX500, RPI, TMC",
+		  "type": "NX2000",
+		  "IPaddress": "192.168.0.101",
+          "orientation_description": "camera rotation degrees: landscape 0, portrait 90, landscape upside down 180, portrait upside down 270",		
+		  "orientation": 0,
+		  "horizontalOffset": 0,
+		  "verticalOffset": 0,
+		  "userId": "",
+		  "password": "",
+        },
+	    { "name" : "NX2000 Right",
+		  "suffix": "R",
+		  "type_description": "MRC, NX2000, NX300, NX30, NX500, RPI, TMC",
+		  "type": "NX2000",
+		  "IPaddress": "192.168.0.102",
+          "orientation_description": "camera rotation degrees: landscape 0, portrait 90, landscape upside_down 180, portrait upside_down 270",		
+		  "orientation": 0,
+		  "horizontalOffset_description": "parallax offset to set stereo window for twin camera images (SPM alignment - pixels)",
+		  "horizontalOffset": 0,
+		  "verticalOffset_description": "vertical offset to align twin camera images (SPM alignment- pixels)",
+		  "verticalOffset": 0,
+		  "userId": "",
+		  "password": "",
+        },
+	],
 	```
 	
-	Here is a four camera configuration connected using a phone WiFi hotstop. File named: cameraphotonet_LL_LM_RM_RR.txt
+	Here is a four camera configuration connected using a phone WiFi hotstop. File named: cameraphotonet_LL_LM_RM_RR.json
 	
 	```
 	192.168.216.96 LL NX2000 0
