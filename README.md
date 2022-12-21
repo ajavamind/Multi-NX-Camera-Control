@@ -4,20 +4,19 @@
  
  ![Android phone screenshot Start screen](screenshots/Android/Screenshot0003.jpg)
 
- MultiNX is a cross platform application originally designed to work with Tizen based Samsung NX cameras. MultiNX synchronizes and controls one or more Samsung NX2000, NX300, and NX500 cameras. The application was expanded to control Android phone cameras running the [Multi Remote Camera app](https://sourceforge.net/projects/multi-remote-camera/) and Raspberry PI cameras. 
+ MultiNX is a cross platform application originally designed to work with Tizen based Samsung NX cameras. MultiNX synchronizes and controls one or more Samsung NX2000, NX300, and NX500 cameras. The application now includes Android phone cameras running the [Multi Remote Camera app](https://sourceforge.net/projects/multi-remote-camera/), m5stack Timer Camera, and Raspberry PI cameras. 
  
- Possible uses for the MultiNX application are photo and video capture sessions where one or more cameras are not easily accessible or wire focus/shutter control is not possible. I have used MultiNX with four NX2000 cameras remotely and twin NX2000, NX300, and NX500 cameras in a stereo camera rig to set camera parameters, while using USB wired focus/shutter control to take photos. 
+ Possible uses for the MultiNX application are photo and video capture sessions where one or more cameras are not easily accessible and wired focus/shutter control is not possible. I have used MultiNX with four NX2000 cameras remotely and twin NX2000, NX300, and NX500 cameras in a stereo camera rig to set camera parameters. Either wireless or USB wired focus/shutter control can trigger the cameras to take photos. 
  
-The NX cameras use the open-source Linux based (Tizen) operating system and Samsung provided a way to access it on power-up for diagnostics and testing. This project does not apply to the NX1000 or NX1100 cameras because those cameras use a different (closed) operating system VxWorks, not Linux (Tizen).
+The NX cameras use the open-source Linux based (Tizen) operating system and Samsung provided a way to access it on power-up for diagnostics and testing. This project does not apply to the NX1000 or NX1100 cameras because those cameras use a different (closed) operating system VxWorks, not Linux (Tizen).   MultiNX uses Telnet and HTTP protocol commands to communicate with the connected NX cameras.
  
- MultiNX uses Telnet and HTTP protocol commands to communicate with the connected NX cameras. MultiNX runs on Android and Windows PC platforms.
+ The MultiNX application is written in [Processing](https://processing.org/) and Java, and runs on a Windows PC, Linux, or Android device (phone, tablet, and Chromebook). The application may also run in the IOS Processing SDK, but I have not tested. 
+ MultiNX runs on Android, Linux and Windows PC platforms where Processing.org SDK can run.
 
  MultiNX supports up to four multiple camera connections at once. The WiFi connection in each NX2000 and NX300 camera is made with the E-Mail WiFi setup service on the camera, however it does not use the email service. With the NX500, the Menu system turns on WiFi access. It has not been tested with more than four camera connections.
  
  Note: The NX300 and NX500 implementations are not yet complete because not all hardware keys can be controlled remotely. 
 
- The MultiNX application is written in [Processing](https://processing.org/) and Java, and runs on a PC or Android device (phone, tablet, and Chromebook). The application may also run in the IOS Processing SDK, but I have not tested. 
- 
  The application connects to each Samsung NX camera over WiFi on a local network. The WiFi network does not have to be connected to the Internet and normally should not be connected to the Internet due to security issues with telnet. For my use, I establish a local network with a USB battery powered mobile router like the TP-Link_290A and other AC powered routers. I have used my Telecom service provider modem router and Android mobile phone hot-spot connection feature. These are connected to the Internet for a short period of time during my tests.
  
  The application only invokes telnet and HTTP protocols to communicate with the cameras. The application does not modify the internal Tizen file system to add shell or application code. The application sends commands to the camera provided by telnet. A start up "autoexec.sh" shell script in the root folder of the SD memory card starts the telnet and HTTP services in the camera. The shell script also starts an optional FTP server for photo transfer after a shoot is finished. The application is not an FTP client. I use [Filezilla](https://filezilla-project.org/) on a PC to transfer photos from all the connected cameras. The FTP server on each camera can be commented out to improve performance. 
@@ -115,13 +114,63 @@ Copy the contents of the sdcard-NXnnnn folder to the base folder of the SD card.
 	Here is a four camera configuration connected using a phone WiFi hotstop. File named: cameraphotonet_LL_LM_RM_RR.json
 	
 	```
-	192.168.216.96 LL NX2000 0
-	192.168.216.18 LM NX2000 0
-	192.168.216.56 RM NX2000 0
-	192.168.216.54 RR NX2000 0
+    "cameras": [
+	    { "name" : "NX2000 Left Left",
+		  "suffix": "LL",
+		  "type_description": "MRC, NX2000, NX300, NX30, NX500, RPI, TMC",
+		  "type": "NX2000",
+		  "IPaddress": "192.168.216.96",
+          "orientation_description": "camera rotation degrees: landscape 0, portrait 90, landscape upside down 180, portrait upside down 270",		
+		  "orientation": 0,
+		  "horizontalOffset": 0,
+		  "verticalOffset": 0,
+		  "userId": "",
+		  "password": "",
+        },
+	    { "name" : "NX2000 Left Middle",
+		  "suffix": "LM",
+		  "type_description": "MRC, NX2000, NX300, NX30, NX500, RPI, TMC",
+		  "type": "NX2000",
+		  "IPaddress": "192.168.216.18",
+          "orientation_description": "camera rotation degrees: landscape 0, portrait 90, landscape upside down 180, portrait upside down 270",		
+		  "orientation": 0,
+		  "horizontalOffset": 0,
+		  "verticalOffset": 0,
+		  "userId": "",
+		  "password": "",
+        },
+	    { "name" : "NX2000 Right Middle",
+		  "suffix": "RM",
+		  "type_description": "MRC, NX2000, NX300, NX30, NX500, RPI, TMC",
+		  "type": "NX2000",
+		  "IPaddress": "192.168.216.56",
+          "orientation_description": "camera rotation degrees: landscape 0, portrait 90, landscape upside_down 180, portrait upside_down 270",		
+		  "orientation": 0,
+		  "horizontalOffset_description": "parallax offset to set stereo window for twin camera images (SPM alignment - pixels)",
+		  "horizontalOffset": 0,
+		  "verticalOffset_description": "vertical offset to align twin camera images (SPM alignment- pixels)",
+		  "verticalOffset": 0,
+		  "userId": "",
+		  "password": "",
+        },
+	    { "name" : "NX2000 Right Right",
+		  "suffix": "RR",
+		  "type_description": "MRC, NX2000, NX300, NX30, NX500, RPI, TMC",
+		  "type": "NX2000",
+		  "IPaddress": "192.168.216.54",
+          "orientation_description": "camera rotation degrees: landscape 0, portrait 90, landscape upside_down 180, portrait upside_down 270",		
+		  "orientation": 0,
+		  "horizontalOffset_description": "parallax offset to set stereo window for twin camera images (SPM alignment - pixels)",
+		  "horizontalOffset": 0,
+		  "verticalOffset_description": "vertical offset to align twin camera images (SPM alignment- pixels)",
+		  "verticalOffset": 0,
+		  "userId": "",
+		  "password": "",
+        },
+	],
 	```
 	
-8. Start the application and select a new configuration. Find the folder with the configuration text file and select it.
+8. Start the application and select a new configuration. Find the folder with the configuration json file and select it.
 	The app will attempt to connect to each camera in the configuration list with telnet.
 
 ## Building MultiNX for Windows or Android
