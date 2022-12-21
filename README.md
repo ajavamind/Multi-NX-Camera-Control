@@ -81,6 +81,18 @@ Copy the contents of the sdcard-NXnnnn folder to the base folder of the SD card.
 	Here is an twin camera side by side configuration for 3D photography. File named: twincameras_tplink_101_102.json
 	
 	```
+{	"description": "Multi NX Camera Control Configuration",
+	"debug": true,
+	"configuration": {
+		"camera_rig_description": "twin (3D stereo), lenticular, multiple",
+		"camera_rig": "twin",
+		"saveFolderPath": "/output",
+		"IPaddress": "192.168.0.105",
+	},
+	"display": {
+		"width": 1920,
+		"height": 1080,
+	},
     "cameras": [
 	    { "name" : "NX2000 Left",
 		  "suffix": "L",
@@ -109,11 +121,35 @@ Copy the contents of the sdcard-NXnnnn folder to the base folder of the SD card.
 		  "password": "",
         },
 	],
+	"repeat": {
+		"description": "start_delay - capture start delay seconds, interval - seconds between repeats, count - number of repeats",
+		"start_delay": 0,
+		"interval": 0,
+		"count": 0,
+	},
+	"printer": {
+		"name": "Canon Selphy 1300",
+		"printWidth": 4.0,
+		"printHeight": 6.0,
+	}
+}
 	```
 	
 	Here is a four camera configuration connected using a phone WiFi hotstop. File named: cameraphotonet_LL_LM_RM_RR.json
 	
 	```
+{	"description": "Multi NX Camera Control Configuration",
+	"debug": true,
+	"configuration": {
+		"camera_rig_description": "twin (3D stereo), lenticular, multiple",
+		"camera_rig": "twin",
+		"saveFolderPath": "/output",
+		"IPaddress": "192.168.0.105",
+	},
+	"display": {
+		"width": 1920,
+		"height": 1080,
+	},
     "cameras": [
 	    { "name" : "NX2000 Left Left",
 		  "suffix": "LL",
@@ -168,6 +204,18 @@ Copy the contents of the sdcard-NXnnnn folder to the base folder of the SD card.
 		  "password": "",
         },
 	],
+	"repeat": {
+		"description": "start_delay - capture start delay seconds, interval - seconds between repeats, count - number of repeats",
+		"start_delay": 0,
+		"interval": 0,
+		"count": 0,
+	},
+	"printer": {
+		"name": "Canon Selphy 1300",
+		"printWidth": 4.0,
+		"printHeight": 6.0,
+	}
+}
 	```
 	
 8. Start the application and select a new configuration. Find the folder with the configuration json file and select it.
