@@ -145,7 +145,7 @@ Copy the contents of the sdcard-NXnnnn folder to the base folder of the SD card.
 	"debug": true,
 	"configuration": {
 		"camera_rig_description": "twin (3D stereo), lenticular, multiple",
-		"camera_rig": "twin",
+		"camera_rig": "lenticular",
 		"saveFolderPath": "/output",
 		"IPaddress": "192.168.0.105",
 	},
