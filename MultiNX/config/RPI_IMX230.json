@@ -1,0 +1,44 @@
+
+{	"description": "Multi NX Camera Control Configuration",
+    "info": "Raspberry Pi Computer with IMX230 camera
+Use libcamera library framework on Raspberry Pi
+Requires web server on Raspberry Pi at port 8080
+Requires a user id and password for SSH access
+",
+	"debug": true,
+	"configuration": {
+		"camera_rig_description": "twin (3D stereo), lenticular, multiple",
+		"camera_rig": "multiple",
+		"saveFolderPath": "/output",
+		"IPaddress": "192.168.0.102",
+	},
+	"display": {
+		"width": 1920,
+		"height": 1080,
+	},
+    "cameras": [
+	    { "name" : "RPI IMX230",
+		  "suffix": "PI",
+		  "type_description": "MRC, NX2000, NX300, NX30, NX500, RPI, TMC",
+		  "type": "RPI",
+		  "IPaddress": "192.168.0.200",
+          "orientation_description": "camera rotation degrees: landscape 0, portrait 90, landscape upside down 180, portrait upside down 270",		
+		  "orientation": 0,
+		  "horizontalOffset": 0,
+		  "verticalOffset": 0,
+		  "userId": "pi",
+		  "password": "password",
+        },
+	],
+	"repeat": {
+		"description": "start_delay - capture start delay seconds, interval - seconds between repeats, count - number of repeats",
+		"start_delay": 0,
+		"interval": 0,
+		"count": 0,
+	},
+	"printer": {
+		"name": "Canon Selphy 1300",
+		"printWidth": 4.0,
+		"printHeight": 6.0,
+	}
+}
