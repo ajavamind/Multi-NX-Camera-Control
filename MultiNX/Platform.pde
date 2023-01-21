@@ -9,8 +9,10 @@ int buildMode = ANDROID_MODE;  // change manually for the build
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.app.Activity;
 import select.files.*;
+
 boolean grantedRead = false;
 boolean grantedWrite = false;
 
@@ -116,6 +118,14 @@ int loadPhotoNumber() {
   return result;
 }
 
+private void destroy(PImage img) {
+  if (img == null) return;
+  Bitmap bitmap = (Bitmap) img.getNative();
+  if (bitmap != null)
+    bitmap.recycle();
+  img.setNative(null);
+  System.gc();
+}
 
 //..........................................................................
 //..........................................................................
