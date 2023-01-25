@@ -375,9 +375,11 @@ int keyUpdate() {
     modeSelection =! modeSelection;
     selectedCameraMode = cameraMode;
     break;
+  case KEYCODE_A:
+    displayAnaglyph = !displayAnaglyph;  // only applies to Multi Remote Camera displayAnaglyph ignored by other cameras for now
+    break;
   case KEYCODE_I:
     if (DEBUG) println("Camera INFO");
-    displayAnaglyph = !displayAnaglyph;
     camera[mainCamera].screenshot();
     for (int i=0; i<numCameras; i++) {
       if (camera[i].isConnected()) {
@@ -385,6 +387,7 @@ int keyUpdate() {
         camera[i].getShutterCount();
       }
     }
+    break;
   case KEYCODE_K:
     if (DEBUG) println("Camera OK");
     for (int i=0; i<numCameras; i++) {
@@ -424,6 +427,7 @@ int keyUpdate() {
         camera[i].ev();
       }
     }
+    break;
   case KEYCODE_J:
     if (DEBUG) println("JOG CW");
     for (int i=0; i<numCameras; i++) {

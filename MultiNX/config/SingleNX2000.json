@@ -4,7 +4,8 @@
 		"camera_rig_description": "One camera test NX2000  0D:B3",
 		"camera_rig": "single",
 		"saveFolderPath": "/output",
-		"IPaddress": "192.168.0.110",
+		"IPaddress description": "Network broadcast address for Multi Remote Camera app",
+		"IPaddress": "192.168.0.255",
 	},
 	"display": {
 		"width": 1920,
@@ -25,7 +26,7 @@
         },
 	],
 	"repeat": {
-		"description": "Future TODO start_delay - capture start delay seconds, interval - seconds between repeats, count - number of repeats",
+		"repeat_description": "Future TODO start_delay - capture start delay seconds, interval - seconds between repeats, count - number of repeats",
 		"start_delay": 0,
 		"interval": 0,
 		"count": 0,

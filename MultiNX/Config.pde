@@ -42,7 +42,6 @@ void readConfig(String filenamePath) {
   configuration = configFile.getJSONObject("configuration");
   DEBUG = configFile.getBoolean("debug");
 
-
   camera_rig = configFile.getString("camera_rig");
   OUTPUT_FOLDER_PATH = configuration.getString("outputFolderPath");
   ipAddress = configuration.getString("IPaddress");
