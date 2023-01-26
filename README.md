@@ -127,13 +127,8 @@ Copy the contents of the sdcard-NXnnnn folder to the base folder of the SD card.
 		"start_delay": 0,
 		"interval": 0,
 		"count": 0,
-	},
-	"printer": {
-		"name": "Canon Selphy 1300",
-		"printWidth": 4.0,
-		"printHeight": 6.0,
 	}
-        }
+    }
 
 ```
 
@@ -212,13 +207,8 @@ Copy the contents of the sdcard-NXnnnn folder to the base folder of the SD card.
 		"start_delay": 0,
 		"interval": 0,
 		"count": 0,
-	},
-	"printer": {
-		"name": "Canon Selphy 1300",
-		"printWidth": 4.0,
-		"printHeight": 6.0,
 	}
-        }
+    }
 
 ```
 	
