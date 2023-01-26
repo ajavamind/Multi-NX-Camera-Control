@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:targetSandboxVersion="1" android:versionCode="4" android:versionName="1.7" package="com.andymodla.apps.multinx">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:targetSandboxVersion="1" android:versionCode="5" android:versionName="1.8" package="com.andymodla.apps.multinx">
     <!-- 
 	    <uses-sdk android:minSdkVersion="17" android:targetSdkVersion="29"/>
 
 	Some Chromebooks don't support touch. Although not essential,
              it's a good idea to explicitly include this declaration. -->
     <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
-    <application android:icon="@mipmap/ic_launcher" android:label="" android:largeHeap="true" android:requestLegacyExternalStorage="true" android:usesCleartextTraffic="true" >
-        <activity android:name=".MainActivity" android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen" android:exported="true">
+    <application android:icon="@mipmap/ic_launcher" android:label="" android:largeHeap="true" android:requestLegacyExternalStorage="true" android:usesCleartextTraffic="true">
+        <activity android:exported="true" android:name=".MainActivity" android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

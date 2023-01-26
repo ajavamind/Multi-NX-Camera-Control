@@ -220,7 +220,7 @@ class Gui {
     message = msg;
   }
 
-   void displayMessage(String msg, int counter) {
+  void displayMessage(String msg, int counter) {
     frameCounter = counter;
     message = msg;
   }
@@ -320,12 +320,12 @@ class Gui {
       table[10] = sKey;
       table[11] = mKey;
       table[12] = okKey;
-      //int[] valueTable = {0, 1, 2, 3, 
-      //  4, 5, 6, 7, 
-      //  8, 9, 10, 11, 
+      //int[] valueTable = {0, 1, 2, 3,
+      //  4, 5, 6, 7,
+      //  8, 9, 10, 11,
       //  12
       //};
-      int[] valueTable = {0, 1, 2, 3, 
+      int[] valueTable = {0, 1, 2, 3,
         4, 5, 10, 11, 6, 7, 8, 9, 12
       };
       insetY = iY/8;
@@ -456,12 +456,12 @@ class Gui {
       table[10] = sKey;
       table[11] = mKey;
       table[12] = okKey;
-      //int[] valueTable = {0, 1, 2, 3, 
-      //  4, 5, 6, 7, 
-      //  8, 9, 10, 11, 
+      //int[] valueTable = {0, 1, 2, 3,
+      //  4, 5, 6, 7,
+      //  8, 9, 10, 11,
       //  12
       //};
-      int[] valueTable = {0, 1, 2, 3, 
+      int[] valueTable = {0, 1, 2, 3,
         4, 5, 10, 11, 6, 7, 8, 9, 12
       };
       insetY = iY/8;
@@ -574,16 +574,16 @@ class Gui {
       isoLeftKey = new MenuKey(2009, LEFT_TRIANGLE, MEDIUM_FONT_SIZE, arrowKeyColor);
       isoKey = new MenuKey(2010, isoName[isoId], FONT_SIZE, keyColor);
       isoRightKey = new MenuKey(2011, RIGHT_TRIANGLE, MEDIUM_FONT_SIZE, arrowKeyColor);
-      
+
       //syncCamerasKey = new MenuKey(KEYCODE_FN_UPDATE_SYNC, "Sync" , FONT_SIZE, keyColor);
       //prevCameraKey = new MenuKey(KEYCODE_FN_UPDATE_PREV, "Prev" , FONT_SIZE, keyColor);
       //okKey = new MenuKey(KEYCODE_FN_UPDATE_OK, CHECK_MARK, FONT_SIZE, keyColor);
       //nextCameraKey = new MenuKey(KEYCODE_FN_UPDATE_NEXT, "Next" , FONT_SIZE, keyColor);
-      syncCamerasKey = new MenuKey(KEYCODE_0, "Sync" , FONT_SIZE, keyColor);
-      prevCameraKey = new MenuKey(KEYCODE_FN_UPDATE_PREV, "Prev" , FONT_SIZE, keyColor);
+      syncCamerasKey = new MenuKey(KEYCODE_0, "Sync", FONT_SIZE, keyColor);
+      prevCameraKey = new MenuKey(KEYCODE_FN_UPDATE_PREV, "Prev", FONT_SIZE, keyColor);
       okKey = new MenuKey(KEYCODE_FN_UPDATE_OK, CHECK_MARK, FONT_SIZE, keyColor);
-      nextCameraKey = new MenuKey(KEYCODE_FN_UPDATE_NEXT, "Next" , FONT_SIZE, keyColor);
-      
+      nextCameraKey = new MenuKey(KEYCODE_FN_UPDATE_NEXT, "Next", FONT_SIZE, keyColor);
+
       table = new MenuKey[numKeys];
       table[0] = shutterNameKey;
       table[1] = shutterLeftKey;
@@ -601,10 +601,10 @@ class Gui {
       table[13] = prevCameraKey;
       table[14] = okKey;
       table[15] = nextCameraKey;
-      
-      int[] valueTable = {0, 1, 2, 3, 
-        4, 5, 6, 7, 
-        8, 9, 10, 11, 
+
+      int[] valueTable = {0, 1, 2, 3,
+        4, 5, 6, 7,
+        8, 9, 10, 11,
         12, 13, 14, 15
       };
       insetY = iY/8;
@@ -725,7 +725,11 @@ class Gui {
 
       focusKey = new MenuKey(KEYCODE_F, "Focus", FONT_SIZE, keyColor);
       shutterKey = new MenuKey(KEYCODE_S, "Shutter", FONT_SIZE, keyColor);
-      evKey = new MenuKey(KEYCODE_E, "EV", FONT_SIZE, keyColor);
+      if (cameraType == NX2000) {
+        evKey = new MenuKey(KEYCODE_E, "EV/OK", FONT_SIZE, keyColor);
+      } else {
+        evKey = new MenuKey(KEYCODE_E, "EV", FONT_SIZE, keyColor);
+      }
       jogcwKey = new MenuKey(KEYCODE_J, LEFT_TRIANGLE, FONT_SIZE, keyColor);
       jogccwKey = new MenuKey(KEYCODE_L, RIGHT_TRIANGLE, FONT_SIZE, keyColor);
       recordKey = new MenuKey(KEYCODE_R, "Record", FONT_SIZE, red);
@@ -793,7 +797,7 @@ class Gui {
             }
           }
         }
-      } 
+      }
       return mkeyCode;
     }
   }
@@ -810,6 +814,7 @@ class Gui {
     MenuKey cameraMenuKey;
     MenuKey cameraFnKey;
     MenuKey cameraOkKey;
+    MenuKey exitKey;
     MenuKey backKey;
     MenuKey[] menuKey;
     int numKeys = 8;
@@ -826,7 +831,8 @@ class Gui {
       cameraFnKey = new MenuKey(KEYCODE_N, "Fn", FONT_SIZE, keyColor);
       cameraModeKey = new MenuKey(KEYCODE_W, "Mode", FONT_SIZE, keyColor);
       cameraOkKey = new MenuKey(KEYCODE_K, "OK", FONT_SIZE, keyColor);
-      backKey = new MenuKey(KEYCODE_ESC, "EXIT", FONT_SIZE, keyColor);
+      exitKey = new MenuKey(KEYCODE_ESC, "EXIT", FONT_SIZE, keyColor);
+      backKey = new MenuKey(KEYCODE_BACKSPACE, "Back", FONT_SIZE, keyColor);
       menuKey = new MenuKey[numKeys];
       menuKey[0] = cameraInfoKey;
       menuKey[1] = cameraShowKey;
@@ -834,8 +840,12 @@ class Gui {
       menuKey[3] = cameraModeKey;
       menuKey[4] = cameraMenuKey;
       menuKey[5] = cameraFnKey;
-      menuKey[6] = cameraOkKey;
-      menuKey[7] = backKey;
+      if (cameraType == NX2000) {
+        menuKey[6] = backKey;
+      } else {
+        menuKey[6] = cameraOkKey;
+      }
+      menuKey[7] = exitKey;
 
       x = 0;
       y = HEIGHT - iY;
@@ -887,7 +897,7 @@ class Gui {
             }
           }
         }
-      } 
+      }
       return mkeyCode;
     }
   }
@@ -969,7 +979,7 @@ class Gui {
             }
           }
         }
-      } 
+      }
       return mkeyCode;
     }
   }
@@ -1044,7 +1054,7 @@ class Gui {
             }
           }
         }
-      } 
+      }
       return mkeyCode;
     }
   }

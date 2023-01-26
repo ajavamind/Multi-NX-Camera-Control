@@ -207,7 +207,8 @@ int keyUpdate() {
       screenshot=null;
     }
     if (camera[mainCamera].type == NX2000) {
-      screenshot = loadImage("http://"+camera[mainCamera].ipAddr+"/screenshot.bmp");
+      //screenshot = loadImage("http://"+camera[mainCamera].ipAddr+"/screenshot.bmp");
+      screenshot = requestImage("http://"+camera[mainCamera].ipAddr+"/screenshot.bmp");
     } else if (camera[mainCamera].type == NX500) {
       delay(2000);  // wait for screenshot capture to finish
       screenshot = loadImage("http://"+camera[mainCamera].ipAddr+"/OSD0001.jpg");
@@ -320,9 +321,8 @@ int keyUpdate() {
         camera[i].takePhoto();
       }
     }
-    // back
     break;
-  case KEYCODE_BACKSPACE:
+  case KEYCODE_BACKSPACE:  // back
     for (int i=0; i<numCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].touchBack();

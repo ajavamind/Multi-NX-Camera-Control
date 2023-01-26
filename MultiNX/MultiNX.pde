@@ -36,12 +36,12 @@
 // Use email WiFi cofiguration on NX2000 to connect to a local network.
 // Exit email screen on NX camera to shoot photos and videos after connection to your local WiFi network.
 
-static final String VERSION = "Version 1.7";
+static final String VERSION = "Version 1.8";
 static final String VERSION_DEBUG = VERSION + " DEBUG";
 static final String TITLE = "MultiNX - Multi Camera Controller";
 static final String SUBTITLE = "Control Multiple NX/MRC/RPI Cameras";
 static final String CREDITS = "Written by Andy Modla";
-static final String COPYRIGHT = "Copyright 2021-2022 Andrew Modla";
+static final String COPYRIGHT = "Copyright 2021-2023 Andrew Modla";
 
 static final boolean testGui = false;
 static boolean DEBUG = true;
@@ -162,7 +162,7 @@ void draw() {
   }
   background(128);
   //background(0);
-  if (screenshot != null) {
+  if (screenshot != null && screenshot.width>0 && screenshot.height>0) {
     if (camera[mainCamera].type == NX2000 || camera[mainCamera].type == NX300 || camera[mainCamera].type == NX30) {
       imageMode(CENTER);
       pushMatrix();
@@ -212,7 +212,7 @@ void draw() {
       initConfig();
     } else {
       if (DEBUG) println("configFilename="+configFilename);
-     if (buildMode == ANDROID_MODE) {
+      if (buildMode == ANDROID_MODE) {
         saveConfig(configFilename);
       } else {
         String[] content = new String[1];
@@ -326,10 +326,12 @@ void draw() {
           }
         } else {
           textSize(FONT_SIZE);
-          if (camera[i].shutterCount == 0) {
-            text(camera[i].name + " " + camera[i].orientation + " " + camera[i].ipAddr + " Connected.", 200, 110+i*50);
-          } else {
-            text(camera[i].name + " " + camera[i].orientation + " " + camera[i].ipAddr + " Shutter Count " + camera[i].shutterCount, 200, 110+i*50);
+          if (screenshot == null) {
+            if (camera[i].shutterCount == 0) {
+              text(camera[i].name + " " + camera[i].orientation + " " + camera[i].ipAddr + " Connected.", 200, 110+i*50);
+            } else {
+              text(camera[i].name + " " + camera[i].orientation + " " + camera[i].ipAddr + " Shutter Count " + camera[i].shutterCount, 200, 110+i*50);
+            }
           }
         }
       } else {
