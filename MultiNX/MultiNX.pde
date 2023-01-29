@@ -36,7 +36,7 @@
 // Use email WiFi cofiguration on NX2000 to connect to a local network.
 // Exit email screen on NX camera to shoot photos and videos after connection to your local WiFi network.
 
-static final String VERSION = "Version 1.8";
+static final String VERSION = "Version 1.9";
 static final String VERSION_DEBUG = VERSION + " DEBUG";
 static final String TITLE = "MultiNX - Multi Camera Controller";
 static final String SUBTITLE = "Control Multiple NX/MRC/RPI Cameras";
@@ -44,9 +44,7 @@ static final String CREDITS = "Written by Andy Modla";
 static final String COPYRIGHT = "Copyright 2021-2023 Andrew Modla";
 
 static final boolean testGui = false;
-static boolean DEBUG = true;
-//static final boolean DEBUG = true;
-//static final boolean DEBUG = false;
+static boolean DEBUG = false;
 
 // Configuration file parsed settings for cameras
 String camera_rig = "multiple";
@@ -107,8 +105,10 @@ boolean showPhoto = false;
 int screenshotCounter = 1;
 String screenshotFilename = "screenshot";
 boolean screenshotRequest = false;
+boolean requestScreenshot = false;
 boolean displayAnaglyph = false;
 boolean forceExit = false;
+boolean cameraStatus = false;
 
 void settings() {
   size(1920, 1080);  // TODO fullscreen and adjust GUI for various sizes and aspect ratio
@@ -293,7 +293,7 @@ void draw() {
       // ---------------------------------------------------------------------
       // displayPhoto
       if (camera[i].isConnected()) {
-        if (camera[i].lastPhoto != null && showPhoto) {
+        if (camera[i].lastPhoto != null && camera[i].lastPhoto.width>0 && camera[i].lastPhoto.height> 0 && showPhoto) {
           textSize(SMALL_FONT_SIZE);
           //if (DEBUG) println("show "+camera[i].filename + " " + camera[i].lastPhoto.width + " "+camera[i].lastPhoto.height);
           float w = camera[i].lastPhoto.width;
@@ -326,7 +326,7 @@ void draw() {
           }
         } else {
           textSize(FONT_SIZE);
-          if (screenshot == null) {
+          if (screenshot == null || cameraStatus) {
             if (camera[i].shutterCount == 0) {
               text(camera[i].name + " " + camera[i].orientation + " " + camera[i].ipAddr + " Connected.", 200, 110+i*50);
             } else {
@@ -345,6 +345,7 @@ void draw() {
     gui.displayMenuBar();
     gui.modeTable.display();
     gui.fnTable.display();
+    gui.navTable.display();
   }
   // Display information or error message
   gui.displayMessage(message);
@@ -359,6 +360,10 @@ void draw() {
 
   // Drawing finished, check for screenshot request
   saveScreenshot();
+  if (requestScreenshot) {
+    requestScreenshot = false;
+    lastKeyCode = KEYCODE_I;
+  }
 }
 
 // to be used

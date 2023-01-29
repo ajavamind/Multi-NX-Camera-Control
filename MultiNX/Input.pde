@@ -2,6 +2,7 @@
 // These codes (ASCII) are for Java applications
 // Android codes (not implemented) differ with some keys
 
+static final int KEYCODE_NOP = 0;
 static final int KEYCODE_BACK = 4;
 static final int KEYCODE_BACKSPACE = 8;
 static final int KEYCODE_TAB = 9;
@@ -108,8 +109,15 @@ static final int KEYCODE_FN_UPDATE_SYNC = 2012;
 static final int KEYCODE_FN_UPDATE_PREV = 2013;
 static final int KEYCODE_FN_UPDATE_OK = 2014;
 static final int KEYCODE_FN_UPDATE_NEXT = 2015;
+static final int KEYCODE_NAV_UPDATE = 2500;
+static final int KEYCODE_NAV_LEFT = 2501;
+static final int KEYCODE_NAV_RIGHT = 2502;
+static final int KEYCODE_NAV_UP = 2503;
+static final int KEYCODE_NAV_DOWN = 2504;
+static final int KEYCODE_NAV_OK = 2505;
 static final int KEYCODE_SHOW = 3000;
 static final int KEYCODE_SAVE = 3001;
+static final int KEYCODE_REPEAT = 3002;
 
 private static final int NOP = 0;
 private static final int EXIT = 1;
@@ -125,31 +133,33 @@ void mousePressed() {
   if (state == RUN_STATE && numCameras > 0) {
     lastKeyCode = gui.vertMenuBar.mousePressed(mouseX, mouseY);
     if (lastKeyCode == 0) {
-      lastKeyCode = gui.horzMenuBar.mousePressed(mouseX, mouseY);
+      lastKeyCode = gui.horzMenuBar[gui.horzMenuBarIndex].mousePressed(mouseX, mouseY);
       if (lastKeyCode == 0 && modeSelection) {
         lastKeyCode = gui.modeTable.mousePressed(mouseX, mouseY);
       }
       if (lastKeyCode == 0 && fnSelection) {
         lastKeyCode = gui.fnTable.mousePressed(mouseX, mouseY);
       }
+      if (lastKeyCode == 0 && navSelection) {
+        lastKeyCode = gui.navTable.mousePressed(mouseX, mouseY);
+      }
       if (lastKeyCode == 0) {
-        lastKeyCode = gui.fnZone.mousePressed(mouseX, mouseY);
-        // touch focus
-        if (lastKeyCode == 0) {
-          if (mouseX >0 && mouseX<= width-320 && mouseY > 0 && mouseY < height-120) {
-            for (int i=0; i<numCameras; i++) {
-              if (camera[i].isConnected()) {
-                if (DEBUG) println("mouse x="+(mouseX) + " y="+mouseY);
-                if (DEBUG) println("screen width="+camera[i].screenWidth + " height="+camera[i].screenHeight);
-                if (mouseX < 2*camera[i].screenWidth && mouseY<2*camera[i].screenHeight) {
-                  // multiple cameras have focus shift to the right
-                  //camera[i].touchFocus((2*NX2000Camera.screenHeight-mouseY)/2, int(mouseX+i*camera[i].focusOffset)/2);
-                  camera[i].touchFocus((camera[i].screenHeight-(mouseY)/2), int(mouseX+i*camera[i].focusOffset)/2);
-                  if (mouseX > 2*Gui.xoffset && mouseX < 2*camera[i].screenWidth &&
-                    mouseY>0 && mouseY < 2*camera[i].screenHeight-120) {
-                    gui.xFocusArea = mouseX;
-                    gui.yFocusArea = mouseY;
-                  }
+        // touch focus and selection
+        if (mouseX >0 && mouseX<= width-320 && mouseY > 0 && mouseY < height-120) {
+          for (int i=0; i<numCameras; i++) {
+            if (camera[i].isConnected()) {
+              if (DEBUG) println("mouse x="+(mouseX) + " y="+mouseY);
+              if (DEBUG) println("screen width="+camera[i].screenWidth + " height="+camera[i].screenHeight);
+              if (mouseX < 2*camera[i].screenWidth && mouseY<2*camera[i].screenHeight) {
+                // multiple cameras have focus shift to the right
+                //camera[i].touchFocus((2*NX2000Camera.screenHeight-mouseY)/2, int(mouseX+i*camera[i].focusOffset)/2);
+                camera[i].touchFocus((camera[i].screenHeight-(mouseY)/2), int(mouseX+i*camera[i].focusOffset)/2);
+                //requestScreenshot = true; // request screenshot
+
+                if (mouseX > 2*Gui.xoffset && mouseX < 2*camera[i].screenWidth &&
+                  mouseY>0 && mouseY < 2*camera[i].screenHeight-120) {
+                  gui.xFocusArea = mouseX;
+                  gui.yFocusArea = mouseY;
                 }
               }
             }
@@ -207,20 +217,14 @@ int keyUpdate() {
       screenshot=null;
     }
     if (camera[mainCamera].type == NX2000) {
-      //screenshot = loadImage("http://"+camera[mainCamera].ipAddr+"/screenshot.bmp");
       screenshot = requestImage("http://"+camera[mainCamera].ipAddr+"/screenshot.bmp");
     } else if (camera[mainCamera].type == NX500) {
       delay(2000);  // wait for screenshot capture to finish
-      screenshot = loadImage("http://"+camera[mainCamera].ipAddr+"/OSD0001.jpg");
+      screenshot = requestImage("http://"+camera[mainCamera].ipAddr+"/OSD0001.jpg");
     } else if (camera[mainCamera].type == NX300 || camera[mainCamera].type == NX30) {
       delay(2000);  // wait for screenshot capture to finish
-      screenshot = loadImage("http://"+camera[mainCamera].ipAddr+"/screenshot.bmp");
+      screenshot = requestImage("http://"+camera[mainCamera].ipAddr+"/screenshot.bmp");
     }
-    //       if (showPhoto) {
-    gui.fnZone.show(false, true);
-    //    } else {
-    //      gui.fnZone.show(true, true);
-    //    }
     break;
   case KEYCODE_SPACE:
     if (allCameras) {
@@ -260,7 +264,7 @@ int keyUpdate() {
   case KEYCODE_Q:  // quit/ESC key
     if (DEBUG) println("QUIT");
     if (numCameras > 0) {
-      gui.horzMenuBar.backKey.setHighlight(true);
+      //gui.horzMenuBar[gui.horzMenuBarIndex].backKey.setHighlight(true);  // TODO
       for (int i=0; i<numCameras; i++) {
         if (camera[i].isConnected()) {
           camera[i].sendMsg("exit\n");
@@ -344,7 +348,11 @@ int keyUpdate() {
       }
     }
     break;
-  case KEYCODE_D:
+  case KEYCODE_C: // Shift to alternate horizontal menu
+    gui.altHorzMenuBar();
+    gui.displayMenuBar();
+    break;
+  case KEYCODE_D: // debug informaton
     if (DEBUG) println("State="+stateName[state]);
     break;
   case KEYCODE_H:
@@ -362,6 +370,8 @@ int keyUpdate() {
         camera[i].menu();
       }
     }
+    break;
+  case KEYCODE_O:  // available
     //} else if (lastKeyCode == KEYCODE_O ) {
     //  if (DEBUG) println("Application Fn Shutter values");
     //  for (int i=0; i<numCameras; i++) {
@@ -379,14 +389,8 @@ int keyUpdate() {
     displayAnaglyph = !displayAnaglyph;  // only applies to Multi Remote Camera displayAnaglyph ignored by other cameras for now
     break;
   case KEYCODE_I:
-    if (DEBUG) println("Camera INFO");
+    if (DEBUG) println("Camera screenshot ");
     camera[mainCamera].screenshot();
-    for (int i=0; i<numCameras; i++) {
-      if (camera[i].isConnected()) {
-        //camera[i].cameraInfo();
-        camera[i].getShutterCount();
-      }
-    }
     break;
   case KEYCODE_K:
     if (DEBUG) println("Camera OK");
@@ -397,7 +401,7 @@ int keyUpdate() {
     }
     break;
   case KEYCODE_B:
-    if (DEBUG) println("Camera Screenshot");
+    if (DEBUG) println("All Camera Screenshot");
     for (int i=0; i<numCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].screenshot(screenshotFilename);
@@ -487,10 +491,10 @@ int keyUpdate() {
     if (!allCameras) {
       who = camera[mainCamera].suffix;
     }
-    gui.fnZone.zoneKey.cap = who + ": " + camera[mainCamera].getSsName(camera[mainCamera].getShutterSpeed())
+    gui.fnTable.zoneKey.cap = who + ": " + camera[mainCamera].getSsName(camera[mainCamera].getShutterSpeed())
       +"    "+camera[mainCamera].getFnName(camera[mainCamera].getFn())+"    EV "+
       camera[mainCamera].getEvName()+"    ISO "+isoName[camera[mainCamera].getISO()];
-    if (DEBUG) println("Camera state "+gui.fnZone.zoneKey.cap);
+    if (DEBUG) println("Camera state "+gui.fnTable.zoneKey.cap);
     break;
   case KEYCODE_FN_UPDATE:
   case KEYCODE_FN_UPDATE1:
@@ -582,17 +586,59 @@ int keyUpdate() {
       }
     }
     break;
+  case KEYCODE_NAV_UPDATE:
+    if (DEBUG) println("Navigation key parameters");
+    navSelection =! navSelection;
+    if (navSelection) {
+      gui.navTable.display();
+    }
+    break;
+  case KEYCODE_NAV_LEFT:
+    if (DEBUG) println("cameraLeft()");
+    for (int i=0; i<numCameras; i++) {
+      if (camera[i].isConnected()) {
+        camera[i].cameraLeft();
+      }
+    }
+    break;
+  case KEYCODE_NAV_RIGHT:
+    if (DEBUG) println("cameraRight()");
+    for (int i=0; i<numCameras; i++) {
+      if (camera[i].isConnected()) {
+        camera[i].cameraRight();
+      }
+    }
+    break;
+  case KEYCODE_NAV_UP:
+    if (DEBUG) println("cameraUp()");
+    for (int i=0; i<numCameras; i++) {
+      if (camera[i].isConnected()) {
+        camera[i].cameraUp();
+      }
+    }
+    break;
+  case KEYCODE_NAV_DOWN:
+    if (DEBUG) println("cameraDown()");
+    for (int i=0; i<numCameras; i++) {
+      if (camera[i].isConnected()) {
+        camera[i].cameraDown();
+      }
+    }
+    break;
+  case KEYCODE_NAV_OK:
+    if (DEBUG) println("cameraOk()");
+    for (int i=0; i<numCameras; i++) {
+      if (camera[i].isConnected()) {
+        camera[i].cameraOk();
+      }
+    }
+    break;
   case KEYCODE_SHOW:
     showPhoto = !showPhoto;
     for (int i=0; i<numCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].getPhotoFile();
       }
-    }
-    if (showPhoto) {
-      gui.fnZone.show(false, false);
-    } else {
-      gui.fnZone.show(true, true);
     }
     break;
   case KEYCODE_SAVE:
@@ -605,15 +651,28 @@ int keyUpdate() {
     gui.configZone.remove();
     state = PRE_CONNECT_STATE;
     break;
-  case KEYCODE_U:
-  // save screenshot file
+  case KEYCODE_U:  // save screenshot file
+    // save screenshot file
     screenshotRequest = true;
     break;
   case KEYCODE_V:
     camera[mainCamera].getCameraEv();
     break;
   case KEYCODE_Y:
-    camera[mainCamera].getShutterCount();
+    //camera[mainCamera].getShutterCount();
+    if (cameraStatus) {
+      cameraStatus = false;
+    } else {
+      cameraStatus = true;
+    }
+    if (cameraStatus) {
+      for (int i=0; i<numCameras; i++) {
+        if (camera[i].isConnected()) {
+          //camera[i].cameraInfo();
+          camera[i].getShutterCount();
+        }
+      }
+    }
     break;
   case KEYCODE_Z:
     if (camera[mainCamera].type == NX2000) {
@@ -641,7 +700,7 @@ int keyUpdate() {
   default:
     break;
   } // switch
-  
+
   lastKey = 0;
   lastKeyCode = 0;
   return cmd;

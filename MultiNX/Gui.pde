@@ -8,16 +8,20 @@ int GIANT_FONT_SIZE = 128;
 
 volatile boolean modeSelection = false;
 volatile boolean fnSelection = false;
+volatile boolean navSelection = false;
 
 // The GUI assumes the camera screen image is at (0,0)
 class Gui {
   MultiNX base;
-  HorzMenuBar horzMenuBar;
+  static final int NUM_HORZ_MENU_BAR = 2;
+  HorzMenuBar[] horzMenuBar = new HorzMenuBar[NUM_HORZ_MENU_BAR];
+  int horzMenuBarIndex;
   VertMenuBar vertMenuBar;
   ModeTable modeTable;
-  FnZone fnZone;
   FnTable fnTable;
   ConfigZone configZone;
+  NavTable navTable;
+
   int xFocusArea;
   int yFocusArea;
   int focusSize=100;
@@ -73,6 +77,7 @@ class Gui {
   color bague;
   final boolean[] vfull = {true, true, true, true, true, true, true, true, true, true};
   final boolean[] hfull = {true, true, true, true, true, true, true, true};
+  final boolean[] h2full = {true, false, false, false, true, true, true, true};
   final boolean[] MRCVfull = {true, true, true, true, true, true, true, true, false, false};
   final boolean[] MRCHfull = {true, true, true, true, false, false, true, true};
   final boolean[] modefull = {true, true, true, true, true, true, true, true, true, true, true, true, true};
@@ -109,14 +114,25 @@ class Gui {
   }
 
   void createGui(int cameraType) {
-    horzMenuBar = new HorzMenuBar();
-    horzMenuBar.create(cameraType);
+    horzMenuBarIndex = 0;
+    horzMenuBar[0] = new HorzMenuBar1(cameraType);
+    //horzMenuBar[0].create(cameraType);
     if (cameraType == MRC || cameraType == RPI) {
-      horzMenuBar.setVisible(MRCHfull);
-      horzMenuBar.setActive(MRCHfull);
+      horzMenuBar[0].setVisible(MRCHfull);
+      horzMenuBar[0].setActive(MRCHfull);
     } else {
-      horzMenuBar.setVisible(hfull);
-      horzMenuBar.setActive(hfull);
+      horzMenuBar[0].setVisible(hfull);
+      horzMenuBar[0].setActive(hfull);
+    }
+
+    horzMenuBar[1] = new HorzMenuBar2(cameraType);
+    //horzMenuBar[1].create(cameraType);
+    if (cameraType == MRC || cameraType == RPI) {
+      horzMenuBar[1].setVisible(MRCHfull);
+      horzMenuBar[1].setActive(MRCHfull);
+    } else {
+      horzMenuBar[1].setVisible(h2full);
+      horzMenuBar[1].setActive(h2full);
     }
 
     vertMenuBar = new VertMenuBar();
@@ -132,10 +148,11 @@ class Gui {
     modeTable = new ModeTable();
     modeTable.create(cameraType);
 
-    fnZone = new FnZone();
-    fnZone.create(cameraType);
     fnTable = new FnTable();
     fnTable.create(cameraType);
+
+    navTable = new NavTable();
+    navTable.create(cameraType);
   }
 
   void createConfigZone() {
@@ -153,13 +170,19 @@ class Gui {
   }
 
   void displayMenuBar() {
-    horzMenuBar.display();
+    horzMenuBar[horzMenuBarIndex].display();
     vertMenuBar.display();
-    fnZone.display();
   }
 
   void highlightFocusKey(boolean hold) {
     vertMenuBar.focusKey.setHighlight(hold);
+  }
+
+  void altHorzMenuBar() {
+    horzMenuBarIndex++;
+    if (horzMenuBarIndex >= NUM_HORZ_MENU_BAR) {
+      horzMenuBarIndex = 0;
+    }
   }
 
   //    void testGrid() {
@@ -527,7 +550,7 @@ class Gui {
 
   /**
    * FnTable appears in center of the screen.
-   * Launched by Settings soft key
+   * Launched by Sync soft key
    */
   class FnTable {
     // initialize function Keys
@@ -548,10 +571,12 @@ class Gui {
     MenuKey syncCamerasKey;
     MenuKey nextCameraKey;
     MenuKey prevCameraKey;
+    MenuKey zoneKey;  // status information, not part of table
     MenuKey[] table;
-    int numKeys = 16;
+    int numKeys = 17;
     float insetY;
     float insetX;
+    int zone = numKeys -1; // index
 
     void create(int cameraType) {
       int keyColor = black;
@@ -583,6 +608,7 @@ class Gui {
       prevCameraKey = new MenuKey(KEYCODE_FN_UPDATE_PREV, "Prev", FONT_SIZE, keyColor);
       okKey = new MenuKey(KEYCODE_FN_UPDATE_OK, CHECK_MARK, FONT_SIZE, keyColor);
       nextCameraKey = new MenuKey(KEYCODE_FN_UPDATE_NEXT, "Next", FONT_SIZE, keyColor);
+      zoneKey = new MenuKey(KEYCODE_NOP, "Camera Settings", FONT_SIZE, keyColor);
 
       table = new MenuKey[numKeys];
       table[0] = shutterNameKey;
@@ -601,6 +627,7 @@ class Gui {
       table[13] = prevCameraKey;
       table[14] = okKey;
       table[15] = nextCameraKey;
+      table[16] = zoneKey;
 
       int[] valueTable = {0, 1, 2, 3,
         4, 5, 6, 7,
@@ -629,10 +656,8 @@ class Gui {
           table[COLS*i+j].setValue(valueTable[COLS*i+j]);
         }
       }
-      //table[ok].setPosition(mX-iX, y + ((float)ROWS) * (iY + 2 * insetY), iX, iY, WIDTH / 64f);
-      //table[ok].setPosition(x + 2* (iX + 2 * insetX), y + ((float)ROWS) * (iY + 2 * insetY), iX, iY, WIDTH / 64f);
-      //table[ok].setVisible(true);
-      //table[ok].setValue(1012);
+      table[zone].setPosition(x, 2*iY-insetY, ROWS*iX+6*insetX, iY, WIDTH / 64f);
+      table[zone].setVisible(true);
     }
 
     void setIso(int value) {
@@ -701,6 +726,96 @@ class Gui {
   }
 
   /**
+   * NavTable appears in center of the screen.
+   * It provides soft up, down, left, and right keys to navigate menu and Fn tables
+   * Launched by Nav soft key
+   */
+  class NavTable {
+    // initialize function Keys
+    MenuKey navLeftKey;
+    MenuKey navRightKey;
+    MenuKey navUpKey;
+    MenuKey navDownKey;
+    MenuKey navOkKey;
+    MenuKey navDummyKey;
+
+    MenuKey[] table;
+    int numKeys = 9;
+    float insetY;
+    float insetX;
+
+    void create(int cameraType) {
+      int keyColor = black;
+      int arrowKeyColor = aqua;
+      navLeftKey = new MenuKey(KEYCODE_NAV_LEFT, LEFT_TRIANGLE, MEDIUM_FONT_SIZE, arrowKeyColor);
+      navRightKey = new MenuKey(KEYCODE_NAV_RIGHT, RIGHT_TRIANGLE, MEDIUM_FONT_SIZE, arrowKeyColor);
+      navUpKey = new MenuKey(KEYCODE_NAV_UP, LEFT_TRIANGLE, MEDIUM_FONT_SIZE, arrowKeyColor);
+      navDownKey = new MenuKey(KEYCODE_NAV_DOWN, RIGHT_TRIANGLE, MEDIUM_FONT_SIZE, arrowKeyColor);
+      navOkKey = new MenuKey(KEYCODE_NAV_OK, "OK", FONT_SIZE, keyColor);
+      navDummyKey = new MenuKey(KEYCODE_NOP, "", FONT_SIZE, keyColor);
+
+      table = new MenuKey[numKeys];
+      table[0] = navDummyKey;
+      table[1] = navUpKey;
+      table[2] = navDummyKey;
+      table[3] = navLeftKey;
+      table[4] = navOkKey;
+      table[5] = navRightKey;
+      table[6] = navDummyKey;
+      table[7] = navDownKey;
+      table[8] = navDummyKey;
+
+      insetY = iY/8;
+      insetX = iX/8;
+      float x = (mX)-insetX-iX-2*insetX- iX -iX/2; // table start from left
+      float y = 3*iY;  // table start from middle
+      int ROWS = 3;
+      int COLS = 3;
+      float inset = WIDTH / 64f;
+      float[] insetTab = { 0, inset, 0, inset, 0, inset, 0, inset, 0, inset, 0, inset};
+      for (int i = 0; i < ROWS; i++) {
+        for (int j = 0; j < COLS; j++) {
+          table[COLS*i+j].setPosition(x + ((float)j) * (iX + 2 * insetX), y + ((float)i) * (iY + 2 * insetY), iX, iY, insetTab[ROWS*i+ j]);
+        }
+      }
+      table[1].setVisible(true);
+      table[3].setVisible(true);
+      table[4].setVisible(true);
+      table[5].setVisible(true);
+      table[7].setVisible(true);
+    }
+
+    void setVisible(boolean[] visible) {
+      for (int i = 0; i < table.length; i++) {
+        table[i].setVisible(visible[i]);
+      }
+    }
+
+    void display() {
+      if (navSelection) {
+        for (int i = 0; i < table.length; i++) {
+          table[i].draw();
+        }
+      }
+    }
+
+    int mousePressed(int x, int y) {
+      int keyCode = 0;
+      // table touch control area at bottom of screen or sides
+      for (int i = 0; i < numKeys; i++) {
+        if (table[i].visible) {
+          if ((x <= (table[i].x + table[i].w)) && (x >= (table[i].x)) &&
+            (y >= table[i].y) && (y <= (table[i].y +table[i].h))) {
+            keyCode = table[i].keyCode;
+            break;
+          }
+        }
+      }
+      return keyCode;
+    }
+  }
+
+  /**
    * MenuBar appears at right of full screen when the screen is tapped.
    */
   class VertMenuBar {
@@ -730,8 +845,8 @@ class Gui {
       } else {
         evKey = new MenuKey(KEYCODE_E, "EV", FONT_SIZE, keyColor);
       }
-      jogcwKey = new MenuKey(KEYCODE_J, LEFT_TRIANGLE, FONT_SIZE, keyColor);
-      jogccwKey = new MenuKey(KEYCODE_L, RIGHT_TRIANGLE, FONT_SIZE, keyColor);
+      jogcwKey = new MenuKey(KEYCODE_J, "EV"+LEFT_TRIANGLE, FONT_SIZE, keyColor);
+      jogccwKey = new MenuKey(KEYCODE_L, "EV"+RIGHT_TRIANGLE, FONT_SIZE, keyColor);
       recordKey = new MenuKey(KEYCODE_R, "Record", FONT_SIZE, red);
       if (cameraType == MRC || cameraType == RPI) {
         homeKey = new MenuKey(KEYCODE_H, "Fname", FONT_SIZE, keyColor);
@@ -806,59 +921,19 @@ class Gui {
    * MenuBar appears at bottom of full screen.
    */
   class HorzMenuBar {
-    // initialize Keys
-    MenuKey cameraInfoKey;
-    MenuKey cameraShowKey;
-    MenuKey cameraSaveKey;
-    MenuKey cameraModeKey;
-    MenuKey cameraMenuKey;
-    MenuKey cameraFnKey;
-    MenuKey cameraOkKey;
-    MenuKey exitKey;
-    MenuKey backKey;
     MenuKey[] menuKey;
     int numKeys = 8;
     float menuBase;
     float x, y, w, h;
+    color keyColor = black;
 
-    void create(int cameraType) {
-      color keyColor = black;
-
-      cameraInfoKey = new MenuKey(KEYCODE_I, "Screen", FONT_SIZE, keyColor);
-      cameraShowKey = new MenuKey(KEYCODE_SHOW, "Show", FONT_SIZE, keyColor);
-      cameraSaveKey = new MenuKey(KEYCODE_SAVE, "Save", FONT_SIZE, keyColor);
-      cameraMenuKey = new MenuKey(KEYCODE_M, "MENU", FONT_SIZE, keyColor);
-      cameraFnKey = new MenuKey(KEYCODE_N, "Fn", FONT_SIZE, keyColor);
-      cameraModeKey = new MenuKey(KEYCODE_W, "Mode", FONT_SIZE, keyColor);
-      cameraOkKey = new MenuKey(KEYCODE_K, "OK", FONT_SIZE, keyColor);
-      exitKey = new MenuKey(KEYCODE_ESC, "EXIT", FONT_SIZE, keyColor);
-      backKey = new MenuKey(KEYCODE_BACKSPACE, "Back", FONT_SIZE, keyColor);
+    public HorzMenuBar() {
       menuKey = new MenuKey[numKeys];
-      menuKey[0] = cameraInfoKey;
-      menuKey[1] = cameraShowKey;
-      menuKey[2] = cameraSaveKey;
-      menuKey[3] = cameraModeKey;
-      menuKey[4] = cameraMenuKey;
-      menuKey[5] = cameraFnKey;
-      if (cameraType == NX2000) {
-        menuKey[6] = backKey;
-      } else {
-        menuKey[6] = cameraOkKey;
-      }
-      menuKey[7] = exitKey;
-
       x = 0;
       y = HEIGHT - iY;
       w = WIDTH / ((float) numKeys);
       h = iY-4;
       menuBase = 2*camera[mainCamera].screenHeight;
-
-      float inset = WIDTH / ((float) numKeys) / 7f;
-      for (int i = 0; i < numKeys; i++) {
-        menuKey[i].setPosition(((float) i) * w + inset, y, w - 2 * inset, h, inset);
-      }
-      //      menuKey[numKeys].setPosition(0, 0, w - 2 * inset, h, inset);
-      //      menuKey[numKeys].setCorner(false);
     }
 
     void setVisible(boolean[] visible) {
@@ -905,82 +980,96 @@ class Gui {
   /**
    * MenuBar appears at bottom of full screen.
    */
-  class FnZone {
+  class HorzMenuBar1 extends HorzMenuBar {
     // initialize Keys
-    MenuKey zoneKey;
-    MenuKey[] menuKey;
-    int numKeys = 1;
-    float menuBase;
+    MenuKey cameraInfoKey;
+    MenuKey cameraShowKey;
+    MenuKey cameraSaveKey;
+    MenuKey cameraSyncKey;
+    MenuKey cameraMenuKey;
+    MenuKey cameraFnKey;
+    MenuKey cameraOkKey;
+    MenuKey altKey;
+    MenuKey backKey;
 
-    void create(int cameraType) {
-      color keyColor = black;
+    public HorzMenuBar1(int cameraType) {
+      super();
+      cameraInfoKey = new MenuKey(KEYCODE_I, "Screen", FONT_SIZE, keyColor);
+      cameraShowKey = new MenuKey(KEYCODE_SHOW, "Show", FONT_SIZE, keyColor);
+      cameraSaveKey = new MenuKey(KEYCODE_SAVE, "Save", FONT_SIZE, keyColor);
+      cameraMenuKey = new MenuKey(KEYCODE_M, "MENU", FONT_SIZE, keyColor);
+      cameraFnKey = new MenuKey(KEYCODE_N, "Fn", FONT_SIZE, keyColor);
+      cameraSyncKey = new MenuKey(KEYCODE_FN_ZONE, "Sync", FONT_SIZE, keyColor);
+      cameraOkKey = new MenuKey(KEYCODE_K, "OK", FONT_SIZE, keyColor);
+      altKey = new MenuKey(KEYCODE_C, "Alt1", FONT_SIZE, keyColor);
+      backKey = new MenuKey(KEYCODE_BACKSPACE, "Back", FONT_SIZE, keyColor);
 
-      zoneKey = new MenuKey(KEYCODE_FN_ZONE, "Camera Settings", FONT_SIZE, keyColor);
-      menuKey = new MenuKey[numKeys];
-      menuKey[0] = zoneKey;
-
-      float w = 1016;
-      float h = 104;
-      float x = 294;
-      float y = 2*camera[mainCamera].screenHeight -h;
-      menuBase = 2*camera[mainCamera].screenHeight -h;
-      float inset = WIDTH / 64f;
-
-      menuKey[0].setPosition( x, y, w, h, inset);
-      menuKey[0].setVisible(true);
-      menuKey[0].setActive(true);
-    }
-
-    void show(boolean visible, boolean active) {
-      for (int i = 0; i < menuKey.length; i++) {
-        menuKey[i].setVisible(visible);
-        menuKey[i].setActive(active);
+      menuKey[0] = cameraInfoKey;
+      menuKey[1] = cameraShowKey;
+      menuKey[2] = cameraSaveKey;
+      menuKey[3] = cameraSyncKey;
+      menuKey[4] = cameraMenuKey;
+      menuKey[5] = cameraFnKey;
+      if (cameraType == NX2000) {
+        menuKey[6] = backKey;
+      } else {
+        menuKey[6] = cameraOkKey;
       }
-    }
+      menuKey[7] = altKey;
 
-    void setVisible(boolean[] visible) {
-      for (int i = 0; i < menuKey.length; i++) {
-        menuKey[i].setVisible(visible[i]);
+      float inset = WIDTH / ((float) numKeys) / 7f;
+      for (int i = 0; i < numKeys; i++) {
+        menuKey[i].setPosition(((float) i) * w + inset, y, w - 2 * inset, h, inset);
       }
+      //      menuKey[numKeys].setPosition(0, 0, w - 2 * inset, h, inset);
+      //      menuKey[numKeys].setCorner(false);
     }
+  }
 
-    void setActive(boolean[] active) {
-      for (int i = 0; i < menuKey.length; i++) {
-        menuKey[i].setActive(active[i]);
+  /**
+   * MenuBar appears at bottom of full screen.
+   */
+  class HorzMenuBar2 extends HorzMenuBar {
+    // initialize Keys
+    MenuKey cameraInfoKey;
+    MenuKey cameraRepeatKey;
+    MenuKey cameraSaveKey;
+    MenuKey cameraModeKey;
+    MenuKey cameraMenuKey;
+    MenuKey cameraFnKey;
+    MenuKey cameraOkKey;
+    MenuKey exitKey;
+    MenuKey altKey;
+    MenuKey cameraStatusKey;
+    MenuKey cameraNavKey;
+    MenuKey dummyKey;
+
+    public HorzMenuBar2(int cameraType) {
+      super();
+
+      cameraInfoKey = new MenuKey(KEYCODE_I, "Screen", FONT_SIZE, keyColor);
+      cameraRepeatKey = new MenuKey(KEYCODE_REPEAT, "Repeat", FONT_SIZE, keyColor);
+      cameraSaveKey = new MenuKey(KEYCODE_SAVE, "Save", FONT_SIZE, keyColor);
+      cameraModeKey = new MenuKey(KEYCODE_W, "Mode", FONT_SIZE, keyColor);
+      exitKey = new MenuKey(KEYCODE_ESC, "EXIT", FONT_SIZE, keyColor);
+      altKey = new MenuKey(KEYCODE_C, "Alt", FONT_SIZE, keyColor);
+      dummyKey = new MenuKey(KEYCODE_NOP, "", FONT_SIZE, keyColor);
+      cameraStatusKey = new MenuKey(KEYCODE_Y, "Status", FONT_SIZE, keyColor);
+      cameraNavKey =  new MenuKey(KEYCODE_NAV_UPDATE, "Nav", FONT_SIZE, keyColor);
+
+      menuKey[0] = cameraInfoKey;
+      menuKey[1] = cameraRepeatKey;
+      menuKey[2] = dummyKey;
+      menuKey[3] = cameraNavKey;
+      menuKey[4] = cameraModeKey;
+      menuKey[5] = cameraStatusKey;
+      menuKey[6] = exitKey;
+      menuKey[7] = altKey;
+
+      float inset = WIDTH / ((float) numKeys) / 7f;
+      for (int i = 0; i < numKeys; i++) {
+        menuKey[i].setPosition(((float) i) * w + inset, y, w - 2 * inset, h, inset);
       }
-    }
-
-    void display() {
-      if (menuKey[0].visible) {
-        fill(255);
-        //rect(menuKey[0].x, menuKey[0].y, menuKey[0].w, menuKey[0].h);
-
-        for (int i = 0; i < menuKey.length; i++) {
-          menuKey[i].draw();
-        }
-        //noFill();
-        //rect(menuKey[0].x, menuKey[0].y, menuKey[0].w, menuKey[0].h);
-      }
-    }
-
-    int mousePressed(int x, int y) {
-      int mkeyCode = 0;
-      int mkey = 0;
-      if (DEBUG) println("Fn Zone mouse x="+x + " y="+y + " menuBase="+menuBase);
-      if (y > menuBase ) {
-        // menu touch control area at bottom of screen or sides
-        for (int i = 0; i < numKeys; i++) {
-          //if (menuKey[i].visible && menuKey[i].active) {
-          if (menuKey[i].active) {
-            if ((x <= (menuKey[i].x + menuKey[i].w)) && (x >= (menuKey[i].x))) {
-              mkeyCode = menuKey[i].keyCode;
-              menuKey[i].visible = true;
-              break;
-            }
-          }
-        }
-      }
-      return mkeyCode;
     }
   }
 

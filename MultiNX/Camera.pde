@@ -68,6 +68,10 @@ interface NXCommand {
   boolean screenshot();
   void getShutterCount();
   void cameraOk();
+  void cameraLeft();
+  void cameraRight();
+  void cameraUp();
+  void cameraDown();
   void cameraMode(int m);
   int getShutterSpeed();
   int getSsId(int value);
@@ -232,13 +236,16 @@ abstract class RCamera implements NXCommand {
         if (!afilenameUrl.equals(filenameUrl)) {
           filename = afilename.substring(afilename.lastIndexOf('/')+1);
           filenameUrl = afilenameUrl;
-          lastPhoto = loadImage(filenameUrl, "jpg");
-          if (DEBUG) println("loadImage "+filenameUrl);
-          if (lastPhoto == null || lastPhoto.width == -1 || lastPhoto.height == -1) {
-            showPhoto = false;
-            gui.displayMessage("Photo Missing "+ filenameUrl, 60);
-          } else {
+          if (!filenameUrl.endsWith("/")) {
+            //lastPhoto = loadImage(filenameUrl, "jpg");
+            lastPhoto = requestImage(filenameUrl);
+            if (DEBUG) println("requestImage "+filenameUrl);
+            gui.displayMessage("Loading Photo ... "+ filenameUrl, 60);
             showPhoto = true;
+          } else {
+            if (DEBUG) println("Image url ends with / " + filenameUrl);
+            showPhoto = false;
+            gui.displayMessage("No Image File", 90);
           }
         } else {
           //gui.displayMessage("Duplicate Photo \n"+ filenameUrl, 60);
@@ -394,6 +401,22 @@ abstract class RCamera implements NXCommand {
 
   void cameraOk() {
     client.write("st key click ok\n");
+  }
+
+  void cameraLeft() {
+    client.write("st key click left\n");
+  }
+
+  void cameraRight() {
+    client.write("st key click right\n");
+  }
+
+  void cameraUp() {
+    client.write("st key click up\n");
+  }
+
+  void cameraDown() {
+    client.write("st key click down\n");
   }
 
   void touchBack() {
