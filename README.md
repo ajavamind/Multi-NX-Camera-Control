@@ -23,7 +23,7 @@ The NX cameras use the open-source Linux based (Tizen) operating system and Sams
  
  With the NX500 camera, Tizen lacks code for Telnet, HTTP and FTP servers execution, so these services were copied from the NX300 and placed on the SD card to start on power up. The NX500 also enters a diagnostic factory mode that disallows touch screen focus unless it is circumvented by installing code in the NX500 file system as described by [ottokiksmaler/nx500_nx1_modding - Running_scripts_without_factory_mode_BT.md](https://github.com/ottokiksmaler/nx500_nx1_modding/blob/master/Running_scripts_without_factory_mode_BT.md) I have not tried this approach yet.
  
- The application synchronizes each camera's exposure settings, does simultaneous focus, and synchronized shutter release at nearly the same time. Shutter release is not simultaneous because individual messages are sent to each camera in sequence. The code does not provide Live-View with the cameras. The application features are limited by what can be done with telnet commands to control the camera and read its status.
+ The application synchronizes each camera's exposure settings, does simultaneous focus, and synchronized shutter release at nearly the same time. Shutter release is not simultaneous because individual messages are sent to each camera in sequence. The code does not provide Live-View with the cameras because I have not found a way to set this up with only telnet commands. The application features are limited by what can be done with telnet commands to control the camera and read its status. With the absence of Live-View, the next best approach is to view screen shots.
 
  The app needs each camera's IP address to configure the connection. The NX cameras do not show their local network IP address. Only the camera's MAC address is available in the Menu - Settings - Device Information. The MAC address helps to find the camera's IP address with an app like "Network Scanner" in the Google play store. [https://play.google.com/store/apps/details?id=com.myprog.netscan&hl=en_US&gl=US](https://play.google.com/store/apps/details?id=com.myprog.netscan&hl=en_US&gl=US) 
  
@@ -31,11 +31,12 @@ The NX cameras use the open-source Linux based (Tizen) operating system and Sams
  
  This MultiNX application code is a work in progress.
  Possible future improvements:
- 1. Convert configuration to use a JSON file. done!
- 2. Improve User interface, error messaging, documentation
- 3. Refactor for simplification, camera design, and more comments 
+
+ 1. Improve User interface, error messaging, documentation
+ 2. Refactor for simplification, camera design, and more comments 
+ 3. Add Repeat shutter for automatic photo sequences.
  4. Add more controls for NX300 and NX500.
- 5. For Multi Remote Cameras, add discovery, GUI controls for camera mode and settings.
+ 5. For Multi Remote Camera App add controls for camera mode and settings.
 
 ## Warning Notice
 
@@ -70,13 +71,15 @@ Copy the contents of the sdcard-NXnnnn folder to the base folder of the SD card.
 	> 
 	> Map Direct Link button to E-Mail: Menu - Key Mapping - DIRECT LINK -> Email
 	
-4. Use Direct Link button to connect to a WiFi router for E-Mail. You will enter a password to access your router. You don't have to be connected to the Internet. Return to camera shoot live view mode. Each time you power on the camera, you will press the Direct link button to automatically sign into your WiFi router. Press OK prompt, and touch back button on the screen to complete the connection. Do not press the cancel button.
+4. Use Direct Link button to connect to a WiFi router for E-Mail. You will need at least one photo stored on your SD card. Enter a password to access your WiFi router. Your WiFi router does not have to be connected to the Internet. Return to camera shoot live view mode. 
+
+Each time you power on the camera, press the Direct link button to automatically sign into your WiFi router. Press OK prompt, and touch back button on the screen to complete the WiFi connection. Do not press the cancel button.
 	
 5. From MENU - Settings - Device Information, get the MAC identification address and label each camera with its MAC address.
 	
 6. Use an Android app such as "Network Scanner" on your local WiFi network to scan for Samsung cameras and write down the IP address associated with each MAC address you found in step 5.
 	
-7. Copy the config.json file in the config folder to a folder for the application to find. I use MultNX in the internal root storage area. The json file defines each camera. The camera suffix name appends to photo file name for storage.
+7. Copy the config.json file in the config folder to a folder for the application to find. I use MultNX in the internal root storage area and give the app permission to access text files. The json file defines each camera. The camera suffix name appends to photo file name for storage.
 
 	Here is an twin camera side by side configuration for 3D photography. File named: twincameras_tplink_101_102.json
 	
@@ -217,7 +220,7 @@ Copy the contents of the sdcard-NXnnnn folder to the base folder of the SD card.
 
 ## Building MultiNX for Windows or Android
 
-Processing SDK version 4.01 builds MultiNX for Windows exe (Java Mode) or Android apk (Android Mode).  
+Processing SDK version 4.1.2 builds MultiNX for Windows exe (Java Mode) or Android apk (Android Mode).  
 
 When you build MultiNX for Windows or Android you must add the SelectFile and oscP5 library to the Processing SDK. See [Processing Library](https://processing.org/reference/libraries/) information under Contributions.
 
@@ -251,25 +254,34 @@ The right hand column of soft keys correspond to physical button keys on the NX2
 
 1. Focus - Press and hold focus in the connected cameras. Updates the display with camera shutter, FN, and ISO for main camera.
 2. Shutter - Press the shutter in the connected cameras and release focus.
-3. Left - rotate wheel counter clockwise.
-4. Right - rotate wheel clockwise.
-5. EV - press the EV button
+3. EV Left - rotate wheel counter clockwise.
+4. EV Right - rotate wheel clockwise.
+5. EV - press the EV/OK button
 6. Record - start and stop video recordings.
 7. Home - display the Home menu
 8. PB -  Playback the photos or video
 
-The bottom row of soft keys provide features for accessing menu keys, and viewing screenshots and photos. It also includes functions for buttons the NX2000 does not have but whose function can be invoked.
+The bottom row of soft keys provide features for accessing menu keys, and viewing screenshots and photos. It also includes functions for buttons the NX2000 does not have but whose function can be invoked. An Alt soft key shifts to a secondary menu and back.
 
 1. Screen - displays a screenshot of the main camera (first camera in the configuration list file)
 2. Show - display the last photo taken on the connected cameras (up to four images)
 3. Save - save the current displayed photos in a folder. The first invocation selects the folder for saving. The MultiNX application only saves JPG photo types in local Windows PC or Android device internal storage folders. To retrieve RAW images directly from the camera, use a FTP client, like FileZilla.
-4. Mode - change the camera mode. The application assumes manual expert mode for its operation, but other modes are possible.
+4. Sync - toggles changes to shutter speed, F-stop, and ISO. The app syncs all connected cameras with the same settings.
 5. MENU - display the MENU options.
 6. Fn - display the Function options.
-7. OK - invoke the soft OK button.
-8. EXIT - terminate the application.
+7. Back - invoke the soft Back button.
+8. Alt1 - show alternate horizontal menu.
 
-The middle bottom Manual Settings soft key toggles changes to shutter speed, F-stop, and ISO. The app syncs all connected cameras with the same settings.
+The secondary soft key menu:
+
+1. Screen - displays a screenshot of the main camera (first camera in the configuration list file)
+2. Repeat - (work in progress)
+3. 
+4. 
+5. Mode - change the camera mode. The application assumes manual expert mode for its operation, but other modes are possible.
+6. Status - display the connection and camera status (work in progress)
+7. EXIT - terminate the application.
+8. Alt - show primary horizontal menu.
 
 ## Keyboard Features
 
