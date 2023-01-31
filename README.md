@@ -61,9 +61,9 @@ Copy the contents of the sdcard-NXnnnn folder to the base folder of the SD card.
 	
 	> AutoShare off
 	> 
-	> Photo Size 2M recommended for quick downloads, otherwise 20M when not saving RAW
+	> Photo Size small 2M recommended for quick JPG downloads with RAW option, otherwise 20M when not saving RAW
 	>
-	> RAW + Normal (note RAW saves at highest photo size 20M)
+	> RAW + JPG Quality Normal (note RAW saves at highest photo size 20M regardless of JPG size)
 	> 
 	> Auto focus - Single Auto Focus
 	> 
