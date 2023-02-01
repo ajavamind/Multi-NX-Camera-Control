@@ -77,9 +77,10 @@ class Gui {
   color bague;
   final boolean[] vfull = {true, true, true, true, true, true, true, true, true, true};
   final boolean[] hfull = {true, true, true, true, true, true, true, true};
-  final boolean[] h2full = {true, false, false, false, true, true, true, true};
+  final boolean[] h2full = {true, true, false, false, true, true, true, true};
   final boolean[] MRCVfull = {true, true, true, true, true, true, true, true, false, false};
-  final boolean[] MRCHfull = {true, true, true, true, false, false, true, true};
+  final boolean[] MRCHfull = {true, true, true, false, true, true, true, true};
+  final boolean[] MRCH2full = {true, true, false, false, true, true, true, true};
   final boolean[] modefull = {true, true, true, true, true, true, true, true, true, true, true, true, true};
 
   Gui() {
@@ -128,8 +129,8 @@ class Gui {
     horzMenuBar[1] = new HorzMenuBar2(cameraType);
     //horzMenuBar[1].create(cameraType);
     if (cameraType == MRC || cameraType == RPI) {
-      horzMenuBar[1].setVisible(MRCHfull);
-      horzMenuBar[1].setActive(MRCHfull);
+      horzMenuBar[1].setVisible(MRCH2full);
+      horzMenuBar[1].setActive(MRCH2full);
     } else {
       horzMenuBar[1].setVisible(h2full);
       horzMenuBar[1].setActive(h2full);
@@ -176,6 +177,10 @@ class Gui {
 
   void highlightFocusKey(boolean hold) {
     vertMenuBar.focusKey.setHighlight(hold);
+  }
+
+  void highlightRepeatKey(boolean hold) {
+    horzMenuBar[1].menuKey[1].setHighlight(hold);
   }
 
   void altHorzMenuBar() {
@@ -848,11 +853,7 @@ class Gui {
       jogcwKey = new MenuKey(KEYCODE_J, "EV"+LEFT_TRIANGLE, FONT_SIZE, keyColor);
       jogccwKey = new MenuKey(KEYCODE_L, "EV"+RIGHT_TRIANGLE, FONT_SIZE, keyColor);
       recordKey = new MenuKey(KEYCODE_R, "Record", FONT_SIZE, red);
-      if (cameraType == MRC || cameraType == RPI) {
-        homeKey = new MenuKey(KEYCODE_H, "Fname", FONT_SIZE, keyColor);
-      } else {
-        homeKey = new MenuKey(KEYCODE_H, "Home", FONT_SIZE, keyColor);
-      }
+      homeKey = new MenuKey(KEYCODE_H, "Home", FONT_SIZE, keyColor);
       playBackKey = new MenuKey(KEYCODE_P, "PB", FONT_SIZE, keyColor);
       menuKey = new MenuKey[numKeys];
       menuKey[0] = focusKey;
@@ -991,25 +992,35 @@ class Gui {
     MenuKey cameraOkKey;
     MenuKey altKey;
     MenuKey backKey;
+    MenuKey anaglyphKey;
 
     public HorzMenuBar1(int cameraType) {
       super();
       cameraInfoKey = new MenuKey(KEYCODE_I, "Screen", FONT_SIZE, keyColor);
       cameraShowKey = new MenuKey(KEYCODE_SHOW, "Show", FONT_SIZE, keyColor);
       cameraSaveKey = new MenuKey(KEYCODE_SAVE, "Save", FONT_SIZE, keyColor);
-      cameraMenuKey = new MenuKey(KEYCODE_M, "MENU", FONT_SIZE, keyColor);
+      if (cameraType == MRC || cameraType == RPI) {
+        cameraMenuKey = new MenuKey(KEYCODE_FILENAME_PREFIX, "Fname", FONT_SIZE, keyColor);
+      } else {
+        cameraMenuKey = new MenuKey(KEYCODE_M, "MENU", FONT_SIZE, keyColor);
+      }
       cameraFnKey = new MenuKey(KEYCODE_N, "Fn", FONT_SIZE, keyColor);
       cameraSyncKey = new MenuKey(KEYCODE_FN_ZONE, "Sync", FONT_SIZE, keyColor);
       cameraOkKey = new MenuKey(KEYCODE_K, "OK", FONT_SIZE, keyColor);
       altKey = new MenuKey(KEYCODE_C, "Alt1", FONT_SIZE, keyColor);
       backKey = new MenuKey(KEYCODE_BACKSPACE, "Back", FONT_SIZE, keyColor);
+      anaglyphKey = new MenuKey(KEYCODE_A, "Anagly", FONT_SIZE, keyColor);
 
       menuKey[0] = cameraInfoKey;
       menuKey[1] = cameraShowKey;
       menuKey[2] = cameraSaveKey;
       menuKey[3] = cameraSyncKey;
       menuKey[4] = cameraMenuKey;
-      menuKey[5] = cameraFnKey;
+      if (cameraType == MRC || cameraType == RPI) {
+        menuKey[5] = anaglyphKey;
+      } else {
+        menuKey[5] = cameraFnKey;
+      }
       if (cameraType == NX2000) {
         menuKey[6] = backKey;
       } else {

@@ -172,7 +172,6 @@ class MRCCamera extends RCamera {
   }
 
   boolean isActive() {
-    //if (udpClient != null && udpClient.active()) {
     if (udpClient != null) {
       return true;
     }
@@ -215,8 +214,9 @@ class MRCCamera extends RCamera {
   }
 
   void shutterPush() {
-    udpClient.send("S"+getFilename(UPDATE, PHOTO_MODE));
-    gui.displayMessage(lastFilename, 45);
+    String fn = getFilename(UPDATE, PHOTO_MODE);
+    udpClient.send("S"+fn);
+    gui.displayMessage(fn, 45);
   }
 
   void shutterRelease() {
@@ -224,26 +224,23 @@ class MRCCamera extends RCamera {
   }
 
   void record() {
-    udpClient.send("V"+getFilename(UPDATE, VIDEO_MODE));
-    if(DEBUG) println("MRC video record");
-    gui.displayMessage(lastFilename, 45);
+    String fn = getFilename(UPDATE, VIDEO_MODE);
+    udpClient.send("V"+fn);
+    if (DEBUG) println("MRC video record");
+    gui.displayMessage(fn, 45);
   }
 
   void end() {
-    //udpClient.write("st key click end\n");
   }
 
   void menu() {
-    //udpClient.write("st key click menu\n");
   }
 
   void cameraMode(int m) {
-    //udpClient.write("st key mode "+ cameraModes[m]+";sleep 1\n");
-    if (DEBUG) println("st key mode "+ cameraModes[m]+"\n");
+    if (DEBUG) println("camera mode "+ cameraModes[m]+"\n");
   }
 
   void cameraInfo() {
-    //udpClient.write("st key "+"\n");
   }
 
   void cameraOk() {
@@ -251,24 +248,29 @@ class MRCCamera extends RCamera {
   }
 
   void touchBack() {
-    //udpClient.write("st key touch click 40 40\n");
+    gui.displayMessage(NOT_IMPLEMENTED, 40);
   }
 
   void touchFocus(int x, int y) {
     if (DEBUG) println("touchFocus x="+x + " y="+y);
-    //udpClient.write("st key touch click "+x +" "+ y+"\n");
+    gui.displayMessage(NOT_IMPLEMENTED, 40);
   }
 
   void function() {
-    //udpClient.write("st key click fn\n");
+    gui.displayMessage(NOT_IMPLEMENTED, 40);
   }
 
   void home() {
+    gui.displayMessage(NOT_IMPLEMENTED, 40);
+  }
+
+  void toggleFilenamePrefix(String data) {
+    if (data == null ) data = "";
     useTimeStamp = !useTimeStamp;
     if (useTimeStamp) {
-      gui.displayMessage("Using Date-Time Filename Prefix", 45);
+      gui.displayMessage("Date-Time Filename " + datetimeFilename + " "+ data, 60);
     } else {
-      gui.displayMessage("Using Counter Number Filename Prefix", 45);
+      gui.displayMessage("Number Filename " + numberFilename + " "+ data, 60);
     }
   }
 
@@ -291,41 +293,35 @@ class MRCCamera extends RCamera {
   }
 
   void shutterPushRelease() {
-    udpClient.send("S"+getFilename(UPDATE, PHOTO_MODE));
-    gui.displayMessage(lastFilename, 45);
+    String fn = getFilename(UPDATE, PHOTO_MODE);
+    udpClient.send("S"+fn);
+    gui.displayMessage(fn, 45);
   }
 
   void takePhoto() {
-    udpClient.send("C"+getFilename(UPDATE, PHOTO_MODE));
-    gui.displayMessage(lastFilename, 45);
+    String fn = getFilename(UPDATE, PHOTO_MODE);
+    udpClient.send("C"+fn);
+    gui.displayMessage(fn, 45);
   }
 
   void sendMsg(String msg) {
-    //    if (udpClient.active()) {
-    //      udpClient.write(msg);
-    //    }
   }
 
   void jogcw() {
     gui.displayMessage(NOT_IMPLEMENTED, 20);
-    //udpClient.write("st key jog jog1_cw\n");
   }
 
   void jogccw() {
     gui.displayMessage(NOT_IMPLEMENTED, 20);
-    //udpClient.write("st key jog jog1_ccw\n");
   }
 
   void screenshot(String filename) {
     if (DEBUG) println("screenshot("+filename+")");
-    //if (udpClient.active()) {
-    //  udpClient.write("/mnt/mmc/screenshot.sh\n");
-    //}
   }
 
   boolean screenshot() {
     if (DEBUG) println("screenshot()");
-    if (displayAnaglyph) gui.displayMessage("anaglyph display", 40);
+    gui.displayMessage(NOT_IMPLEMENTED, 20);
     return true;
   }
 
@@ -333,17 +329,21 @@ class MRCCamera extends RCamera {
     String aName = getFilename(SAME, PHOTO_MODE);
     String aFilename = "IMG_"+ aName+ "_"+suffix+".jpg";
     filename = aFilename;
-    String afilenameUrl = "http:"+ File.separator+ File.separator+ipAddr + ":" + HTTPport + File.separator + aFilename;
+    //String afilenameUrl = "http:"+ File.separator+ File.separator+ipAddr + ":" + HTTPport + File.separator + aFilename;
+    String afilenameUrl = "http://" + ipAddr + ":" + HTTPport + "/" + aFilename;
     afilenameUrl.trim();
     afilenameUrl = afilenameUrl.replaceAll("(\\r|\\n)", "");
     String afilename = filename.replaceAll("(\\r|\\n)", "");
     if (DEBUG) println("result filename = " + afilename + " filenameURL= "+afilenameUrl);
-    //if (!afilenameUrl.equals(filenameUrl)) {
     if (!afilenameUrl.equals(filenameUrl) || lastPhoto == null || lastPhoto.width <= 0 || lastPhoto.height <=0) {
       filename = afilename.substring(afilename.lastIndexOf('/')+1);
       if (DEBUG) println("filename="+filename);
       filenameUrl = afilenameUrl;
-      lastPhoto = requestImage(filenameUrl);
+      if (aName.equals("")) {
+        lastPhoto = null;
+      } else {
+        lastPhoto = requestImage(filenameUrl);
+      }
       if (DEBUG) println("MRC getPhotoFile loadImage "+filenameUrl);
       gui.displayMessage("Get Photo... \n"+ filenameUrl, 90);
       if (orientation != 0) {
@@ -376,5 +376,4 @@ class MRCCamera extends RCamera {
 
   void updateIso() {
   }
-
 }

@@ -1,6 +1,5 @@
 // Configuration from JSON file
-// Looks for file my.config.json
-// If not found use the config.json as the default file - do not change config.json
+// config.json is the default file - do not change config.json
 
 int screenWidth = 1920; // default
 int screenHeight = 1080;  // default
@@ -28,6 +27,10 @@ JSONObject configuration;
 JSONObject display;
 JSONArray cameras;
 JSONObject printer;
+JSONObject repeat;
+int repeatStartDelay;
+int repeatInterval;
+int repeatCount;
 
 void initConfig() {
   readConfig(configFilename);
@@ -45,7 +48,7 @@ void readConfig(String filenamePath) {
   camera_rig = configFile.getString("camera_rig");
   OUTPUT_FOLDER_PATH = configuration.getString("outputFolderPath");
   ipAddress = configuration.getString("IPaddress");
-  if (DEBUG) println("ipAddress="+ipAddress);
+  if (DEBUG) println("broadcast ipAddress="+ipAddress);
 
   display = configFile.getJSONObject("display");
   if (display != null) {
@@ -60,6 +63,14 @@ void readConfig(String filenamePath) {
     printAspectRatio = printWidth/printHeight;
     if (DEBUG) println("printAspectRatio="+printAspectRatio);
   }
+  repeat = configFile.getJSONObject("repeat");
+  if (repeat != null) {
+    repeatStartDelay = repeat.getInt("start_delay");
+    repeatInterval = repeat.getInt("interval");
+    repeatCount = repeat.getInt("count");
+    if (DEBUG) println("repeatStartDelay="+repeatStartDelay+" repeatInterval="+repeatInterval+" repeatCount="+repeatCount);
+  }
+  if (DEBUG) println("Debug force repeatStartDelay="+repeatStartDelay+" repeatInterval="+repeatInterval+" repeatCount="+repeatCount);
 
   cameras = configFile.getJSONArray("cameras");
   numCameras = cameras.size();

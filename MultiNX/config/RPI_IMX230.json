@@ -10,7 +10,7 @@ Requires a user id and password for SSH access
 		"camera_rig_description": "twin (3D stereo), lenticular, multiple",
 		"camera_rig": "multiple",
 		"saveFolderPath": "/output",
-		"IPaddress": "192.168.0.102",
+		"IPaddress": "192.168.0.255",
 	},
 	"display": {
 		"width": 1920,

@@ -65,16 +65,16 @@ void selectConfigurationFile() {
   //  requestPermissions();
   //}
   files.selectInput("Select Configuration File:", "fileSelected");
-  //gui.configZone.setActive();
 }
 
 void selectPhotoFolder() {
   if (saveFolderPath == null) {
     files.selectFolder("Select Photo Folder", "folderSelected");
+    gui.displayMessage("Select Photo Folder", 30);
   } else {
     state = PRE_SAVE_STATE;
     if (DEBUG) println("saveFolderPath="+saveFolderPath);
-    gui.displayMessage("Save Photos", 30);
+    gui.displayMessage("Save Photo", 30);
   }
 }
 

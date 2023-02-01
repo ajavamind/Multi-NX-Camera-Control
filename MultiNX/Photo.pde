@@ -4,7 +4,7 @@ int photoNumber=0;
 PImage lastAnaglyph;
 
 void savePhoto(String filename) {
-  if (DEBUG) println("savePhoto");
+  if (DEBUG) println("savePhoto "+ filename);
   saveCameraPhotos();
   if (DEBUG) println("saveCompositePhoto");
   saveCompositePhoto(filename);

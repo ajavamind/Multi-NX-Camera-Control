@@ -4,7 +4,8 @@
 		"camera_rig_description": "twin (3D stereo), lenticular, multiple",
 		"camera_rig": "twin",
 		"saveFolderPath": "/output",
-		"IPaddress": "192.168.0.102",
+		"IPaddress description": "Network broadcast address for Multi Remote Camera app",
+		"IPaddress": "192.168.0.255",
 	},
 	"display": {
 		"width": 1920,
@@ -20,8 +21,6 @@
 		  "orientation": 90,
 		  "horizontalOffset": 0,
 		  "verticalOffset": 0,
-		  "userId": "",
-		  "password": "",
         },
 	    { "name" : "S8 Right",
 		  "suffix": "R",
@@ -34,8 +33,6 @@
 		  "horizontalOffset": 0,
 		  "verticalOffset_description": "vertical offset to align twin camera images (SPM alignment- pixels)",
 		  "verticalOffset": 0,
-		  "userId": "",
-		  "password": "",
         },
 	],
 	"repeat": {

@@ -118,6 +118,7 @@ static final int KEYCODE_NAV_OK = 2505;
 static final int KEYCODE_SHOW = 3000;
 static final int KEYCODE_SAVE = 3001;
 static final int KEYCODE_REPEAT = 3002;
+static final int KEYCODE_FILENAME_PREFIX = 3003;  // for MRC and RPI cameras
 
 private static final int NOP = 0;
 private static final int EXIT = 1;
@@ -195,8 +196,8 @@ void keyPressed() {
 }
 
 // Process key from main loop not in keyPressed()
-// returns false no key processed
-// returns true when a key is processed
+// returns NOP command when no key processed
+// returns command when a key requests another operation, otherwise NOP
 int keyUpdate() {
   int cmd = NOP;  // return code
   if (lastKey == 0 && lastKeyCode == 0) {
@@ -360,6 +361,13 @@ int keyUpdate() {
     for (int i=0; i<numCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].home();
+      }
+    }
+    break;
+  case KEYCODE_FILENAME_PREFIX:
+    for (int i=0; i<numCameras; i++) {
+      if (camera[i].isConnected()) {
+        camera[i].toggleFilenamePrefix("Last");
       }
     }
     break;
@@ -695,6 +703,26 @@ int keyUpdate() {
       camera[mainCamera].getPrefMem(NX300Camera.APPID, NX300Camera.APPPREF_FNO_INDEX, "l");
     } else if (camera[mainCamera].type == NX30) {
       camera[mainCamera].getPrefMem(NX30Camera.APPID, NX300Camera.APPPREF_FNO_INDEX, "l");
+    }
+    break;
+  case KEYCODE_REPEAT:
+    if (repeat_enabled) {
+      repeat_enabled = false;
+      gui.displayMessage("Repeat stop " + "repeat_counter=" + repeat_counter, 60);
+      repeat_counter = 0;
+      gui.highlightRepeatKey(false);  // remove highlight from repeat key
+    } else {
+      // set up new repeat
+      repeat_enabled = true;
+      repeat_interval = 1000*repeatInterval;  // milliseconds
+      repeat_counter = System.currentTimeMillis(); // current time in milliseconds
+      repeat_start_delay = repeat_counter + 1000*repeatStartDelay;
+      repeat_end = repeat_start_delay + repeat_interval*repeatCount + 100;  // 100 is pad
+      gui.displayMessage("Repeat start " + "count=" + repeatCount, 30);
+      if (repeat_counter >= repeat_start_delay) {
+        if (DEBUG) println("no start delay");
+        return KEYCODE_T;  // take photo
+      }
     }
     break;
   default:

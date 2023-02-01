@@ -4,7 +4,7 @@
 		"camera_rig_description": "twin (3D stereo), lenticular, multiple",
 		"camera_rig": "twin",
 		"saveFolderPath": "/output",
-		"IPaddress": "192.168.0.105",
+		"IPaddress": "192.168.216.255",
 	},
 	"display": {
 		"width": 1920,

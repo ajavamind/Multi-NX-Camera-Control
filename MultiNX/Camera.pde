@@ -97,6 +97,7 @@ interface NXCommand {
   void getCameraEv();
   void getPrefMem(int id, int offset, String type);
   void getPrefMemBlock(int id, int offset, int size);
+  void toggleFilenamePrefix(String data);
 }
 
 abstract class RCamera implements NXCommand {
@@ -618,5 +619,8 @@ abstract class RCamera implements NXCommand {
 
   void getPrefMemBlock(int id, int offset, int size) {
     client.write("prefman get "+id+" "+offset+" v="+size+"\n");
+  }
+  
+  void toggleFilenamePrefix(String data) {
   }
 }

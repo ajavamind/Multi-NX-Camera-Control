@@ -338,11 +338,16 @@ class RPICamera extends RCamera {
   }
 
   void home() {
+    gui.displayMessage(NOT_IMPLEMENTED, 40);
+  }
+
+  void toggleFilenamePrefix(String data) {
+    if (data == null) data = "";
     useTimeStamp = !useTimeStamp;
     if (useTimeStamp) {
-      gui.displayMessage("Using Date-Time Filename Prefix", 45);
+      gui.displayMessage("Date-Time Filename "+ data, 60);
     } else {
-      gui.displayMessage("Using Counter Number Filename Prefix", 45);
+      gui.displayMessage("Number Filename "+ data, 60);
     }
   }
 

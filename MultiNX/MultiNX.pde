@@ -36,7 +36,7 @@
 // Use email WiFi cofiguration on NX2000 to connect to a local network.
 // Exit email screen on NX camera to shoot photos and videos after connection to your local WiFi network.
 
-static final String VERSION = "Version 1.9";
+static final String VERSION = "Version 2.0";
 static final String VERSION_DEBUG = VERSION + " DEBUG";
 static final String TITLE = "MultiNX - Multi Camera Controller";
 static final String SUBTITLE = "Control Multiple NX/MRC/RPI Cameras";
@@ -53,7 +53,7 @@ String camera_rig = "multiple";
 String[] photoFnPrefix; // default IMG_
 String[] photoFnSuffix; // default "" empty string
 String[] videoFnPrefix; // default VID_
-String[] vodepFnSuffix; // default "" empty string
+String[] videoFnSuffix; // default "" empty string
 
 int numCameras = 0;
 int mainCamera = 0;  // current display camera
@@ -110,8 +110,16 @@ boolean displayAnaglyph = false;
 boolean forceExit = false;
 boolean cameraStatus = false;
 
+// repeat function variables // milliseconds using System.currentTimeMillis();
+boolean repeat_enabled = false;
+long repeat_start_delay = 0;
+long repeat_interval = 0;  // milliseconds
+long repeat_counter = 0;
+long repeat_end = 0;
+
 void settings() {
   size(1920, 1080);  // TODO fullscreen and adjust GUI for various sizes and aspect ratio
+  // the GUI layout is requires 1920x1080
   //size(1280, 720);  // for testing on a smaller display TODO needs GUI refactor
   //size(960, 540);  // for testing on a smaller display TODO needs GUI refactor
   smooth();
@@ -155,8 +163,10 @@ void draw() {
     return;
   }
   if (state == SAVE_STATE) {
-    if (DEBUG) println(stateName[state]);
-    savePhoto(camera[mainCamera].filename.substring(0, camera[mainCamera].filename.lastIndexOf("_")) );
+    if (DEBUG) println(stateName[state]+ " filename="+camera[mainCamera].filename);
+    if (camera[mainCamera].filename.length() > 0) {
+      savePhoto(camera[mainCamera].filename.substring(0, camera[mainCamera].filename.lastIndexOf("_")) );
+    }
     message = null;
     state = RUN_STATE;
   }
@@ -232,7 +242,7 @@ void draw() {
   state = RUN_STATE;
 
   // process key and mouse inputs on this main sketch loop
-  keyUpdate();
+  lastKeyCode = keyUpdate();
 
   if (state == EXIT_STATE) {
     for (int i=0; i<numCameras; i++) {
@@ -241,11 +251,30 @@ void draw() {
     exit();
   }
 
+  // check for repeat
+  if (repeat_enabled) {
+    // set Repeat button highlight
+    gui.highlightRepeatKey(true);
+    long currentTime = System.currentTimeMillis(); // current time in milliseconds
+    if (currentTime >= repeat_counter && currentTime >= repeat_start_delay) {
+      repeat_counter += repeat_interval;
+      if (repeat_counter < repeat_end) {
+        lastKeyCode = KEYCODE_T;  // take picture
+        return;
+      }
+      else {
+        repeat_enabled = false;
+        gui.highlightRepeatKey(false); // set repeat button white background
+      }
+    }
+  }
+
   if (displayAnaglyph) {
     if (DEBUG) println("Anaglyph display");
     if (lastAnaglyph == null) {
       displayAnaglyph = false;
     } else {
+      //gui.displayMessage("anaglyph display", 40);
       float ar = (float)lastAnaglyph.width/(float)lastAnaglyph.height;
       float offset = (2*camera[0].screenWidth-((2*camera[0].screenHeight)*ar))/2;
       image(lastAnaglyph, offset, 0, (2*camera[0].screenHeight)*ar, 2*camera[0].screenHeight);
