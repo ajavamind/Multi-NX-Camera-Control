@@ -23,7 +23,9 @@ The NX cameras use the open-source Linux based (Tizen) operating system and Sams
  
  With the NX500 camera, Tizen lacks code for Telnet, HTTP and FTP servers execution, so these services were copied from the NX300 and placed on the SD card to start on power up. The NX500 also enters a diagnostic factory mode that disallows touch screen focus unless it is circumvented by installing code in the NX500 file system as described by [ottokiksmaler/nx500_nx1_modding - Running_scripts_without_factory_mode_BT.md](https://github.com/ottokiksmaler/nx500_nx1_modding/blob/master/Running_scripts_without_factory_mode_BT.md) I have not tried this approach yet.
  
- The application synchronizes each camera's exposure settings, does simultaneous focus, and synchronized shutter release at nearly the same time. Shutter release is not simultaneous because individual messages are sent to each camera in sequence. The code does not provide Live-View with the cameras because I have not found a way to set this up with only telnet commands. The application features are limited by what can be done with telnet commands to control the camera and read its status. With the absence of Live-View, the next best approach is to view screen shots.
+ The application synchronizes each camera's exposure settings, does simultaneous focus, and synchronized shutter release at nearly the same time. For NX cameras shutter release is not simultaneous because individual messages are sent to each camera in sequence over telnet. For MRC (Android Multi Remote Camera app) with Android phone cameras, the shutter release to all cameras is nearly simultaneous because it uses broadcast messages to control the cameras, a single message is sent to all cameras. The MRC app does not use telnet and is not set up for changing settings from this application.
+ 
+ The app does not provide Live-View with the cameras because I have not found a way to set this up with only telnet commands. The application features are limited by what can be done with telnet commands to control the camera and read its status. With the absence of Live-View, the next best approach is to view screen shots.
 
  The app needs each camera's IP address to configure the connection. The NX cameras do not show their local network IP address. Only the camera's MAC address is available in the Menu - Settings - Device Information. The MAC address helps to find the camera's IP address with an app like "Network Scanner" in the Google play store. [https://play.google.com/store/apps/details?id=com.myprog.netscan&hl=en_US&gl=US](https://play.google.com/store/apps/details?id=com.myprog.netscan&hl=en_US&gl=US) 
  
@@ -59,9 +61,9 @@ Copy the contents of the sdcard-NXnnnn folder to the base folder of the SD card.
 	
 	> AutoShare off
 	> 
-	> Photo Size 2M recommended for quick downloads, otherwise 20M when not saving RAW
+	> Photo Size small 2M recommended for quick JPG downloads with RAW option, otherwise 20M when not saving RAW
 	>
-	> RAW + Normal (note RAW saves at highest photo size 20M)
+	> RAW + JPG Quality Normal (note RAW saves at highest photo size 20M regardless of JPG size)
 	> 
 	> Auto focus - Single Auto Focus
 	> 
