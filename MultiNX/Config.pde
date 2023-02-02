@@ -1,6 +1,13 @@
 // Configuration from JSON file
 // config.json is the default file - do not change config.json
 
+import java.time.*;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 int screenWidth = 1920; // default
 int screenHeight = 1080;  // default
 float screenAspectRatio;
@@ -28,9 +35,13 @@ JSONObject display;
 JSONArray cameras;
 JSONObject printer;
 JSONObject repeat;
+
 int repeatStartDelay;
 int repeatInterval;
 int repeatCount;
+String repeatStartDateTime;
+long repeatDateTime;
+ZonedDateTime repeatStartZonedDateTime;
 
 void initConfig() {
   readConfig(configFilename);
@@ -50,11 +61,14 @@ void readConfig(String filenamePath) {
   ipAddress = configuration.getString("IPaddress");
   if (DEBUG) println("broadcast ipAddress="+ipAddress);
 
+  // display section
   display = configFile.getJSONObject("display");
   if (display != null) {
     screenWidth = display.getInt("width");
     screenHeight = display.getInt("height");
   }
+
+  // print section - NOT USED
   screenAspectRatio = (float)screenWidth/(float)screenHeight;
   printer = configFile.getJSONObject("printer");
   if (printer != null) {
@@ -63,15 +77,32 @@ void readConfig(String filenamePath) {
     printAspectRatio = printWidth/printHeight;
     if (DEBUG) println("printAspectRatio="+printAspectRatio);
   }
+
+  // repeat section
   repeat = configFile.getJSONObject("repeat");
   if (repeat != null) {
     repeatStartDelay = repeat.getInt("start_delay");
     repeatInterval = repeat.getInt("interval");
     repeatCount = repeat.getInt("count");
-    if (DEBUG) println("repeatStartDelay="+repeatStartDelay+" repeatInterval="+repeatInterval+" repeatCount="+repeatCount);
+    repeatStartDateTime = repeat.getString("start_DateTime");
+    if (repeatStartDateTime == null) {
+      repeatDateTime = 0L;
+    } else {
+      LocalDateTime localDateTime = LocalDateTime.parse(repeatStartDateTime);
+      repeatStartZonedDateTime = ZonedDateTime.of(localDateTime, ZoneId.systemDefault());
+      Instant starttime = repeatStartZonedDateTime.toInstant();
+      System.out.println("starttime ="+starttime.toEpochMilli());
+      if (DEBUG) println("ZoneId.systemDefault(): " + ZoneId.systemDefault());
+      //nowDateTime = nowInstantDateTime.toEpochMilli();
+      repeatDateTime = starttime.toEpochMilli();
+      if (DEBUG) println("repeat start date time="+repeatDateTime);
+      if (DEBUG) println("repeatStartDelay="+repeatStartDelay+" repeatInterval="+repeatInterval+" repeatCount="+repeatCount+" repeatStartDateTime="+repeatStartDateTime);
+    }
+  } else {
+    if (DEBUG) println("No repeat config: repeatStartDelay="+repeatStartDelay+" repeatInterval="+repeatInterval+" repeatCount="+repeatCount);
   }
-  if (DEBUG) println("Debug force repeatStartDelay="+repeatStartDelay+" repeatInterval="+repeatInterval+" repeatCount="+repeatCount);
 
+  // camera section
   cameras = configFile.getJSONArray("cameras");
   numCameras = cameras.size();
   if (DEBUG) println("number of cameras "+numCameras);

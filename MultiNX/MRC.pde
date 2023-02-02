@@ -68,6 +68,7 @@ class MRCCamera extends RCamera {
     port = UDPport;
     // convert IP address into broadcast IP address
     String broadcastIpAddress = ipAddr.substring(0, ipAddr.lastIndexOf("."))+".255";
+    //String broadcastIpAddress = ipAddr;
     try {
       if (!testGui) {
         udpClient = new UdpClient( broadcastIpAddress, port);  // from netP5.* library

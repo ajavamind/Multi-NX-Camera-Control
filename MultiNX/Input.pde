@@ -714,15 +714,18 @@ int keyUpdate() {
     } else {
       // set up new repeat
       repeat_enabled = true;
-      repeat_interval = 1000*repeatInterval;  // milliseconds
+      repeat_interval = repeatInterval; // convert to long
+      repeat_interval = 1000L*repeat_interval;  // milliseconds
       repeat_counter = System.currentTimeMillis(); // current time in milliseconds
-      repeat_start_delay = repeat_counter + 1000*repeatStartDelay;
-      repeat_end = repeat_start_delay + repeat_interval*repeatCount + 100;  // 100 is pad
-      gui.displayMessage("Repeat start " + "count=" + repeatCount, 30);
-      if (repeat_counter >= repeat_start_delay) {
-        if (DEBUG) println("no start delay");
-        return KEYCODE_T;  // take photo
+      if (Long.compareUnsigned(repeatDateTime,0L) > 0 && Long.compareUnsigned(repeatDateTime,(repeat_counter + 1000L)) > 0) {
+        repeat_start_delay =  1000L*repeatStartDelay + repeatDateTime;
+      } else {
+        repeat_start_delay = repeat_counter + 1000L*repeatStartDelay;
       }
+      repeat_counter = repeat_start_delay;
+      repeat_end = repeat_start_delay + repeat_interval*repeatCount + 100L;  // 100 is pad
+      if (DEBUG) println("repeat_counter="+ repeat_counter+ " repeat_start_delay="+repeat_start_delay+ " repeat_end="+repeat_end);
+      gui.displayMessage("Repeat start " + "count=" + repeatCount, 30);
     }
     break;
   default:

@@ -112,10 +112,10 @@ boolean cameraStatus = false;
 
 // repeat function variables // milliseconds using System.currentTimeMillis();
 boolean repeat_enabled = false;
-long repeat_start_delay = 0;
-long repeat_interval = 0;  // milliseconds
-long repeat_counter = 0;
-long repeat_end = 0;
+volatile long repeat_start_delay = 0;
+volatile long repeat_interval = 0;  // milliseconds
+volatile long repeat_counter = 0;
+volatile long repeat_end = 0;
 
 void settings() {
   size(1920, 1080);  // TODO fullscreen and adjust GUI for various sizes and aspect ratio
@@ -253,16 +253,15 @@ void draw() {
 
   // check for repeat
   if (repeat_enabled) {
-    // set Repeat button highlight
-    gui.highlightRepeatKey(true);
+    gui.highlightRepeatKey(true);  // set Repeat button highlight
     long currentTime = System.currentTimeMillis(); // current time in milliseconds
-    if (currentTime >= repeat_counter && currentTime >= repeat_start_delay) {
-      repeat_counter += repeat_interval;
-      if (repeat_counter < repeat_end) {
+    if (Long.compareUnsigned(currentTime, repeat_counter) >= 0 && (Long.compareUnsigned(currentTime, repeat_start_delay) >= 0 )) {
+      repeat_counter = repeat_counter + repeat_interval;
+      if (Long.compareUnsigned(repeat_counter, repeat_end) < 0) {
         lastKeyCode = KEYCODE_T;  // take picture
-        return;
-      }
-      else {
+        if (DEBUG) println("shutter at: "+currentTime+ " repeat_counter="+repeat_counter);
+        //return;
+      } else {
         repeat_enabled = false;
         gui.highlightRepeatKey(false); // set repeat button white background
       }
