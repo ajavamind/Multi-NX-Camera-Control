@@ -47,7 +47,7 @@ The NX cameras use the open-source Linux based (Tizen) operating system and Sams
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  
 
-## How to setup and configure Samsung NX cameras and application
+## How to setup and configure Samsung NX cameras
 
 Copy the contents of the sdcard-NXnnnn folder to the base folder of the SD card. Here are instructions for the NX2000 as a setup guide example.
 
@@ -83,7 +83,7 @@ Each time you power on the camera, press the Direct link button to automatically
 	
 7. Copy the config.json file in the config folder to a folder for the application to find. I use MultNX in the internal root storage area and give the app permission to access text files. The json file defines each camera. The camera suffix name appends to photo file name for storage.
 
-	Here is an twin camera side by side configuration for 3D photography. File named: twincameras_tplink_101_102.json
+	Here is an example JSON configuration files for Samsung NX2000 twin camera side by side mount for 3D photography. File named: twincameras_tplink_101_102.json
 	
 ```
 	
@@ -137,7 +137,7 @@ Each time you power on the camera, press the Direct link button to automatically
 
 ```
 
-	Here is a four camera configuration connected using a phone WiFi hotstop. File named: cameraphotonet_LL_LM_RM_RR.json
+	Here is a four camera NX2000 JSON configuration file connected using a phone WiFi hotstop. File named: cameraphotonet_LL_LM_RM_RR.json
 
 ```
 	
@@ -217,8 +217,25 @@ Each time you power on the camera, press the Direct link button to automatically
 
 ```
 	
-8. Start the application and select a new configuration. Find the folder with the configuration json file and select it.
-	The app will attempt to connect to each camera in the configuration list with telnet.
+8. Start the application and select a new configuration. Find the folder with the configuration JSON file and select it.
+	The app will attempt to connect to each Samsung camera in the configuration list with telnet.
+	
+9. To edit your JSON configuration files on Android phones running MultiNX, I use the app "Simple Text Editor by MaxiStar. It is open source found at https://github.com/maxistar/TextPad or download from the Google Play Store.
+
+## Repeat feature
+
+A photo sequence can be captured with parameters defined in a repeat section in the JSON configuration file.
+There are four keyword parameters:
+
+1. start_DateTime  -  This parameter is optional. It is the starting date and time for the first sequence photo capture. 
+
+2. start_delay  -  the number of seconds to delay before the first sequence photo capture
+
+3. interval  -  the number of seconds between photo sequence captures
+
+4. count  -  the total number of photo captures for the sequence
+
+Work in progress
 
 ## Building MultiNX for Windows or Android
 
