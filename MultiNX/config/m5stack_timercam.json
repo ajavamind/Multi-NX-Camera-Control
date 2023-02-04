@@ -1,5 +1,4 @@
 {	"description": "Multi NX Camera Control Configuration",
-	"debug": true,
 	"configuration": {
 		"camera_rig_description": "twin (3D stereo), lenticular, multiple",
 		"info": "M5Stack Timer Camera https://github.com/m5stack/TimerCam-arduino",

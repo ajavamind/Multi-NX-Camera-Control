@@ -1,5 +1,4 @@
 {	"description": "Multi NX Camera Control Configuration",
-	"debug": true,
 	"configuration": {
 		"camera_rig_description": "single, twin (3D stereo), lenticular, multiple",
 		"camera_rig": "single",
@@ -32,14 +31,6 @@
 		"interval": 1,
 		"count": 3,
 	},
-	"repeatdatetime": {
-		"description": "start_delay - capture start delay seconds, interval - seconds between repeats, count - number of repeats",
-		"start_DateTime_description": "YYYY-MM-DDTHH:MM:SS  HH is 24 hour, local date time",
-		"notes": "start time lapse capture shortest shadows of day: at 12:30 pm minus 60 minutes, interval every 5 minutes, for two hours total duration",
-		"start_DateTime": "2023-02-04T12:30:00",
-		"start_delay": -3600,
-		"interval": 300,
-		"count": 24,
-	},
+
 }
 

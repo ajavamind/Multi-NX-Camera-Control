@@ -708,23 +708,25 @@ int keyUpdate() {
   case KEYCODE_REPEAT:
     if (repeat_enabled) {
       repeat_enabled = false;
-      gui.displayMessage("Repeat stop " + "repeat_counter=" + repeat_counter, 60);
+      gui.displayMessage("Repeat stop " + "repeat_counter=" + repeat_counter + " of "+repeatCount, 60);
       repeat_counter = 0;
+      repeat_time = 0;
       gui.highlightRepeatKey(false);  // remove highlight from repeat key
     } else {
       // set up new repeat
       repeat_enabled = true;
+      repeat_counter = 0;
       repeat_interval = repeatInterval; // convert to long
       repeat_interval = 1000L*repeat_interval;  // milliseconds
-      repeat_counter = System.currentTimeMillis(); // current time in milliseconds
-      if (Long.compareUnsigned(repeatDateTime,0L) > 0 && Long.compareUnsigned(repeatDateTime,(repeat_counter + 1000L)) > 0) {
+      repeat_time = System.currentTimeMillis(); // current time in milliseconds
+      if (Long.compareUnsigned(repeatDateTime,0L) > 0 && Long.compareUnsigned(repeatDateTime,(repeat_time + 1000L)) > 0) {
         repeat_start_delay =  1000L*repeatStartDelay + repeatDateTime;
       } else {
-        repeat_start_delay = repeat_counter + 1000L*repeatStartDelay;
+        repeat_start_delay = repeat_time + 1000L*repeatStartDelay;
       }
-      repeat_counter = repeat_start_delay;
-      repeat_end = repeat_start_delay + repeat_interval*repeatCount + 100L;  // 100 is pad
-      if (DEBUG) println("repeat_counter="+ repeat_counter+ " repeat_start_delay="+repeat_start_delay+ " repeat_end="+repeat_end);
+      repeat_time = repeat_start_delay;
+      repeat_endtime = repeat_start_delay + repeat_interval*(repeatCount) + 100L;  // 100 is pad
+      if (DEBUG) println("repeat_time="+ repeat_time+ " repeat_start_delay="+repeat_start_delay+ " repeat_endtime="+repeat_endtime);
       gui.displayMessage("Repeat start " + "count=" + repeatCount, 30);
     }
     break;

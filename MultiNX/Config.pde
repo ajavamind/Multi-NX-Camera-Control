@@ -6,7 +6,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 int screenWidth = 1920; // default
 int screenHeight = 1080;  // default
@@ -54,7 +53,6 @@ void readConfig(String filenamePath) {
   }
   configFile = loadJSONObject(filenamePath);
   configuration = configFile.getJSONObject("configuration");
-  DEBUG = configFile.getBoolean("debug");
 
   camera_rig = configFile.getString("camera_rig");
   OUTPUT_FOLDER_PATH = configuration.getString("outputFolderPath");
@@ -82,6 +80,7 @@ void readConfig(String filenamePath) {
   repeat = configFile.getJSONObject("repeat");
   if (repeat != null) {
     repeatStartDelay = repeat.getInt("start_delay");
+    if (repeatStartDelay < 0) repeatStartDelay = 0; // do not allow negative delays
     repeatInterval = repeat.getInt("interval");
     repeatCount = repeat.getInt("count");
     repeatStartDateTime = repeat.getString("start_DateTime");
@@ -97,6 +96,11 @@ void readConfig(String filenamePath) {
       repeatDateTime = starttime.toEpochMilli();
       if (DEBUG) println("repeat start date time="+repeatDateTime);
       if (DEBUG) println("repeatStartDelay="+repeatStartDelay+" repeatInterval="+repeatInterval+" repeatCount="+repeatCount+" repeatStartDateTime="+repeatStartDateTime);
+      long currentTime = System.currentTimeMillis(); // current time in milliseconds
+      if (Long.compareUnsigned(repeatDateTime, currentTime) <= 0) {  // do not allow past time
+        repeatDateTime = 0;
+        if (DEBUG) println("disallow start date time "+repeatStartDateTime);
+      }
     }
   } else {
     if (DEBUG) println("No repeat config: repeatStartDelay="+repeatStartDelay+" repeatInterval="+repeatInterval+" repeatCount="+repeatCount);

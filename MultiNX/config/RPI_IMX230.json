@@ -5,7 +5,6 @@ Use libcamera library framework on Raspberry Pi
 Requires web server on Raspberry Pi at port 8080
 Requires a user id and password for SSH access
 ",
-	"debug": true,
 	"configuration": {
 		"camera_rig_description": "twin (3D stereo), lenticular, multiple",
 		"camera_rig": "multiple",

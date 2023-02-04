@@ -111,7 +111,7 @@ abstract class RCamera implements NXCommand {
   int shutterCount;
   int[] result;
   String name; // camera name
-  String suffix; // camera name
+  String suffix; // append to filename
   String filename = "";
   String filenameUrl = "";
   PImage lastPhoto;

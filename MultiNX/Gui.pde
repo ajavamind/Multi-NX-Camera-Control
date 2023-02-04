@@ -1323,12 +1323,7 @@ void drawIntroductionScreen() {
 
   text(TITLE, 300, 60);
   text(SUBTITLE, 300, 60+50);
-  if (DEBUG) {
-    text(VERSION_DEBUG, 300, 60+100);
-  } else {
-    text(VERSION, 300, 60+100);
-  }
-
+  text(version, 300, 60+100);
   text(CREDITS, 300, 60+150);
   textSize(FONT_SIZE);
   text("Select Multi-Camera Configuration File", 300, 400);

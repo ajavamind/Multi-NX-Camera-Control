@@ -36,15 +36,16 @@
 // Use email WiFi cofiguration on NX2000 to connect to a local network.
 // Exit email screen on NX camera to shoot photos and videos after connection to your local WiFi network.
 
-static final String VERSION = "Version 2.0";
-static final String VERSION_DEBUG = VERSION + " DEBUG";
+static final boolean DEBUG = false;
+static final boolean testGui = false;
+
+static final String VERSION_NAME = "2.0";
+static final String VERSION_CODE = "7";
 static final String TITLE = "MultiNX - Multi Camera Controller";
 static final String SUBTITLE = "Control Multiple NX/MRC/RPI Cameras";
 static final String CREDITS = "Written by Andy Modla";
 static final String COPYRIGHT = "Copyright 2021-2023 Andrew Modla";
-
-static final boolean testGui = false;
-static boolean DEBUG = false;
+static String version;
 
 // Configuration file parsed settings for cameras
 String camera_rig = "multiple";
@@ -114,8 +115,9 @@ boolean cameraStatus = false;
 boolean repeat_enabled = false;
 volatile long repeat_start_delay = 0;
 volatile long repeat_interval = 0;  // milliseconds
-volatile long repeat_counter = 0;
-volatile long repeat_end = 0;
+volatile long repeat_time = 0;
+volatile long repeat_endtime = 0;
+volatile long repeat_counter;
 
 void settings() {
   size(1920, 1080);  // TODO fullscreen and adjust GUI for various sizes and aspect ratio
@@ -131,6 +133,11 @@ void settings() {
 void setup() {
   // set Landscape orientation
   orientation(LANDSCAPE);
+  version = "Version "+ VERSION_NAME + " Build "+ VERSION_CODE;
+  if (DEBUG) {
+    version = version + " DEBUG";
+  }
+
   setTitle(titleText);
 
   textSize(FONT_SIZE);
@@ -255,16 +262,17 @@ void draw() {
   if (repeat_enabled) {
     gui.highlightRepeatKey(true);  // set Repeat button highlight
     long currentTime = System.currentTimeMillis(); // current time in milliseconds
-    if (Long.compareUnsigned(currentTime, repeat_counter) >= 0 && (Long.compareUnsigned(currentTime, repeat_start_delay) >= 0 )) {
-      repeat_counter = repeat_counter + repeat_interval;
-      if (Long.compareUnsigned(repeat_counter, repeat_end) < 0) {
+    if (Long.compareUnsigned(currentTime, repeat_time) >= 0 && (Long.compareUnsigned(currentTime, repeat_start_delay) >= 0 )) {
+      repeat_time = repeat_time + repeat_interval;
+      if (Long.compareUnsigned(repeat_time, repeat_endtime) < 0) {
         lastKeyCode = KEYCODE_T;  // take picture
-        if (DEBUG) println("shutter at: "+currentTime+ " repeat_counter="+repeat_counter);
-        //return;
-      } else {
-        repeat_enabled = false;
-        gui.highlightRepeatKey(false); // set repeat button white background
-      }
+        repeat_counter++;
+        if (DEBUG) println("shutter at: "+currentTime+ " repeat_time="+repeat_time);
+        if (repeat_counter >= repeatCount) {
+          repeat_enabled = false;
+          gui.highlightRepeatKey(false); // set repeat button white background
+        }
+      } 
     }
   }
 
@@ -375,6 +383,25 @@ void draw() {
     gui.fnTable.display();
     gui.navTable.display();
   }
+
+  if (cameraStatus) {
+    fill(255);
+    int i = 4;
+    int offset = 790;
+    text(version, offset, 110+i*50);
+    i++;
+    String date = "";
+    if (repeatStartDateTime != null) date = repeatStartDateTime;
+    
+    if (repeat_enabled) {
+      text("Repeat active " + date, offset, 110 + i*50);
+      text("Repeat active " + " startDelay=" + repeatStartDelay + "  "+"Interval="+repeatInterval + " Count "+repeat_counter+" of " + repeatCount, offset, 160 + i*50);
+    } else {
+      text("Repeat off " + date, offset, 110 + i*50);
+      text("Repeat off " + " startDelay=" + repeatStartDelay + "  "+"Interval=" + repeatInterval + " Count=" + repeatCount, offset, 160 + i*50);
+    }
+  }
+
   // Display information or error message
   gui.displayMessage(message);
 

@@ -1,5 +1,4 @@
 {	"description": "Multi NX Camera Control Configuration",
-	"debug": true,
 	"configuration": {
 		"camera_rig_description": "One camera test NX2000  0D:B3",
 		"camera_rig": "single",
