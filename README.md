@@ -87,7 +87,6 @@ Each time you power on the camera, press the Direct link button to automatically
 ```
 	
       {	"description": "Multi NX Camera Control Configuration",
-	"debug": true,
 	"configuration": {
 		"camera_rig_description": "twin (3D stereo), lenticular, multiple",
 		"camera_rig": "twin",
@@ -141,7 +140,6 @@ Each time you power on the camera, press the Direct link button to automatically
 ```
 	
        { "description": "Multi NX Camera Control Configuration",
-	"debug": true,
 	"configuration": {
 		"camera_rig_description": "twin (3D stereo), lenticular, multiple",
 		"camera_rig": "lenticular",
@@ -250,7 +248,7 @@ The "Platform.pde" file needs to be modified for either Java or Android by comme
 
 ## Using MultiNX app
 
-The latest Android apk can be found in the buildPackage folder in MultiNx.
+The latest Android apk can be found in the buildPackage folder in MultiNX. 
 
 -------------------------------------
 
