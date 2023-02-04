@@ -1,0 +1,35 @@
+{	"description": "Multi NX Camera Control Configuration",
+	"debug": true,
+	"configuration": {
+		"camera_rig_description": "single, twin (3D stereo), lenticular, multiple",
+		"camera_rig": "single",
+		"saveFolderPath": "/output",
+		"IPaddress description": "Network broadcast address for Multi Remote Camera (MRC) app",
+		"IPaddress": "10.0.0.136",
+		"Broadcast_IPaddress": "10.0.0.255",
+	},
+	"display": {
+		"width": 1920,
+		"height": 1080,
+	},
+    "cameras": [
+	    { "name" : "Samsung S20",
+		  "suffix": "SEQ",
+		  "type_description": "MRC, NX2000, NX300, NX30, NX500, RPI, TMC",
+		  "type": "MRC",
+		  "IPaddress": "10.0.0.136",
+          "orientation_description": "camera rotation degrees: landscape 0, portrait 90, landscape upside down 180, portrait upside down 270",		
+		  "orientation": 0,
+		  "horizontalOffset": 0,
+		  "verticalOffset": 0,
+        },
+	],
+	"repeat": {
+		"description": "start_delay - capture start delay seconds, interval - seconds between repeats, count - number of repeats",
+		"start_DateTime_description": "YYYYMMDD_HHMMSS  HH is 24 hour, local date time",
+		"start_DateTime": "2023-02-03T17:30:00",
+		"start_delay": 5,
+		"interval": 15,
+		"count": 4,
+	}
+}
