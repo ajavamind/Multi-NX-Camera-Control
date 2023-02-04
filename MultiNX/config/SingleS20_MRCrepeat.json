@@ -1,5 +1,4 @@
 {	"description": "Multi NX Camera Control Configuration",
-	"debug": true,
 	"configuration": {
 		"camera_rig_description": "single, twin (3D stereo), lenticular, multiple",
 		"camera_rig": "single",
