@@ -250,10 +250,11 @@ The "Platform.pde" file needs to be modified for either Java or Android by comme
 
 ## Using MultiNX app
 
-The latest Android apk can be found in the buildPackage folder in MultiNX. 
+The latest Android apk can be found in the buildPackage folder in MultiNX. I have my phones set to developer mode to install apps outside the Google Play Store.
 
-After installing the apk, later versions of Android will require you to go to Android Settings, Apps and find MultiNX app.
-Change Permissions to Allow all Files and media access.
+After installing the apk, in order to read a configuration JSON text file, later versions of Android will require you to go to Android Settings, Apps and find MultiNX app. Change Permissions to Allow all Files and media access.
+
+For Android 13 (API 33) go to Android Settings and search for "Special access". Select "All files access". Find the "MultiNX" app in the list and turn on all files access. 
 
 -------------------------------------
 
