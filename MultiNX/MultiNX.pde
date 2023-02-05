@@ -39,8 +39,8 @@
 static final boolean DEBUG = false;
 static final boolean testGui = false;
 
-static final String VERSION_NAME = "2.0";
-static final String VERSION_CODE = "7";
+static final String VERSION_NAME = "2.1";
+static final String VERSION_CODE = "8";
 static final String TITLE = "MultiNX - Multi Camera Controller";
 static final String SUBTITLE = "Control Multiple NX/MRC/RPI Cameras";
 static final String CREDITS = "Written by Andy Modla";

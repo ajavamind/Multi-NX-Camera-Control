@@ -13,7 +13,8 @@
 	},
     "cameras": [
 	    { "name" : "Samsung S20",
-		  "suffix": "SEQ",
+		  "suffix_description": "Must match MRC photo/video suffix",
+		  "suffix": "",
 		  "type_description": "MRC, NX2000, NX300, NX30, NX500, RPI, TMC",
 		  "type": "MRC",
 		  "IPaddress": "10.0.0.136",
