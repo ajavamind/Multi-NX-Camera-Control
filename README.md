@@ -80,7 +80,9 @@ Each time you power on the camera, press the Direct link button to automatically
 	
 6. Use an Android app such as "Network Scanner" on your local WiFi network to scan for Samsung cameras and write down the IP address associated with each MAC address you found in step 5.
 	
-7. Copy the config.json file in the config folder to a folder for the application to find. I use MultNX in the internal root storage area and give the app permission to access text files. The json file defines each camera. The camera suffix name appends to photo file name for storage.
+7. Copy the config.json file in the config folder to a folder for the application to find. I use MultNX in the internal root storage area and give the app permission to access text files. 
+
+The JDOM file defines each camera. The camera "suffix" name appends to photo file name for storage. The suffix must match the photo or video suffix defined for Multi Remote Camera, otherwise MultiNX will not be able to load the image file.
 
 	Here is an example JSON configuration files for Samsung NX2000 twin camera side by side mount for 3D photography. File named: twincameras_tplink_101_102.json
 	
@@ -249,6 +251,9 @@ The "Platform.pde" file needs to be modified for either Java or Android by comme
 ## Using MultiNX app
 
 The latest Android apk can be found in the buildPackage folder in MultiNX. 
+
+After installing the apk, later versions of Android will require you to go to Android Settings, Apps and find MultiNX app.
+Change Permissions to Allow all Files and media access.
 
 -------------------------------------
 
