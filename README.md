@@ -36,9 +36,8 @@ The NX cameras use the open-source Linux based (Tizen) operating system and Sams
 
  1. Improve User interface, error messaging, documentation
  2. Refactor for simplification, camera design, and more comments 
- 3. Add Repeat shutter for automatic photo sequences.
- 4. Add more controls for NX300 and NX500.
- 5. For Multi Remote Camera App add controls for camera mode and settings.
+ 3. Add more controls for NX300 and NX500.
+ 4. For Multi Remote Camera App add controls for camera mode and settings.
 
 ## Warning Notice
 
@@ -88,7 +87,6 @@ Each time you power on the camera, press the Direct link button to automatically
 ```
 	
       {	"description": "Multi NX Camera Control Configuration",
-	"debug": true,
 	"configuration": {
 		"camera_rig_description": "twin (3D stereo), lenticular, multiple",
 		"camera_rig": "twin",
@@ -142,7 +140,6 @@ Each time you power on the camera, press the Direct link button to automatically
 ```
 	
        { "description": "Multi NX Camera Control Configuration",
-	"debug": true,
 	"configuration": {
 		"camera_rig_description": "twin (3D stereo), lenticular, multiple",
 		"camera_rig": "lenticular",
@@ -222,20 +219,18 @@ Each time you power on the camera, press the Direct link button to automatically
 	
 9. To edit your JSON configuration files on Android phones running MultiNX, I use the app "Simple Text Editor by MaxiStar. It is open source found at https://github.com/maxistar/TextPad or download from the Google Play Store.
 
-## Repeat feature
+## Intervalometer - repeat configuration section
 
-A photo sequence can be captured with parameters defined in a repeat section in the JSON configuration file.
+An intervalometer photo capture sequence can be captured with parameters defined in a repeat section in the JSON configuration file.
 There are four keyword parameters:
 
-1. start_DateTime  -  This parameter is optional. It is the starting date and time for the first sequence photo capture. 
+1. start_DateTime  -  This parameter is optional. It is the starting date and time for the photo capture. This parameter is ignored when the date/time is in the past.
 
-2. start_delay  -  the number of seconds to delay before the first sequence photo capture
+2. start_delay  -  the number of seconds to delay before starting the photo capture sequence. Must be greater or equal to 0.
 
 3. interval  -  the number of seconds between photo sequence captures
 
 4. count  -  the total number of photo captures for the sequence
-
-Work in progress
 
 ## Building MultiNX for Windows or Android
 
@@ -253,7 +248,7 @@ The "Platform.pde" file needs to be modified for either Java or Android by comme
 
 ## Using MultiNX app
 
-The latest Android apk can be found in the buildPackage folder in MultiNx.
+The latest Android apk can be found in the buildPackage folder in MultiNX. 
 
 -------------------------------------
 
@@ -294,11 +289,11 @@ The bottom row of soft keys provide features for accessing menu keys, and viewin
 The secondary soft key menu:
 
 1. Screen - displays a screenshot of the main camera (first camera in the configuration list file)
-2. Repeat - (work in progress)
+2. Repeat - start intervalometer photo capture sequence defined in the configuration file
 3. 
 4. 
 5. Mode - change the camera mode. The application assumes manual expert mode for its operation, but other modes are possible.
-6. Status - display the connection and camera status (work in progress)
+6. Status - display the connection and camera status, such as repeat progress (work in progress)
 7. EXIT - terminate the application.
 8. Alt - show primary horizontal menu.
 
