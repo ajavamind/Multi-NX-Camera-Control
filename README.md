@@ -82,7 +82,7 @@ Each time you power on the camera, press the Direct link button to automatically
 	
 7. Copy the config.json file in the config folder to a folder for the application to find. I use MultNX in the internal root storage area and give the app permission to access text files. 
 
-The JDOM file defines each camera. The camera "suffix" name appends to photo file name for storage. The suffix must match the photo or video suffix defined for Multi Remote Camera, otherwise MultiNX will not be able to load the image file.
+The JSON file defines each camera. The camera "suffix" name appends to photo file name for storage. The suffix must match the photo or video suffix defined in Multi Remote Camera types, otherwise MultiNX will not be able to load the image file from MRC app.
 
 	Here is an example JSON configuration files for Samsung NX2000 twin camera side by side mount for 3D photography. File named: twincameras_tplink_101_102.json
 	
