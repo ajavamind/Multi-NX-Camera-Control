@@ -23,8 +23,6 @@ Requires a user id and password for SSH access
 		  "IPaddress": "192.168.0.200",
           "orientation_description": "camera rotation degrees: landscape 0, portrait 90, landscape upside down 180, portrait upside down 270",		
 		  "orientation": 0,
-		  "horizontalOffset": 0,
-		  "verticalOffset": 0,
 		  "userId": "pi",
 		  "password": "password",
         },

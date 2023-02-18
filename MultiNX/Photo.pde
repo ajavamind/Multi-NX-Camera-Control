@@ -129,7 +129,7 @@ void saveAnaglyphPhoto(String filename) {
       lastAnaglyph.parent = null; // dispose
       lastAnaglyph = null;
     }
-    lastAnaglyph =createAnaglyph(camera[0].lastPhoto, camera[1].lastPhoto, 0);
+    lastAnaglyph =createAnaglyph(camera[0].lastPhoto, camera[1].lastPhoto, horizontalOffset);
 
     if (saveFolderPath != null) {
       String out = saveFolderPath+File.separator+filename+suffix+".jpg";

@@ -1,9 +1,12 @@
 // Java or Android platform build
+// Code differences
+//
+
 private final static int JAVA_MODE = 0;
 private final static int ANDROID_MODE = 1;
 int buildMode = ANDROID_MODE;  // change manually for the build
 
-// Important Comment Out the unused platform code below 
+// ***** Important Comment Out the unused platform code below 
 
 // Android Platform Build Mode
 import android.content.SharedPreferences;
@@ -178,6 +181,12 @@ private void destroy(PImage img) {
 //}
 
 //..........................................................................
+//..........................................................................
+//..........................................................................
+//..........................................................................
+//..........................................................................
+
+
 // Code common to Android and Java platforms
 // do not comment out
 

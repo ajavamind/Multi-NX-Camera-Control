@@ -20,6 +20,7 @@ static final String MRCS = "MRC"; // Multi Remmote Camera (Android Camera App)
 //static final String IMX230S = "IMX230"; // Raspberry PI Arducam Pivariety 21 MP IMX230 Camera
 static final String RPIS = "RPI"; // Raspberry PI Computer Camera: Tested with Arducam Pivariety 21 MP IMX230 Camera
 static final String TMCS = "TMC"; // M5Stack Timer Camera
+static final String[] CAMERA_TYPES = {NX2000S, NX300S, NX30S, NX500S, MRCS, RPIS, TMCS};
 
 static final int TelnetPort = 23; // telnet port
 static final int SSHport = 22; // SSH port
@@ -61,8 +62,10 @@ interface NXCommand {
   void end();
   void playback();
   void ev();
-  void jogcw();
-  void jogccw();
+  //void jogcw();
+  //void jogccw();
+  //void jog2cw();
+  //void jog2ccw();
   //void getCameraFnShutter();
   void screenshot(String filename);
   boolean screenshot();
@@ -189,6 +192,21 @@ abstract class RCamera implements NXCommand {
   void jogccw() {
   }
 
+  void jogcw() {
+  }
+
+  void jog2ccw() {
+  }
+
+  void jog2cw() {
+  }
+
+  void wheelccw() {
+  }
+
+  void wheelcw() {
+  }
+
   String getName() {
     return this.name;
   }
@@ -238,8 +256,8 @@ abstract class RCamera implements NXCommand {
           filename = afilename.substring(afilename.lastIndexOf('/')+1);
           filenameUrl = afilenameUrl;
           if (!filenameUrl.endsWith("/")) {
-            //lastPhoto = loadImage(filenameUrl, "jpg");
-            lastPhoto = requestImage(filenameUrl);
+            lastPhoto = loadImage(filenameUrl, "jpg");
+            //lastPhoto = requestImage(filenameUrl);
             if (DEBUG) println("requestImage "+filenameUrl);
             gui.displayMessage("Loading Photo ... "+ filenameUrl, 60);
             showPhoto = true;
@@ -418,6 +436,22 @@ abstract class RCamera implements NXCommand {
 
   void cameraDown() {
     client.write("st key click down\n");
+  }
+
+  void cameraDel() {
+    client.write("st key click del\n");
+  }
+
+  void cameraCustom() {
+    client.write("st key click custom1\n");
+  }
+
+  void cameraEv() {
+    client.write("st key click ev\n");
+  }
+
+  void cameraAel() {
+    client.write("st key click ael\n");
   }
 
   void touchBack() {
@@ -620,7 +654,7 @@ abstract class RCamera implements NXCommand {
   void getPrefMemBlock(int id, int offset, int size) {
     client.write("prefman get "+id+" "+offset+" v="+size+"\n");
   }
-  
+
   void toggleFilenamePrefix(String data) {
   }
 }

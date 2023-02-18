@@ -20,8 +20,6 @@
 		  "IPaddress": "10.0.0.136",
           "orientation_description": "camera rotation degrees: landscape 0, portrait 90, landscape upside down 180, portrait upside down 270",		
 		  "orientation": 0,
-		  "horizontalOffset": 0,
-		  "verticalOffset": 0,
         },
 	],
 	"repeat": {

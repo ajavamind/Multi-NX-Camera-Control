@@ -51,12 +51,22 @@ class Gui {
   final static String LEFT_TRIANGLE = "<";
   final static String RIGHT_TRIANGLE = ">";
   final static String BIG_TRIANGLE_UP = "\u25B3";
+  //  ↑ U+2191 Up Arrow
+
+  //↓ U+2193 Down Arrow
+
+  //→ U+2192 Right Arrow
+
+  //← U+2190 Left Arrow
+  final static String UP_ARROW = "\u2191";
+  final static String DOWN_ARROW = "\u2193";
+  final static String LEFT_ARROW = "\u2190";
+  final static String RIGHT_ARROW = "\u2192";
   final static String PLAY = "\u25BA";
   final static String STOP = "\u25AA";
   final static String PLUS_MINUS = "||"; //"\u00B1";  //  alternate plus minus 2213
   final static String RESET = "\u21BB";  // loop
   final static String LEFT_ARROW_EXIT = "\u2190";  // Left arrow for exit
-  final static String LEFT_ARROW = "\u02FF";
   final static String LEFT_ARROWHEAD = "\u02C2";
   final static String RIGHT_ARROWHEAD = "\u02C3";
   final static String CHECK_MARK = "\u2713";
@@ -75,9 +85,9 @@ class Gui {
   color silver;
   color brown;
   color bague;
-  final boolean[] vfull = {true, true, true, true, true, true, true, true, true, true};
+  final boolean[] vfull = {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true};
   final boolean[] hfull = {true, true, true, true, true, true, true, true};
-  final boolean[] h2full = {true, true, false, false, true, true, true, true};
+  final boolean[] h2full = {true, true, true, true, true, true, true, true};
   final boolean[] MRCVfull = {true, true, true, true, true, true, true, true, false, false};
   final boolean[] MRCHfull = {true, true, true, false, true, true, true, true};
   final boolean[] MRCH2full = {true, true, false, false, true, true, true, true};
@@ -90,10 +100,11 @@ class Gui {
     this.base = base;
     WIDTH = base.width;
     HEIGHT = base.height;
+    if (DEBUG) println("WIDTH-"+WIDTH+" HEIGHT="+HEIGHT);
     //xFocusArea= 2*(camera[mainCamera].screenWidth+xoffset)/2;
     //yFocusArea = 2*camera[mainCamera].screenHeight/2;
-    xFocusArea= 2*(NX2000Camera.SCREEN_WIDTH+xoffset)/2;
-    yFocusArea = 2*NX2000Camera.SCREEN_HEIGHT/2;
+    //xFocusArea= 2*(NX2000Camera.SCREEN_WIDTH+xoffset)/2;
+    //yFocusArea = 2*NX2000Camera.SCREEN_HEIGHT/2;
     iX = WIDTH / 8;
     iY = HEIGHT / 10;
     mX = WIDTH / 2;
@@ -136,8 +147,11 @@ class Gui {
       horzMenuBar[1].setActive(h2full);
     }
 
-    vertMenuBar = new VertMenuBar();
-    vertMenuBar.create(cameraType);
+    if (cameraType == NX300 || cameraType == NX500 || cameraType == NX30) {
+      vertMenuBar = new VertMenuBar2(cameraType);
+    } else {
+      vertMenuBar = new VertMenuBar1(cameraType);
+    }
     if (cameraType == MRC || cameraType == RPI) {
       vertMenuBar.setVisible(MRCVfull);
       vertMenuBar.setActive(MRCVfull);
@@ -236,10 +250,11 @@ class Gui {
     stroke(white);
     strokeWeight(4);
     rectMode(CORNER);
-    //float w = 2*(camera[mainCamera].screenWidth-xoffset);
-    //float h = 2*camera[mainCamera].screenHeight;
     noFill();
-    rect(xFocusArea-focusSize/2, yFocusArea-focusSize/2, focusSize, focusSize);
+    if (xFocusArea == 0 || yFocusArea == 0) {
+    } else {
+      rect(xFocusArea-focusSize/2, yFocusArea-focusSize/2, focusSize, focusSize);
+    }
   }
 
   void displayMessage(String msg, int position, int counter) {
@@ -821,25 +836,129 @@ class Gui {
   }
 
   /**
-   * MenuBar appears at right of full screen when the screen is tapped.
+   * MenuBar appears at right of full screen.
+   * The menu bar corresponds to hardware keys on the NX cameras
    */
   class VertMenuBar {
-    // initialize Keys
     MenuKey focusKey;
     MenuKey shutterKey;
+    //MenuKey evKey;
+    //MenuKey jogcwKey;
+    //MenuKey jogccwKey;
+    //MenuKey recordKey;
+    //MenuKey homeKey;
+    //MenuKey playBackKey;
+    MenuKey[] menuKey;
+    int numKeys;
+    float menuBase;
+    float menux;
+    float menuy;
+
+    //void create(int cameraType) {
+    //  color keyColor = black;
+    //  //PImage imgeye = base.loadImage("icons/eye.png");
+
+    //  focusKey = new MenuKey(KEYCODE_F, "Focus", FONT_SIZE, keyColor);
+    //  shutterKey = new MenuKey(KEYCODE_S, "Shutter", FONT_SIZE, keyColor);
+    //  if (cameraType == NX2000) {
+    //    evKey = new MenuKey(KEYCODE_E, "EV/OK", FONT_SIZE, keyColor);
+    //  } else {
+    //    evKey = new MenuKey(KEYCODE_E, "EV", FONT_SIZE, keyColor);
+    //  }
+    //  jogcwKey = new MenuKey(KEYCODE_J, "EV"+LEFT_TRIANGLE, FONT_SIZE, keyColor);
+    //  jogccwKey = new MenuKey(KEYCODE_L, "EV"+RIGHT_TRIANGLE, FONT_SIZE, keyColor);
+    //  recordKey = new MenuKey(KEYCODE_R, "Record", FONT_SIZE, red);
+    //  homeKey = new MenuKey(KEYCODE_H, "Home", FONT_SIZE, keyColor);
+    //  playBackKey = new MenuKey(KEYCODE_P, "PB", FONT_SIZE, keyColor);
+    //  menuKey = new MenuKey[numKeys];
+    //  menuKey[0] = focusKey;
+    //  menuKey[1] = shutterKey;
+    //  menuKey[2] = jogcwKey;
+    //  menuKey[3] = jogccwKey;
+    //  menuKey[4] = evKey;
+    //  menuKey[5] = recordKey;
+    //  menuKey[6] = homeKey;
+    //  menuKey[7] = playBackKey;
+    //  float inset = 320 / ((float) numKeys) / 2f;
+    //  menux = WIDTH - 320 +(2*inset);
+    //  menuy = 0;
+    //  float w = iX;
+    //  float h = (HEIGHT-120)/ ((float) numKeys);
+    //  menuBase = menuy;
+
+    //  for (int i = 0; i < numKeys; i++) {
+    //    menuKey[i].setPosition(menux, ((float) i) * h, w, h- inset, inset);
+    //  }
+    //}
+
+    void setVisible(boolean[] visible) {
+      for (int i = 0; i < menuKey.length; i++) {
+        menuKey[i].setVisible(visible[i]);
+      }
+    }
+
+    void setActive(boolean[] active) {
+      for (int i = 0; i < menuKey.length; i++) {
+        menuKey[i].setActive(active[i]);
+      }
+    }
+
+    void display() {
+      highlightFocusKey(focus);
+      fill(192);
+      if (cameraType == NX500) {
+        rect(WIDTH -480, 0, 480, HEIGHT - 120);
+      } else {
+        rect(WIDTH -320, 0, 320, HEIGHT - 120);
+      }
+      for (int i = 0; i < menuKey.length; i++) {
+        menuKey[i].draw();
+      }
+    }
+
+    int mousePressed(int x, int y) {
+      int mkeyCode = 0;
+      int mkey = 0;
+      if (DEBUG) println("vert menubar mouse x="+x + " y="+y);
+      if (y > menuBase && y < HEIGHT-120 && x > menux) {
+        // menu touch control area at bottom of screen or sides
+        for (int i = 0; i < numKeys; i++) {
+          if (menuKey[i].visible && menuKey[i].active) {
+            if (x >= menuKey[i].x && x<= (menuKey[i].x + menuKey[i].w) && y >= menuKey[i].y && y <= (menuKey[i].y +menuKey[i].h)) {
+              mkeyCode = menuKey[i].keyCode;
+              mkey = 0;
+              if (DEBUG) println("vertMenu keycode="+mkeyCode);
+              break;
+            }
+          }
+        }
+      }
+      return mkeyCode;
+    }
+  }
+
+  /**
+   * MenuBar appears at right of full screen.
+   * Emulates keys on the NX2000, MRC, RPI
+   */
+  class VertMenuBar1 extends VertMenuBar {
+    //MenuKey focusKey;
+    //MenuKey shutterKey;
     MenuKey evKey;
     MenuKey jogcwKey;
     MenuKey jogccwKey;
     MenuKey recordKey;
     MenuKey homeKey;
     MenuKey playBackKey;
-    MenuKey[] menuKey;
-    int numKeys = 8;
-    float menuBase;
-    float menux;
-    float menuy;
+    //MenuKey[] menuKey;
+    //int numKeys;
+    //float menuBase;
+    //float menux;
+    //float menuy;
 
-    void create(int cameraType) {
+    public VertMenuBar1(int cameraType) {
+      super();
+      numKeys = 8;
       color keyColor = black;
       //PImage imgeye = base.loadImage("icons/eye.png");
 
@@ -876,40 +995,162 @@ class Gui {
       }
     }
 
+    //void setVisible(boolean[] visible) {
+    //  for (int i = 0; i < menuKey.length; i++) {
+    //    menuKey[i].setVisible(visible[i]);
+    //  }
+    //}
+
+    //void setActive(boolean[] active) {
+    //  for (int i = 0; i < menuKey.length; i++) {
+    //    menuKey[i].setActive(active[i]);
+    //  }
+    //}
+
+    //void display() {
+    //  highlightFocusKey(focus);
+    //  fill(192);
+    //  rect(WIDTH -320, 0, 320, HEIGHT - 120);
+    //  for (int i = 0; i < menuKey.length; i++) {
+    //    menuKey[i].draw();
+    //  }
+    //}
+  }
+
+  /**
+   * MenuBar appears at right of full screen.
+   * Emulates keys on the NX300, NX30, and NX500
+   */
+  class VertMenuBar2 extends VertMenuBar {
+    MenuKey jog1cwKey;
+    MenuKey jog1ccwKey;
+    MenuKey jog2cwKey;
+    MenuKey jog2ccwKey;
+    MenuKey recordKey;
+    MenuKey okKey;
+    MenuKey playBackKey;
+    MenuKey delKey;
+    MenuKey isoKey;
+    MenuKey leftKey;
+    MenuKey rightKey;
+    MenuKey upKey;
+    MenuKey downKey;
+    MenuKey blankKey;
+    int numRows;
+
+    public VertMenuBar2(int cameraType) {
+      super();
+      numKeys = 8;
+      numRows = 2;
+      color keyColor = black;
+      //PImage imgeye = base.loadImage("icons/eye.png");
+
+      focusKey = new MenuKey(KEYCODE_F, "Focus", FONT_SIZE, keyColor);
+      shutterKey = new MenuKey(KEYCODE_S, "Shutter", FONT_SIZE, keyColor);
+      jog1cwKey = new MenuKey(KEYCODE_J, "Jog"+LEFT_TRIANGLE, FONT_SIZE, keyColor);
+      jog1ccwKey = new MenuKey(KEYCODE_L, "Jog"+RIGHT_TRIANGLE, FONT_SIZE, keyColor);
+      jog2cwKey = new MenuKey(KEYCODE_WHEELCW, "Whl"+LEFT_TRIANGLE, FONT_SIZE, keyColor);
+      jog2ccwKey = new MenuKey(KEYCODE_WHEELCCW, "Whl"+RIGHT_TRIANGLE, FONT_SIZE, keyColor);
+      recordKey = new MenuKey(KEYCODE_R, "Record", FONT_SIZE, red);
+      playBackKey = new MenuKey(KEYCODE_P, "PB", FONT_SIZE, keyColor);
+      okKey = new MenuKey(KEYCODE_K, "OK", FONT_SIZE, keyColor);
+      delKey = new MenuKey(KEYCODE_TRASH, "CUS/DEL", FONT_SIZE, keyColor);
+      blankKey = new MenuKey(0, "", FONT_SIZE, keyColor);
+      upKey = new MenuKey(KEYCODE_NAV_UP, "DISP"+UP_ARROW, FONT_SIZE, keyColor);
+      downKey = new MenuKey(KEYCODE_NAV_DOWN, "ISO"+DOWN_ARROW, FONT_SIZE, keyColor);
+      leftKey = new MenuKey(KEYCODE_NAV_LEFT, "DRV"+LEFT_ARROW, FONT_SIZE, keyColor);
+      rightKey = new MenuKey(KEYCODE_NAV_RIGHT, "AF"+RIGHT_ARROW, FONT_SIZE, keyColor);
+      menuKey = new MenuKey[numRows*numKeys];
+      menuKey[0] = focusKey;
+      menuKey[1] = jog1cwKey;
+      menuKey[2] = jog2cwKey;
+      menuKey[3] = okKey;
+      menuKey[4] = upKey;
+      menuKey[5] = leftKey;
+      menuKey[6] = downKey;
+      menuKey[7] = playBackKey;
+
+      menuKey[8] = shutterKey;
+      menuKey[9] = jog1ccwKey;
+      menuKey[10] = jog2ccwKey;
+      menuKey[11] = recordKey;
+      menuKey[12] = upKey;
+      menuKey[13] = rightKey;
+      menuKey[14] = downKey;
+      menuKey[15] = delKey;
+
+      float inset = 480 / ((float) numKeys) / 4f;
+      //menux = WIDTH - 480 +(2*inset);
+      menux = WIDTH - 480 +4;
+      menuy = 0;
+      float w = iX - 4;
+      float h = (HEIGHT-120)/ ((float) numKeys);
+      menuBase = menuy;
+
+      for (int j = 0; j < numRows; j++) {
+        for (int i = 0; i < numKeys; i++) {
+          menuKey[i+j*numKeys].setPosition(menux+j*w, ((float) i) * h, w, h - inset, inset);
+        }
+      }
+      if (cameraType == NX300 || cameraType == NX500 || cameraType == NX30) {
+          menuKey[4].setPosition(menux+w/2, ((float) 4) * h, w, h - inset, inset);
+          menuKey[12].setPosition(menux+w/2, ((float) 4) * h, w, h - inset, inset);
+          menuKey[6].setPosition(menux+w/2, ((float) 6) * h, w, h - inset, inset);
+          menuKey[14].setPosition(menux+w/2, ((float) 6) * h, w, h - inset, inset);
+      }
+    }
+
     void setVisible(boolean[] visible) {
-      for (int i = 0; i < menuKey.length; i++) {
-        menuKey[i].setVisible(visible[i]);
+      for (int j = 0; j< numRows; j++) {
+        for (int i = 0; i < numKeys; i++) {
+          menuKey[i+j*numKeys].setVisible(visible[i+j*numKeys]);
+        }
       }
     }
 
     void setActive(boolean[] active) {
-      for (int i = 0; i < menuKey.length; i++) {
-        menuKey[i].setActive(active[i]);
+      for (int j = 0; j< numRows; j++) {
+        for (int i = 0; i < numKeys; i++) {
+          menuKey[i+j*numKeys].setActive(active[i+j*numKeys]);
+        }
       }
     }
-
-    void display() {
-      highlightFocusKey(focus);
-      fill(192);
-      rect(WIDTH -320, 0, 320, HEIGHT - 120);
-      for (int i = 0; i < menuKey.length; i++) {
-        menuKey[i].draw();
-      }
-    }
+    //void display() {
+    //  highlightFocusKey(focus);
+    //  fill(192);
+    //  rect(WIDTH -320, 0, 320, HEIGHT - 120);
+    //  for (int i = 0; i < menuKey.length; i++) {
+    //    menuKey[i].draw();
+    //  }
+    //}
 
     int mousePressed(int x, int y) {
       int mkeyCode = 0;
       int mkey = 0;
       if (DEBUG) println("vert menubar mouse x="+x + " y="+y);
-      if (y > menuBase && y < HEIGHT-120 && x > menux) {
+      if (y > menuBase && y < HEIGHT-120 && x > (menux+iX)) {
         // menu touch control area at bottom of screen or sides
-        for (int i = 0; i < numKeys; i++) {
+        for (int i = 8; i < 2*numKeys; i++) {
           if (menuKey[i].visible && menuKey[i].active) {
             if (x >= menuKey[i].x && x<= (menuKey[i].x + menuKey[i].w) && y >= menuKey[i].y && y <= (menuKey[i].y +menuKey[i].h)) {
               mkeyCode = menuKey[i].keyCode;
               mkey = 0;
               if (DEBUG) println("vertMenu keycode="+mkeyCode);
               break;
+            }
+          }
+        }
+      } else {
+        if (y > menuBase && y < HEIGHT-120 && x > menux) {
+          // menu touch control area at bottom of screen or sides
+          for (int i = 0; i < numKeys; i++) {
+            if (menuKey[i].visible && menuKey[i].active) {
+              if (x >= menuKey[i].x && x<= (menuKey[i].x + menuKey[i].w) && y >= menuKey[i].y && y <= (menuKey[i].y +menuKey[i].h)) {
+                mkeyCode = menuKey[i].keyCode;
+                mkey = 0;
+                if (DEBUG) println("vertMenu keycode="+mkeyCode);
+                break;
+              }
             }
           }
         }
@@ -980,6 +1221,7 @@ class Gui {
 
   /**
    * MenuBar appears at bottom of full screen.
+   * Horizontal menu bar emulates soft keys for the camera
    */
   class HorzMenuBar1 extends HorzMenuBar {
     // initialize Keys
@@ -1006,7 +1248,11 @@ class Gui {
       }
       cameraFnKey = new MenuKey(KEYCODE_N, "Fn", FONT_SIZE, keyColor);
       cameraSyncKey = new MenuKey(KEYCODE_FN_ZONE, "Sync", FONT_SIZE, keyColor);
-      cameraOkKey = new MenuKey(KEYCODE_K, "OK", FONT_SIZE, keyColor);
+      if (cameraType == MRC || cameraType == RPI) {
+        cameraOkKey = new MenuKey(KEYCODE_K, "Pause", FONT_SIZE, keyColor);
+      } else {
+        cameraOkKey = new MenuKey(KEYCODE_CUSTOM, "Custom", FONT_SIZE, keyColor);
+      }
       altKey = new MenuKey(KEYCODE_C, "Alt1", FONT_SIZE, keyColor);
       backKey = new MenuKey(KEYCODE_BACKSPACE, "Back", FONT_SIZE, keyColor);
       anaglyphKey = new MenuKey(KEYCODE_A, "Anagly", FONT_SIZE, keyColor);
@@ -1049,6 +1295,8 @@ class Gui {
     MenuKey cameraMenuKey;
     MenuKey cameraFnKey;
     MenuKey cameraOkKey;
+    MenuKey evKey;
+    MenuKey aelKey;
     MenuKey exitKey;
     MenuKey altKey;
     MenuKey cameraStatusKey;
@@ -1060,9 +1308,11 @@ class Gui {
 
       cameraInfoKey = new MenuKey(KEYCODE_I, "Screen", FONT_SIZE, keyColor);
       cameraRepeatKey = new MenuKey(KEYCODE_REPEAT, "Repeat", FONT_SIZE, keyColor);
-      cameraSaveKey = new MenuKey(KEYCODE_SAVE, "Save", FONT_SIZE, keyColor);
+      //cameraSaveKey = new MenuKey(KEYCODE_SAVE, "Save", FONT_SIZE, keyColor);
       cameraModeKey = new MenuKey(KEYCODE_W, "Mode", FONT_SIZE, keyColor);
       exitKey = new MenuKey(KEYCODE_ESC, "EXIT", FONT_SIZE, keyColor);
+      evKey = new MenuKey(KEYCODE_EV, "EV", FONT_SIZE, keyColor);
+      aelKey = new MenuKey(KEYCODE_AEL, "AEL", FONT_SIZE, keyColor);
       altKey = new MenuKey(KEYCODE_C, "Alt", FONT_SIZE, keyColor);
       dummyKey = new MenuKey(KEYCODE_NOP, "", FONT_SIZE, keyColor);
       cameraStatusKey = new MenuKey(KEYCODE_Y, "Status", FONT_SIZE, keyColor);
@@ -1070,8 +1320,13 @@ class Gui {
 
       menuKey[0] = cameraInfoKey;
       menuKey[1] = cameraRepeatKey;
-      menuKey[2] = dummyKey;
-      menuKey[3] = cameraNavKey;
+      if (cameraType == NX300 || cameraType == NX500 || cameraType == NX30) {
+        menuKey[2] = evKey;
+        menuKey[3] = aelKey;
+      } else {
+        menuKey[2] = dummyKey;
+        menuKey[3] = cameraNavKey;
+      }
       menuKey[4] = cameraModeKey;
       menuKey[5] = cameraStatusKey;
       menuKey[6] = exitKey;
@@ -1324,7 +1579,8 @@ void drawIntroductionScreen() {
   text(TITLE, 300, 60);
   text(SUBTITLE, 300, 60+50);
   text(version, 300, 60+100);
-  text(CREDITS, 300, 60+150);
+  //text(CREDITS, 300, 60+150);
+  text(COPYRIGHT, 300, 60+150);
   textSize(FONT_SIZE);
   text("Select Multi-Camera Configuration File", 300, 400);
 

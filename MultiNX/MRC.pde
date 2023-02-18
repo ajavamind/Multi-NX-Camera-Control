@@ -1,11 +1,10 @@
-// Multi Remote Camera
+// Multi Remote Camera app
 // Android Camera app interface
 
 import netP5.*;
 //import oscP5.*; // does not use this part of oscP5 library
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.Locale;
 
 import java.net.DatagramSocket;
@@ -246,6 +245,7 @@ class MRCCamera extends RCamera {
 
   void cameraOk() {
     udpClient.send("P"); // pause in video mode
+    gui.displayMessage("Video Pause/Resume for Multi Remote Camera", 60);
   }
 
   void touchBack() {

@@ -22,6 +22,10 @@ int doubleTriggerDelay = doubleTriggerDelayMin;
 String OUTPUT_FOLDER_PATH="output";  // where to store photos
 String fileType = "jpg"; //  other file types "png" "bmp"
 
+// for stereo pair and anaglyph retification and stereo window adjustments
+int verticalOffset; // twin camera vertical offset
+int horizontalOffset; // twin camera horizontal offset
+
 float printWidth;
 float printHeight;
 float printAspectRatio = 4.0/6.0;  // default 4x6 inch print portrait orientation
@@ -54,7 +58,19 @@ void readConfig(String filenamePath) {
   configFile = loadJSONObject(filenamePath);
   configuration = configFile.getJSONObject("configuration");
 
-  camera_rig = configFile.getString("camera_rig");
+  camera_rig = configuration.getString("camera_rig");
+  if (DEBUG) println("camera rig: " + camera_rig);
+
+  try {
+    verticalOffset = configuration.getInt("verticalOffset");
+    horizontalOffset = configuration.getInt("horizontalOffset");
+  }
+  catch(Exception re) {
+    verticalOffset = 0;
+    horizontalOffset = 0;
+    if (DEBUG) println("Missing verticalOffset or horizontalOffset");
+  }
+  if (DEBUG) println("verticalOffset="+verticalOffset+" horizontalOffset="+horizontalOffset);
   OUTPUT_FOLDER_PATH = configuration.getString("outputFolderPath");
   ipAddress = configuration.getString("IPaddress");
   if (DEBUG) println("broadcast ipAddress="+ipAddress);
@@ -120,8 +136,8 @@ void readConfig(String filenamePath) {
     int cOrientation = jCamera.getInt("orientation");
     String cName = jCamera.getString("name");
     String cSuffix = jCamera.getString("suffix");
-    int cHorz = jCamera.getInt("horizontalOffset");
-    int cVert = jCamera.getInt("verticalOffset");
+    //int cHorz = jCamera.getInt("horizontalOffset");
+    //int cVert = jCamera.getInt("verticalOffset");
     String cUserId = jCamera.getString("userId");
     String cPassword = jCamera.getString("password");
     if (cType.equals(NX2000S)) {
@@ -147,8 +163,8 @@ void readConfig(String filenamePath) {
     camera[i].setName(cName);
     camera[i].setSuffix(cSuffix);
     camera[i].setOrientation(cOrientation);
-    camera[i].setHorizontalOffset(cHorz);
-    camera[i].setVerticalOffset(cVert);
+    //camera[i].setHorizontalOffset(cHorz);
+    //camera[i].setVerticalOffset(cVert);
   }
 }
 

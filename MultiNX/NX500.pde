@@ -98,6 +98,22 @@ class NX500Camera extends RCamera {
     client.write("st key jog jog1_ccw\n");
   }
 
+  void jog2cw() {
+    client.write("st key jog jog2_cw\n");
+  }
+
+  void jog2ccw() {
+    client.write("st key jog jog2_ccw\n");
+  }
+
+  void wheelcw() {
+    client.write("st key wheel wheel_cw\n");
+  }
+
+  void wheelccw() {
+    client.write("st key wheel wheel_ccw\n");
+  }
+
   void screenshot(String filename) {
     if (DEBUG) println("screenshot("+filename+")");
     if (client.active()) {

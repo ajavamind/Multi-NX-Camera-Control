@@ -119,6 +119,14 @@ static final int KEYCODE_SHOW = 3000;
 static final int KEYCODE_SAVE = 3001;
 static final int KEYCODE_REPEAT = 3002;
 static final int KEYCODE_FILENAME_PREFIX = 3003;  // for MRC and RPI cameras
+static final int KEYCODE_JOG2CW = 4000;
+static final int KEYCODE_JOG2CCW = 4001;
+static final int KEYCODE_WHEELCW = 4002;
+static final int KEYCODE_WHEELCCW = 4003;
+static final int KEYCODE_CUSTOM = 4004;
+static final int KEYCODE_TRASH = 4005;
+static final int KEYCODE_EV = 4006;
+static final int KEYCODE_AEL = 4007;
 
 private static final int NOP = 0;
 private static final int EXIT = 1;
@@ -218,13 +226,13 @@ int keyUpdate() {
       screenshot=null;
     }
     if (camera[mainCamera].type == NX2000) {
-      screenshot = requestImage("http://"+camera[mainCamera].ipAddr+"/screenshot.bmp");
+      screenshot = loadImage("http://"+camera[mainCamera].ipAddr+"/screenshot.bmp");
     } else if (camera[mainCamera].type == NX500) {
       delay(2000);  // wait for screenshot capture to finish
-      screenshot = requestImage("http://"+camera[mainCamera].ipAddr+"/OSD0001.jpg");
+      screenshot = loadImage("http://"+camera[mainCamera].ipAddr+"/OSD0001.jpg");
     } else if (camera[mainCamera].type == NX300 || camera[mainCamera].type == NX30) {
       delay(2000);  // wait for screenshot capture to finish
-      screenshot = requestImage("http://"+camera[mainCamera].ipAddr+"/screenshot.bmp");
+      screenshot = loadImage("http://"+camera[mainCamera].ipAddr+"/screenshot.bmp");
     }
     break;
   case KEYCODE_SPACE:
@@ -456,6 +464,38 @@ int keyUpdate() {
       }
     }
     break;
+  case KEYCODE_JOG2CW:
+    if (DEBUG) println("JOG2 CW");
+    for (int i=0; i<numCameras; i++) {
+      if (camera[i].isConnected()) {
+        camera[i].jog2cw();
+      }
+    }
+    break;
+  case KEYCODE_JOG2CCW:
+    if (DEBUG) println("JOG2 CCW");
+    for (int i=0; i<numCameras; i++) {
+      if (camera[i].isConnected()) {
+        camera[i].jog2ccw();
+      }
+    }
+    break;
+  case KEYCODE_WHEELCW:
+    if (DEBUG) println("JOG2 CW");
+    for (int i=0; i<numCameras; i++) {
+      if (camera[i].isConnected()) {
+        camera[i].wheelcw();
+      }
+    }
+    break;
+  case KEYCODE_WHEELCCW:
+    if (DEBUG) println("JOG2 CCW");
+    for (int i=0; i<numCameras; i++) {
+      if (camera[i].isConnected()) {
+        camera[i].wheelccw();
+      }
+    }
+    break;
   case KEYCODE_MODE_TABLE:
   case KEYCODE_MODE_TABLE1:
   case KEYCODE_MODE_TABLE2:
@@ -641,6 +681,38 @@ int keyUpdate() {
       }
     }
     break;
+  case KEYCODE_CUSTOM:
+    if (DEBUG) println("cameraCustom()");
+    for (int i=0; i<numCameras; i++) {
+      if (camera[i].isConnected()) {
+        camera[i].cameraCustom();
+      }
+    }
+    break;
+  case KEYCODE_TRASH:
+    if (DEBUG) println("cameraDel()");
+    for (int i=0; i<numCameras; i++) {
+      if (camera[i].isConnected()) {
+        camera[i].cameraDel();
+      }
+    }
+    break;
+  case KEYCODE_EV:
+    if (DEBUG) println("cameraDel()");
+    for (int i=0; i<numCameras; i++) {
+      if (camera[i].isConnected()) {
+        camera[i].cameraEv();
+      }
+    }
+    break;
+  case KEYCODE_AEL:
+    if (DEBUG) println("cameraDel()");
+    for (int i=0; i<numCameras; i++) {
+      if (camera[i].isConnected()) {
+        camera[i].cameraAel();
+      }
+    }
+    break;
   case KEYCODE_SHOW:
     showPhoto = !showPhoto;
     for (int i=0; i<numCameras; i++) {
@@ -719,7 +791,7 @@ int keyUpdate() {
       repeat_interval = repeatInterval; // convert to long
       repeat_interval = 1000L*repeat_interval;  // milliseconds
       repeat_time = System.currentTimeMillis(); // current time in milliseconds
-      if (Long.compareUnsigned(repeatDateTime,0L) > 0 && Long.compareUnsigned(repeatDateTime,(repeat_time + 1000L)) > 0) {
+      if (Long.compareUnsigned(repeatDateTime, 0L) > 0 && Long.compareUnsigned(repeatDateTime, (repeat_time + 1000L)) > 0) {
         repeat_start_delay =  1000L*repeatStartDelay + repeatDateTime;
       } else {
         repeat_start_delay = repeat_time + 1000L*repeatStartDelay;

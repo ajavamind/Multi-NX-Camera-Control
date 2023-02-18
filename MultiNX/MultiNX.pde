@@ -36,11 +36,11 @@
 // Use email WiFi cofiguration on NX2000 to connect to a local network.
 // Exit email screen on NX camera to shoot photos and videos after connection to your local WiFi network.
 
-static final boolean DEBUG = false;
+static final boolean DEBUG = true;
 static final boolean testGui = false;
 
-static final String VERSION_NAME = "2.1";
-static final String VERSION_CODE = "8";
+static final String VERSION_NAME = "2.2";
+static final String VERSION_CODE = "9";
 static final String TITLE = "MultiNX - Multi Camera Controller";
 static final String SUBTITLE = "Control Multiple NX/MRC/RPI Cameras";
 static final String CREDITS = "Written by Andy Modla";
@@ -259,7 +259,7 @@ void draw() {
   }
 
   // check for repeat
-  if (repeat_enabled) {
+  if (repeat_enabled && repeatCount > 0) {
     gui.highlightRepeatKey(true);  // set Repeat button highlight
     long currentTime = System.currentTimeMillis(); // current time in milliseconds
     if (Long.compareUnsigned(currentTime, repeat_time) >= 0 && (Long.compareUnsigned(currentTime, repeat_start_delay) >= 0 )) {
@@ -364,9 +364,9 @@ void draw() {
           textSize(FONT_SIZE);
           if (screenshot == null || cameraStatus) {
             if (camera[i].shutterCount == 0) {
-              text(camera[i].name + " " + camera[i].orientation + " " + camera[i].ipAddr + " Connected.", 200, 110+i*50);
+              text(camera[i].name + " " + CAMERA_TYPES[camera[i].type] + " " + camera[i].orientation + "\u00B0 " + camera[i].ipAddr + " Connected.", 200, 110+i*50);
             } else {
-              text(camera[i].name + " " + camera[i].orientation + " " + camera[i].ipAddr + " Shutter Count " + camera[i].shutterCount, 200, 110+i*50);
+              text(camera[i].name + " " + CAMERA_TYPES[camera[i].type] + " " + camera[i].orientation + "\u00B0 " + camera[i].ipAddr + " Shutter Count " + camera[i].shutterCount, 200, 110+i*50);
             }
           }
         }

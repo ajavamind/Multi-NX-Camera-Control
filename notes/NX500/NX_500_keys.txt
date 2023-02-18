@@ -1,0 +1,69 @@
+************************************************************
+*                 SAMSUNG LINUX PLATFORM                   *
+************************************************************
+
+[root@drime5 ~]# st help
+usage: st [command] [param]
+Supported bult-in commands
+        help            readl           writel          dump
+        gpio            hdmi            log             lcd
+        cap             pmu             clk             thread
+        key             firmware        util            app
+        leak            devman          stlcd           bat
+        rtc             tbm             micom           misc
+        oic             dvfs            adc
+[root@drime5 ~]#
+
+drime5 login: root
+[root@drime5 ~]# st key help
+Usage:
+st key [push/release/click] [command]
+   [command]:
+        up              left            right           down
+        del             depth           meter           ok
+        pwon            pwoff           reset           s1
+        s2              menu            custom1         evf
+        ael             rec             fn              ev
+        pb              af_mode         wb              iso
+        af_on           light           mf_zoom         wifi
+        end
+
+st key jog [command]
+   [command]:
+        jog1_cw         jog1_ccw        jog2_cw         jog2_ccw
+
+
+st key mode [command]
+   [command]:
+        scene           smart           p               a
+        s               m               custom2         custom1
+
+
+st key wheel [command]
+   [command]:
+        wheel_cw        wheel_ccw
+
+st key drive [command]
+   [command]:
+        single          conti_n         conti_h         timer
+        bracket
+
+st key touch [push/release/click] [x] [y]
+
+
+st key log [on/off]
+
+
+[root@drime5 ~]#
+
+[root@drime5 ~]# st cap help
+usage: st cap [command] [param]
+Supported capture commands
+        al              back            capdtm          capmm
+        capt            cis             dp              efs
+        fd              fenx            iq              iqr
+        lens            live            lockinfo                log
+        obj             path            ref             seq
+        sh              sh-ad           str
+[root@drime5 ~]#
+
