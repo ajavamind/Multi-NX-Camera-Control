@@ -21,8 +21,6 @@
 		  "IPaddress": "192.168.0.101",
           "orientation_description": "camera rotation degrees: landscape 0, portrait 90, landscape upside down 180, portrait upside down 270",		
 		  "orientation": 90,
-		  "userId": "",
-		  "password": "",
         },
 	    { "name" : "S8 Right",
 		  "suffix": "R",
@@ -31,8 +29,6 @@
 		  "IPaddress": "192.168.0.100",
           "orientation_description": "camera rotation degrees: landscape 0, portrait 90, landscape upside_down 180, portrait upside_down 270",		
 		  "orientation": 90,
-		  "userId": "",
-		  "password": "",
         },
 	],
 	"repeat": {

@@ -760,17 +760,17 @@ class Gui {
     MenuKey navDummyKey;
 
     MenuKey[] table;
-    int numKeys = 9;
+    int numKeys = 9; // 3 rows x 3 columns keyboard
     float insetY;
     float insetX;
 
     void create(int cameraType) {
       int keyColor = black;
       int arrowKeyColor = aqua;
-      navLeftKey = new MenuKey(KEYCODE_NAV_LEFT, LEFT_TRIANGLE, MEDIUM_FONT_SIZE, arrowKeyColor);
-      navRightKey = new MenuKey(KEYCODE_NAV_RIGHT, RIGHT_TRIANGLE, MEDIUM_FONT_SIZE, arrowKeyColor);
-      navUpKey = new MenuKey(KEYCODE_NAV_UP, LEFT_TRIANGLE, MEDIUM_FONT_SIZE, arrowKeyColor);
-      navDownKey = new MenuKey(KEYCODE_NAV_DOWN, RIGHT_TRIANGLE, MEDIUM_FONT_SIZE, arrowKeyColor);
+      navLeftKey = new MenuKey(KEYCODE_NAV_LEFT, LEFT_ARROW, MEDIUM_FONT_SIZE, arrowKeyColor);
+      navRightKey = new MenuKey(KEYCODE_NAV_RIGHT, RIGHT_ARROW, MEDIUM_FONT_SIZE, arrowKeyColor);
+      navUpKey = new MenuKey(KEYCODE_NAV_UP, UP_ARROW, MEDIUM_FONT_SIZE, arrowKeyColor);
+      navDownKey = new MenuKey(KEYCODE_NAV_DOWN, DOWN_ARROW, MEDIUM_FONT_SIZE, arrowKeyColor);
       navOkKey = new MenuKey(KEYCODE_NAV_OK, "OK", FONT_SIZE, keyColor);
       navDummyKey = new MenuKey(KEYCODE_NOP, "", FONT_SIZE, keyColor);
 
@@ -795,7 +795,7 @@ class Gui {
       float[] insetTab = { 0, inset, 0, inset, 0, inset, 0, inset, 0, inset, 0, inset};
       for (int i = 0; i < ROWS; i++) {
         for (int j = 0; j < COLS; j++) {
-          table[COLS*i+j].setPosition(x + ((float)j) * (iX + 2 * insetX), y + ((float)i) * (iY + 2 * insetY), iX, iY, insetTab[ROWS*i+ j]);
+          table[COLS*i+j].setPosition(x + ((float)j) * (iX + (iX/2) + 2 * insetX), y + ((float)i) * (iY + 2 * insetY), iX, iY, insetTab[ROWS*i+ j]);
         }
       }
       table[1].setVisible(true);
@@ -1301,6 +1301,7 @@ class Gui {
     MenuKey altKey;
     MenuKey cameraStatusKey;
     MenuKey cameraNavKey;
+    MenuKey iFnKey;
     MenuKey dummyKey;
 
     public HorzMenuBar2(int cameraType) {
@@ -1317,6 +1318,7 @@ class Gui {
       dummyKey = new MenuKey(KEYCODE_NOP, "", FONT_SIZE, keyColor);
       cameraStatusKey = new MenuKey(KEYCODE_Y, "Status", FONT_SIZE, keyColor);
       cameraNavKey =  new MenuKey(KEYCODE_NAV_UPDATE, "Nav", FONT_SIZE, keyColor);
+      iFnKey =  new MenuKey(KEYCODE_IFN, "iFn", FONT_SIZE, keyColor);
 
       menuKey[0] = cameraInfoKey;
       menuKey[1] = cameraRepeatKey;
@@ -1324,8 +1326,8 @@ class Gui {
         menuKey[2] = evKey;
         menuKey[3] = aelKey;
       } else {
-        menuKey[2] = dummyKey;
-        menuKey[3] = cameraNavKey;
+        menuKey[2] = dummyKey; //iFnKey;  // lens button iFn not available for NX2000
+        menuKey[3] = dummyKey; //cameraNavKey;  // OK key causes camera to hang
       }
       menuKey[4] = cameraModeKey;
       menuKey[5] = cameraStatusKey;

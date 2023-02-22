@@ -207,6 +207,9 @@ abstract class RCamera implements NXCommand {
   void wheelcw() {
   }
 
+  void ifn() {
+  }
+  
   String getName() {
     return this.name;
   }
@@ -259,7 +262,7 @@ abstract class RCamera implements NXCommand {
             lastPhoto = loadImage(filenameUrl, "jpg");
             //lastPhoto = requestImage(filenameUrl);
             if (DEBUG) println("requestImage "+filenameUrl);
-            gui.displayMessage("Loading Photo ... "+ filenameUrl, 60);
+            gui.displayMessage("Loading Photo "+ filenameUrl, 60);
             showPhoto = true;
           } else {
             if (DEBUG) println("Image url ends with / " + filenameUrl);

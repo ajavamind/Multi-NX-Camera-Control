@@ -127,6 +127,7 @@ static final int KEYCODE_CUSTOM = 4004;
 static final int KEYCODE_TRASH = 4005;
 static final int KEYCODE_EV = 4006;
 static final int KEYCODE_AEL = 4007;
+static final int KEYCODE_IFN = 4008;
 
 private static final int NOP = 0;
 private static final int EXIT = 1;
@@ -493,6 +494,14 @@ int keyUpdate() {
     for (int i=0; i<numCameras; i++) {
       if (camera[i].isConnected()) {
         camera[i].wheelccw();
+      }
+    }
+    break;
+  case KEYCODE_IFN:
+    if (DEBUG) println("iFn");
+    for (int i=0; i<numCameras; i++) {
+      if (camera[i].isConnected()) {
+        camera[i].ifn();
       }
     }
     break;

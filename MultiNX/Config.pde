@@ -51,7 +51,6 @@ void initConfig() {
 }
 
 void readConfig(String filenamePath) {
-  //String filenamePath = sketchPath("config")+File.separator+"my_config.json";
   if (!fileExists(filenamePath)) {
     filenamePath = "config.json"; // default for development code test
   }
@@ -136,8 +135,7 @@ void readConfig(String filenamePath) {
     int cOrientation = jCamera.getInt("orientation");
     String cName = jCamera.getString("name");
     String cSuffix = jCamera.getString("suffix");
-    //int cHorz = jCamera.getInt("horizontalOffset");
-    //int cVert = jCamera.getInt("verticalOffset");
+    // userId and password used for cameras accessed with SSH
     String cUserId = jCamera.getString("userId");
     String cPassword = jCamera.getString("password");
     if (cType.equals(NX2000S)) {
@@ -163,8 +161,6 @@ void readConfig(String filenamePath) {
     camera[i].setName(cName);
     camera[i].setSuffix(cSuffix);
     camera[i].setOrientation(cOrientation);
-    //camera[i].setHorizontalOffset(cHorz);
-    //camera[i].setVerticalOffset(cVert);
   }
 }
 

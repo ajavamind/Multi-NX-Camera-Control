@@ -102,6 +102,10 @@ class NX2000Camera extends RCamera {
     client.write("st key jog ccw\n");
   }
 
+  void ifn() {
+    client.write("st key click end\n");
+  }
+  
   void screenshot(String filename) {
     if (DEBUG) println("screenshot("+filename+")");
     if (client.active()) {
