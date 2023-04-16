@@ -46,16 +46,21 @@ String repeatStartDateTime;
 long repeatDateTime;
 ZonedDateTime repeatStartZonedDateTime;
 
-void initConfig() {
-  readConfig(configFilename);
+int initConfig() {
+  int result = readConfig(configFilename);
+  return result;
 }
 
-void readConfig(String filenamePath) {
+int readConfig(String filenamePath) {
   if (!fileExists(filenamePath)) {
     filenamePath = "config.json"; // default for development code test
   }
+  try {
   configFile = loadJSONObject(filenamePath);
   configuration = configFile.getJSONObject("configuration");
+  } catch (Exception e) {
+    return -1;
+  }
 
   camera_rig = configuration.getString("camera_rig");
   if (DEBUG) println("camera rig: " + camera_rig);
@@ -156,12 +161,13 @@ void readConfig(String filenamePath) {
       if (DEBUG) println(cIP + " Configuration Error!");
       numCameras = 0;
       message = cIP + " Configuration Error! "+ "index="+i+ " "+cType;
-      return;
+      return -2;
     }
     camera[i].setName(cName);
     camera[i].setSuffix(cSuffix);
     camera[i].setOrientation(cOrientation);
   }
+  return 0;
 }
 
 // Check if file exists

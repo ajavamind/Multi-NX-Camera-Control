@@ -1,5 +1,6 @@
 // Andy Modla
 // Copyright 2021-2023 Andrew Modla All Rights Reserved
+// Github:
 // Java sketch for simultaneous WiFi telnet/ssh/UDP broadcast control of compatible multiple cameras
 // 1) Samsung NX cameras
 // 2) Android devices and phones running the  Multi Remote Camera (MRC) App
@@ -40,7 +41,7 @@ static final boolean DEBUG = true;
 static final boolean testGui = false;
 
 static final String VERSION_NAME = "2.2";
-static final String VERSION_CODE = "9";
+static final String VERSION_CODE = "10";
 static final String TITLE = "MultiNX - Multi Camera Controller";
 static final String SUBTITLE = "Control Multiple NX/MRC/RPI Cameras";
 static final String CREDITS = "Written by Andy Modla";
@@ -101,7 +102,7 @@ String[] stateName = {
 
 String message=null;
 int messagePosition = 0;
-int frameCounter = 60;
+int frameCounter = 0;
 boolean showPhoto = false;
 int screenshotCounter = 1;
 String screenshotFilename = "screenshot";
@@ -133,19 +134,26 @@ void settings() {
 void setup() {
   // set Landscape orientation
   orientation(LANDSCAPE);
+  frameRate(30.0);
   version = "Version "+ VERSION_NAME + " Build "+ VERSION_CODE;
   if (DEBUG) {
     version = version + " DEBUG";
+    println("version="+version);
   }
 
   setTitle(titleText);
 
   textSize(FONT_SIZE);
-
+  if (DEBUG) println("load images");
   // get data folder images for the app
   lcdScreen = loadImage("screenshot/nx2000/blankscreen.png");
   cameraImage = loadImage("images/nx2000_topview_270x270.jpg");
-  if (DEBUG) println("width="+width + " height="+height);
+
+  // java.lang.IllegalArgumentException: File /data/data/com.andymodla.apps.multinx/files/screenshot/nx2000/blankscreen.png contains a path separator
+  //lcdScreen = loadImage(sketchPath("screenshot") + File.separator +"nx2000"+File.separator+ "blankscreen.png");
+  //cameraImage = loadImage(sketchPath("images")+ File.separator + "nx2000_topview_270x270.jpg");
+
+  if (DEBUG) println("setup width="+width + " height="+height);
 
   loadPhotoNumber();
   if (DEBUG) println("setup() completed");
@@ -158,6 +166,8 @@ void draw() {
   //
   if (frameCounter > 0) {
     frameCounter--;
+    gui.displayMessage(message);
+    return;
   } else {
     message = null;
     if (forceExit) {
@@ -178,7 +188,7 @@ void draw() {
     state = RUN_STATE;
   }
   background(128);
-  //background(0);
+
   if (screenshot != null && screenshot.width>0 && screenshot.height>0) {
     if (camera[mainCamera].type == NX2000 || camera[mainCamera].type == NX300 || camera[mainCamera].type == NX30) {
       imageMode(CENTER);
@@ -215,7 +225,7 @@ void draw() {
     gui.removeConfigZone();
     state = CONNECT_STATE;
     drawIntroductionScreen();
-    gui.displayMessage("Using Last Configuration");
+    gui.displayMessage("Using Last Configuration", 60);
     return;
   } else if (state == CONNECT_STATE) {
     if (configFilename == null) {
@@ -226,7 +236,6 @@ void draw() {
       if (configFilename == null) {
         configFilename = defaultFilename;
       }
-      initConfig();
     } else {
       if (DEBUG) println("configFilename="+configFilename);
       if (buildMode == ANDROID_MODE) {
@@ -236,7 +245,16 @@ void draw() {
         content[0] = configFilename;
         saveStrings("data"+File.separator+lastFilename, content);
       }
-      initConfig();
+    }
+    int errorCode = initConfig();
+    if (errorCode == -1) {
+      gui.displayMessage("Configuration File Error "+configFilename, 180);
+      state = INTRODUCTION_STATE;
+      return;
+    } else if (errorCode == -2) {
+      gui.displayMessage(message, 180);
+      state = INTRODUCTION_STATE;   
+      return;
     }
 
     // initialze GUI when the configuration is OK
@@ -272,7 +290,7 @@ void draw() {
           repeat_enabled = false;
           gui.highlightRepeatKey(false); // set repeat button white background
         }
-      } 
+      }
     }
   }
 
@@ -392,7 +410,7 @@ void draw() {
     i++;
     String date = "";
     if (repeatStartDateTime != null) date = repeatStartDateTime;
-    
+
     if (repeat_enabled) {
       text("Repeat active " + date, offset, 110 + i*50);
       text("Repeat active " + " startDelay=" + repeatStartDelay + "  "+"Interval="+repeatInterval + " Count "+repeat_counter+" of " + repeatCount, offset, 160 + i*50);
@@ -419,7 +437,7 @@ void draw() {
     requestScreenshot = false;
     lastKeyCode = KEYCODE_I;
   }
-}
+} // draw()
 
 // to be used
 void imageDraw(int i, int offset, float ar) {

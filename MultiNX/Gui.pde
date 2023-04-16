@@ -100,7 +100,7 @@ class Gui {
     this.base = base;
     WIDTH = base.width;
     HEIGHT = base.height;
-    if (DEBUG) println("WIDTH-"+WIDTH+" HEIGHT="+HEIGHT);
+    if (DEBUG) println("Gui create() WIDTH="+WIDTH+" HEIGHT="+HEIGHT);
     //xFocusArea= 2*(camera[mainCamera].screenWidth+xoffset)/2;
     //yFocusArea = 2*camera[mainCamera].screenHeight/2;
     //xFocusArea= 2*(NX2000Camera.SCREEN_WIDTH+xoffset)/2;
@@ -176,6 +176,7 @@ class Gui {
   }
 
   void displayConfigZone() {
+    configZone.setActive();
     configZone.display();
   }
 
@@ -1374,7 +1375,7 @@ class Gui {
     }
 
     void setActive() {
-      if (DEBUG) println("gui.ConfigZone.setActive()");
+      //if (DEBUG) println("gui.ConfigZone.setActive()");
       for (int i = 0; i < menuKey.length; i++) {
         menuKey[i].setVisible(true);
         menuKey[i].setActive(true);
