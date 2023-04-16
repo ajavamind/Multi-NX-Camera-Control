@@ -907,7 +907,7 @@ class Gui {
     void display() {
       highlightFocusKey(focus);
       fill(192);
-      if (cameraType == NX500) {
+      if (cameraType == NX500 || cameraType == NX300 || cameraType == NX30) {
         rect(WIDTH -480, 0, 480, HEIGHT - 120);
       } else {
         rect(WIDTH -320, 0, 320, HEIGHT - 120);

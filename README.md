@@ -36,7 +36,7 @@ The NX cameras use the open-source Linux based (Tizen) operating system and Sams
 
  1. Improve User interface, error messaging, documentation
  2. Refactor for simplification, camera design, and more comments 
- 3. Add more controls for NX300 and NX500.
+ 3. NX30 not available for testing
  4. For Multi Remote Camera App add controls for camera mode and settings.
 
 ## Warning Notice
@@ -346,6 +346,8 @@ Many thanks to Samsung camera enthusiasts for information on how to modify, acce
 [Compare NX3000 with NX2000](https://cameradecision.com/compare/Samsung-NX3000-vs-Samsung-NX2000)
 
 [Compare NX300 with NX2000](https://cameradecision.com/compare/Samsung-NX300-vs-Samsung-NX2000)
+
+[Compare NX30 with NX2000](https://cameradecision.com/compare/Samsung-NX30-vs-Samsung-NX2000)
 
 [Compare NX500 with NX2000](https://cameradecision.com/compare/Samsung-NX500-vs-Samsung-NX2000)
 

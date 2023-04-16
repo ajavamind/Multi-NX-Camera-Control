@@ -17,7 +17,7 @@ class NX30Camera extends RCamera {
   static final int SYSRWPREF_SHUTTER_COUNT = 0x00000008;  
 
   // LCD screen dimensions
-  static final int SCREEN_WIDTH = 800;
+  static final int SCREEN_WIDTH = 720;  //800 is actual screenshot image width
   static final int SCREEN_HEIGHT = 480;
   static final float offsetPercent = 3.0; //6.5;
 

@@ -1,0 +1,30 @@
+{	"description": "Multi NX Camera Control Configuration",
+	"debug": true,
+	"configuration": {
+		"camera_rig_description": "One camera test 300 MAC 9E54",
+		"camera_rig": "single",
+		"saveFolderPath": "/output",
+		"IPaddress description": "Network broadcast address for Multi Remote Camera app",
+		"IPaddress": "192.168.0.255",
+	},
+	"display": {
+		"width": 1920,
+		"height": 1080,
+	},
+    "cameras": [
+	    { "name" : "NX300 Right",
+		  "suffix": "_L",
+		  "type_description": "MRC, NX2000, NX300, NX30, NX500, RPI, TMC",
+		  "type": "NX300",
+		  "IPaddress": "192.168.1.25",
+          "orientation_description": "camera rotation degrees: landscape 0, portrait 90, landscape upside down 180, portrait upside down 270",		
+		  "orientation": 0,
+        },
+	],
+	"repeat": {
+		"repeat_description": "Future TODO start_delay - capture start delay seconds, interval - seconds between repeats, count - number of repeats",
+		"start_delay": 0,
+		"interval": 0,
+		"count": 0,
+	}
+}
