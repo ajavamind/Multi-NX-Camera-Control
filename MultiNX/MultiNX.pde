@@ -37,7 +37,7 @@
 // Use email WiFi cofiguration on NX2000 to connect to a local network.
 // Exit email screen on NX camera to shoot photos and videos after connection to your local WiFi network.
 
-static final boolean DEBUG = true;
+static final boolean DEBUG = false;
 static final boolean testGui = false;
 
 static final String VERSION_NAME = "2.3";
