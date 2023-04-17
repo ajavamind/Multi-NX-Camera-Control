@@ -37,11 +37,11 @@
 // Use email WiFi cofiguration on NX2000 to connect to a local network.
 // Exit email screen on NX camera to shoot photos and videos after connection to your local WiFi network.
 
-static final boolean DEBUG = false;
+static final boolean DEBUG = true;
 static final boolean testGui = false;
 
-static final String VERSION_NAME = "2.3";
-static final String VERSION_CODE = "11";
+static final String VERSION_NAME = "2.4";
+static final String VERSION_CODE = "12";
 static final String TITLE = "MultiNX - Multi Camera Controller";
 static final String SUBTITLE = "Control Multiple NX/MRC/RPI Cameras";
 static final String CREDITS = "Written by Andy Modla";

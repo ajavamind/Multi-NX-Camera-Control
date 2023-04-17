@@ -5,7 +5,7 @@
 		"camera_rig": "single",
 		"saveFolderPath": "/output",
 		"IPaddress description": "Network broadcast address for Multi Remote Camera app",
-		"IPaddress": "192.168.0.255",
+		"IPaddress": "192.168.1.255",
 	},
 	"display": {
 		"width": 1920,
@@ -13,7 +13,7 @@
 	},
     "cameras": [
 	    { "name" : "NX300 Right",
-		  "suffix": "_L",
+		  "suffix": "_R",
 		  "type_description": "MRC, NX2000, NX300, NX30, NX500, RPI, TMC",
 		  "type": "NX300",
 		  "IPaddress": "192.168.1.25",

@@ -34,7 +34,7 @@ void saveCameraPhotos() {
           //name.replace("\\.SRW", "");
           //if (DEBUG) println(name);
           String cname = camera[i].suffix;
-          String out = saveFolderPath+File.separator+name+number(photoNumber)+"_"+cname+".JPG";
+          String out = saveFolderPath+File.separator+name+"_"+number(photoNumber)+cname+".JPG";
           //String out = saveFolderPath+File.separator+"MNX"+convertCounter(photoNumber)+"_"+cname+".JPG";
           if (DEBUG) println("save="+out);
           camera[i].lastPhoto.save(out);
@@ -89,7 +89,12 @@ void saveCompositePhoto(String filename) {
     if (saveFolderPath != null) {
       String out = saveFolderPath+File.separator+filename+suffix+".jpg";
       if (DEBUG) println("save="+out);
-      pg.save(out);
+      try {
+        pg.save(out);
+      }
+      catch (Error err) {
+        gui.displayMessage(err.toString(), 180);
+      }
     }
   }
 }
@@ -129,12 +134,17 @@ void saveAnaglyphPhoto(String filename) {
       lastAnaglyph.parent = null; // dispose
       lastAnaglyph = null;
     }
-    lastAnaglyph =createAnaglyph(camera[0].lastPhoto, camera[1].lastPhoto, horizontalOffset);
+    try {
+      lastAnaglyph =createAnaglyph(camera[0].lastPhoto, camera[1].lastPhoto, horizontalOffset);
 
-    if (saveFolderPath != null) {
-      String out = saveFolderPath+File.separator+filename+suffix+".jpg";
-      if (DEBUG) println("save="+out);
-      lastAnaglyph.save(out);
+      if (saveFolderPath != null) {
+        String out = saveFolderPath+File.separator+filename+suffix+".jpg";
+        if (DEBUG) println("save="+out);
+        lastAnaglyph.save(out);
+      }
+    }
+    catch (Error err) {
+      gui.displayMessage(err.toString(), 180);
     }
   }
 }
