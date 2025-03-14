@@ -2,9 +2,9 @@
 	"configuration": {
 		"camera_rig_description": "twin (3D stereo), lenticular, multiple",
 		"info": "M5Stack Timer Camera https://github.com/m5stack/TimerCam-arduino",
-		"camera_rig": "twin",
+		"camera_rig": "single",
 		"saveFolderPath": "/output",
-		"IPaddress": "192.168.0.102",
+		"IPaddress": "192.168.0.255",
 	},
 	"display": {
 		"width": 1920,
@@ -15,7 +15,7 @@
 		  "suffix": "TMC",
 		  "type_description": "MRC, NX2000, NX300, NX30, NX500, RPI, TMC",
 		  "type": "TMC",
-		  "IPaddress": "192.168.0.104",
+		  "IPaddress": "192.168.0.102",
           "orientation_description": "camera rotation degrees: landscape 0, portrait 90, landscape upside down 180, portrait upside down 270",		
 		  "orientation": 0,
         },

@@ -40,12 +40,12 @@
 static final boolean DEBUG = true;
 static final boolean testGui = false;
 
-static final String VERSION_NAME = "2.4";
-static final String VERSION_CODE = "12";
+static final String VERSION_NAME = "2.5";
+static final String VERSION_CODE = "13";
 static final String TITLE = "MultiNX - Multi Camera Controller";
-static final String SUBTITLE = "Control Multiple NX/MRC/RPI Cameras";
+static final String SUBTITLE = "Control Multiple NX/MRC/RPI Cameras and Flash";
 static final String CREDITS = "Written by Andy Modla";
-static final String COPYRIGHT = "Copyright 2021-2023 Andrew Modla";
+static final String COPYRIGHT = "Copyright 2021-2025 Andrew Modla";
 static String version;
 
 // Configuration file parsed settings for cameras

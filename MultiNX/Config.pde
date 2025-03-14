@@ -157,6 +157,8 @@ int readConfig(String filenamePath) {
       camera[i] = new RPICamera(this, cIP, cUserId, cPassword);
     } else if (cType.equals(TMCS)) {
       camera[i] = new TMCCamera(this, cIP);
+    } else if (cType.equals(STBS)) {
+      camera[i] = new STBCamera(this, cIP);
     } else {
       if (DEBUG) println(cIP + " Configuration Error!");
       numCameras = 0;

@@ -330,6 +330,7 @@ class TMCCamera extends RCamera {
     return true;
   }
 
+  // used to read capture and read photo from the TMC device
   void getFilename() {
     String aFilename = "IMG_"+ getFilename(SAME, PHOTO_MODE)+ "_"+suffix+".jpg";
     filename = aFilename;

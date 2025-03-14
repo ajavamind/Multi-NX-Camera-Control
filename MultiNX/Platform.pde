@@ -22,7 +22,7 @@ boolean grantedWrite = false;
 SelectLibrary files;
 
 void openFileSystem() {
-  requestPermissions(); 
+  //requestPermissions(); // comment out because this is handled in Processing Android startup main activity code
   files = new SelectLibrary(this);
 }
 
@@ -30,9 +30,9 @@ void setTitle(String str) {
 }
 
 public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-  println("onRequestPermissionsResult "+ requestCode + " " + grantResults + " ");
+  println("Async - onRequestPermissionsResult requestCode="+ requestCode + " ");
   for (int i=0; i<permissions.length; i++) {
-    println(permissions[i]);
+    println(permissions[i] + " " + grantResults[i]);
   }
 }  
 

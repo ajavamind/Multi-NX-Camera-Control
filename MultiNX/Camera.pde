@@ -1,4 +1,4 @@
-// Camera parameters and control
+// Camera and Flash device parameters and control
 
 // Raspberry Pi Camera support uses libcamera library
 // Camera types supported
@@ -6,10 +6,12 @@ static final int NX2000 = 0; // Samsung NX2000 Camera
 static final int NX300 = 1; // Samsung NX300 Camera
 static final int NX30 = 2; // Samsung NX30 Camera
 static final int NX500 = 3; // Samsung NX500 Camera
-static final int MRC = 4; // Multi Remmote Camera (Android Camera App)
-//static final int IMX230 = 5; // Raspberry PI Arducam Pivariety 21 MP IMX230 Camera
+static final int MRC = 4; // Multi Remote Camera (Android Camera App)
 static final int RPI = 5; // Raspberry PI Computer Camera: Tested with Arducam Pivariety 21 MP IMX230 Camera
 static final int TMC = 6; // M5Stack Timer Camera
+static final int STB = 7; // Flash (Strobe) controlled by WiFi receiver similar to MRC
+//static final int IMX230 = 8; // Raspberry PI Arducam Pivariety 21 MP IMX230 Camera
+
 // Raspberry PI requires libcamera stack and web server at port 8080
 
 static final String NX2000S = "NX2000"; // Samsung NX2000 Camera
@@ -20,11 +22,12 @@ static final String MRCS = "MRC"; // Multi Remmote Camera (Android Camera App)
 //static final String IMX230S = "IMX230"; // Raspberry PI Arducam Pivariety 21 MP IMX230 Camera
 static final String RPIS = "RPI"; // Raspberry PI Computer Camera: Tested with Arducam Pivariety 21 MP IMX230 Camera
 static final String TMCS = "TMC"; // M5Stack Timer Camera
-static final String[] CAMERA_TYPES = {NX2000S, NX300S, NX30S, NX500S, MRCS, RPIS, TMCS};
+static final String STBS = "STB"; // Flash controlled over WiFi similar to MRC
+static final String[] CAMERA_TYPES = {NX2000S, NX300S, NX30S, NX500S, MRCS, RPIS, TMCS, STBS};
 
 static final int TelnetPort = 23; // telnet port
 static final int SSHport = 22; // SSH port
-static final int UDPport = 8000;  // UDP port for Multi Remmote Camera (Android Camera App)
+static final int UDPport = 8000;  // UDP port for Multi Remmote Camera (Android Camera App) and Flash Strobe units
 static final String HTTPport = "8080";
 
 // Camera modes
